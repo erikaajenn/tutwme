@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="chatbot.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - TutwMe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+        nav { background: #2c3e50; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        nav h1 { color: white; font-size: 22px; }
+        nav a { color: #ccc; text-decoration: none; margin-left: 24px; font-size: 15px; }
+        nav a:hover { color: white; }
+        .container { max-width: 420px; margin: 80px auto; background: white; border-radius: 10px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { color: #888; font-size: 14px; margin-bottom: 28px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #555; }
+        input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        input:focus { outline: none; border-color: #3498db; }
+        button { width: 100%; background: #3498db; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 4px; }
+        button:hover { background: #2980b9; }
+        .error { background: #fdf0f0; color: #e74c3c; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 16px; display: none; }
+        .divider { text-align: center; color: #aaa; font-size: 13px; margin: 20px 0; }
+        .register-btn { background: white; color: #3498db; border: 1px solid #3498db; margin-top: 8px; }
+        .register-btn:hover { background: #f0f7ff; }
+
+        /* Dashboard (shown after login) */
+        .dashboard { display: none; }
+        .dashboard h2 { margin-bottom: 20px; }
+        .booking-card { border: 1px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .booking-card h4 { font-size: 15px; margin-bottom-4px; }
+        .booking-card p { font-size: 13px; color: #666; margin-top: 4px; }
+        .status { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 20px; margin-top: 8px; }
+        .status.confirmed { background: #eafaf1; color: #27ae60; }
+        .status.pending { background: #fef9e7; color: #f39c12; }
+        .status.completed { background: #eaf0ff; color: #3455db; }
+        .logout { background: #e74c3c; margin-top: 20px; }
+        .logout:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>TutwMe</h1>
+    <div>
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book a Session</a>
+        <a href="login.html">Student Login</a>
+        <a href="admin.html">Admin</a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Login form -->
+    <div id="login-form">
+        <h2>Student Login</h2>
+        <p class="subtitle">Sign in to view your bookings</p>
+        <div class="error" id="error">Invalid email or password.</div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+        <button onclick="login()">Sign In</button>
+        <div class="divider">or</div>
+        <button class="register-btn" onclick="window.location.href='register.html'">Create Account</button>
+    </div>
+
+    <!-- Dashboard (shown after login) -->
+    <div class="dashboard" id="dashboard">
+        <h2 id="welcome-msg">Welcome back!</h2>
+        <p style="color:#888; font-size:14px; margin-bottom:20px;">Your upcoming sessions</p>
+        <div id="bookings-list">Loading...</div>
+        <button class="logout" onclick="logout()">Sign Out</button>
+    </div>
+</div>
+
+<script>
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+            showError('Please enter your email and password.');
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:8080/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (res.ok) {
+                const student = await res.json();
+                localStorage.setItem('student', JSON.stringify(student));
+                showDashboard(student);
+            } else {
+                showError('Invalid email or password.');
+            }
+        } catch {
+            showError('Could not connect to server.');
+        }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('error');
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    function showDashboard(student) {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('welcome-msg').textContent = `Welcome, ${student.first_name}!`;
+        loadBookings(student.id);
+    }
+
+    async function loadBookings(studentId) {
+        const res = await fetch(`http://localhost:8080/api/students/${studentId}/bookings`);
+        const bookings = await res.json();
+        const list = document.getElementById('bookings-list');
+
+        if (bookings.length === 0) {
+            list.innerHTML = '<p style="color:#aaa">No bookings yet. <a href="booking.html">Book a session</a></p>';
+            return;
+        }
+
+        list.innerHTML = bookings.map(b => `
+    <div class="booking-card">
+      <h4>${b.subject_name} with ${b.tutor_first} ${b.tutor_last}</h4>
+      <p>${new Date(b.scheduled_at).toLocaleString()}</p>
+      <p>${b.duration_minutes} minutes</p>
+      <span class="status ${b.status}">${b.status}</span>
+    </div>
+  `).join('');
+    }
+
+    function logout() {
+        localStorage.removeItem('student');
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+
+    // Auto-login if already logged in
+    const saved = localStorage.getItem('student');
+    if (saved) showDashboard(JSON.parse(saved));
+</script>
+
+</body>
+</html>
+```
+
+Save, restart the app in Terminal, then visit:
+```
+http://localhost:8080/login.html

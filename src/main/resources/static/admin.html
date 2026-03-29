@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="chatbot.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - TutwMe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+        nav { background: #2c3e50; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        nav h1 { color: white; font-size: 22px; }
+        nav a { color: #ccc; text-decoration: none; margin-left: 24px; font-size: 15px; }
+        nav a:hover { color: white; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h2 { font-size: 24px; margin-bottom: 20px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .tab { padding: 8px 20px; border-radius: 6px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 14px; }
+        .tab.active { background: #2c3e50; color: white; border-color: #2c3e50; }
+        table { width: 100%; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-collapse: collapse; overflow: hidden; }
+        th { background: #2c3e50; color: white; padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 500; }
+        td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f0f0f0; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+        .status { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 20px; }
+        .status.confirmed { background: #eafaf1; color: #27ae60; }
+        .status.pending { background: #fef9e7; color: #f39c12; }
+        .status.completed { background: #eaf0ff; color: #3455db; }
+        .status.cancelled { background: #fdf0f0; color: #e74c3c; }
+        .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .stat-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .stat-card .number { font-size: 32px; font-weight: 500; color: #3498db; }
+        .stat-card .label { font-size: 13px; color: #888; margin-top: 4px; }
+        .loading { color: #aaa; padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>TutwMe</h1>
+    <div>
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book a Session</a>
+        <a href="login.html">Student Login</a>
+        <a href="admin.html">Admin</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Admin Panel</h2>
+
+    <div class="stat-cards">
+        <div class="stat-card">
+            <div class="number" id="stat-tutors">-</div>
+            <div class="label">Tutors</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="stat-students">-</div>
+            <div class="label">Students</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="stat-bookings">-</div>
+            <div class="label">Bookings</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="stat-subjects">-</div>
+            <div class="label">Subjects</div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('tutors', this)">Tutors</button>
+        <button class="tab" onclick="showTab('bookings', this)">Bookings</button>
+        <button class="tab" onclick="showTab('students', this)">Students</button>
+    </div>
+
+    <div id="tab-content">
+        <p class="loading">Loading...</p>
+    </div>
+</div>
+
+<script>
+    let allTutors = [], allBookings = [], allStudents = [];
+
+    async function loadAll() {
+        const [tutors, bookings, students, subjects] = await Promise.all([
+            fetch('http://localhost:8080/api/tutors').then(r => r.json()),
+            fetch('http://localhost:8080/api/bookings').then(r => r.json()),
+            fetch('http://localhost:8080/api/students').then(r => r.json()),
+            fetch('http://localhost:8080/api/subjects').then(r => r.json())
+        ]);
+
+        allTutors = tutors;
+        allBookings = bookings;
+        allStudents = students;
+
+        document.getElementById('stat-tutors').textContent = tutors.length;
+        document.getElementById('stat-bookings').textContent = bookings.length;
+        document.getElementById('stat-students').textContent = students.length;
+        document.getElementById('stat-subjects').textContent = subjects.length;
+
+        showTab('tutors', document.querySelector('.tab.active'));
+    }
+
+    function showTab(tab, btn) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (tab === 'tutors') renderTutors();
+        if (tab === 'bookings') renderBookings();
+        if (tab === 'students') renderStudents();
+    }
+
+    function renderTutors() {
+        document.getElementById('tab-content').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${allTutors.map(t => `
+          <tr>
+            <td>${t.id}</td>
+            <td>${t.first_name} ${t.last_name}</td>
+            <td>${t.email}</td>
+            <td>${t.phone}</td>
+            <td>$${t.hourly_rate}/hr</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+    }
+
+    function renderBookings() {
+        document.getElementById('tab-content').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Student</th><th>Tutor</th><th>Subject</th><th>Date</th><th>Duration</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${allBookings.map(b => `
+          <tr>
+            <td>${b.id}</td>
+            <td>${b.student_first} ${b.student_last}</td>
+            <td>${b.tutor_first} ${b.tutor_last}</td>
+            <td>${b.subject_name}</td>
+            <td>${new Date(b.scheduled_at).toLocaleString()}</td>
+            <td>${b.duration_minutes} min</td>
+            <td><span class="status ${b.status}">${b.status}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+    }
+
+    function renderStudents() {
+        document.getElementById('tab-content').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>Email</th><th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${allStudents.map(s => `
+          <tr>
+            <td>${s.id}</td>
+            <td>${s.first_name} ${s.last_name}</td>
+            <td>${s.email}</td>
+            <td>${s.grade_level}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+    }
+
+    loadAll();
+</script>
+
+</body>
+</html>

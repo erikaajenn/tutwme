@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="chatbot.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Session - TutwMe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+        nav { background: #2c3e50; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        nav h1 { color: white; font-size: 22px; }
+        nav a { color: #ccc; text-decoration: none; margin-left: 24px; font-size: 15px; }
+        nav a:hover { color: white; }
+        .container { max-width: 600px; margin: 40px auto; background: white; border-radius: 10px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { font-size: 24px; margin-bottom: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #555; }
+        select, input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        select:focus, input:focus { outline: none; border-color: #3498db; }
+        .tutor-info { background: #f0f7ff; border-radius: 8px; padding: 16px; margin-bottom: 20px; display: none; }
+        .tutor-info h3 { font-size: 16px; margin-bottom: 4px; }
+        .tutor-info p { font-size: 14px; color: #666; }
+        button[type=submit] { width: 100%; background: #3498db; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; cursor: pointer; }
+        button[type=submit]:hover { background: #2980b9; }
+        .success { background: #eafaf1; color: #27ae60; padding: 16px; border-radius: 6px; text-align: center; font-size: 15px; display: none; }
+        .error { background: #fdf0f0; color: #e74c3c; padding: 16px; border-radius: 6px; text-align: center; font-size: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>TutwMe</h1>
+    <div>
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book a Session</a>
+        <a href="login.html">Student Login</a>
+        <a href="admin.html">Admin</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Book a Session</h2>
+
+    <div class="success" id="success">Booking confirmed! We'll be in touch shortly.</div>
+    <div class="error" id="error">Something went wrong. Please try again.</div>
+
+    <div class="form-group">
+        <label>Select a Tutor</label>
+        <select id="tutor-select" onchange="onTutorChange()">
+            <option value="">-- Choose a tutor --</option>
+        </select>
+    </div>
+
+    <div class="tutor-info" id="tutor-info">
+        <h3 id="tutor-name"></h3>
+        <p id="tutor-rate"></p>
+        <p id="tutor-bio"></p>
+    </div>
+
+    <div class="form-group">
+        <label>Subject</label>
+        <select id="subject-select">
+            <option value="">-- Choose a subject --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Date & Time</label>
+        <input type="datetime-local" id="scheduled-at">
+    </div>
+
+    <div class="form-group">
+        <label>Duration</label>
+        <select id="duration">
+            <option value="30">30 minutes</option>
+            <option value="60" selected>60 minutes</option>
+            <option value="90">90 minutes</option>
+            <option value="120">120 minutes</option>
+        </select>
+    </div>
+
+    <button type="submit" onclick="submitBooking()">Confirm Booking</button>
+</div>
+
+<script>
+    let tutors = [];
+
+    async function loadTutors() {
+        const res = await fetch('http://localhost:8080/api/tutors');
+        tutors = await res.json();
+        const select = document.getElementById('tutor-select');
+        tutors.forEach(t => {
+            select.innerHTML += `<option value="${t.id}">${t.first_name} ${t.last_name} - $${t.hourly_rate}/hr</option>`;
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('tutor_id')) {
+            select.value = params.get('tutor_id');
+            onTutorChange();
+        }
+    }
+
+    async function onTutorChange() {
+        const id = document.getElementById('tutor-select').value;
+        if (!id) return;
+
+        const tutor = tutors.find(t => t.id == id);
+        document.getElementById('tutor-name').textContent = `${tutor.first_name} ${tutor.last_name}`;
+        document.getElementById('tutor-rate').textContent = `$${tutor.hourly_rate}/hr`;
+        document.getElementById('tutor-bio').textContent = tutor.bio;
+        document.getElementById('tutor-info').style.display = 'block';
+
+        const res = await fetch(`http://localhost:8080/api/tutors/${id}/subjects`);
+        const subjects = await res.json();
+        const subSelect = document.getElementById('subject-select');
+        subSelect.innerHTML = '<option value="">-- Choose a subject --</option>';
+        subjects.forEach(s => {
+            subSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+        });
+    }
+
+    async function submitBooking() {
+        const tutor_id = document.getElementById('tutor-select').value;
+        const subject_id = document.getElementById('subject-select').value;
+        const scheduled_at = document.getElementById('scheduled-at').value;
+        const duration_minutes = document.getElementById('duration').value;
+
+        if (!tutor_id || !subject_id || !scheduled_at) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:8080/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tutor_id: parseInt(tutor_id),
+                    student_id: 1,
+                    subject_id: parseInt(subject_id),
+                    scheduled_at,
+                    duration_minutes: parseInt(duration_minutes)
+                })
+            });
+
+            if (res.ok) {
+                document.getElementById('success').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+            } else {
+                throw new Error();
+            }
+        } catch {
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('success').style.display = 'none';
+        }
+    }
+
+    loadTutors();
+</script>
+
+</body>
+</html>

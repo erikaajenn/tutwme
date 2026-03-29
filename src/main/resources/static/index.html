@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="chatbot.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TutwMe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #f5f5f5; color: #333; }
+        nav { background: #2c3e50; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        nav h1 { color: white; font-size: 22px; }
+        nav a { color: #ccc; text-decoration: none; margin-left: 24px; font-size: 15px; }
+        nav a:hover { color: white; }
+        .hero { background: #3498db; color: white; text-align: center; padding: 60px 20px; }
+        .hero h2 { font-size: 36px; margin-bottom: 12px; }
+        .hero p { font-size: 18px; margin-bottom: 24px; }
+        .hero button { background: white; color: #3498db; border: none; padding: 12px 32px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+        .hero button:hover { background: #eee; }
+        .section { padding: 40px 32px; max-width: 1100px; margin: 0 auto; }
+        .section h2 { font-size: 24px; margin-bottom: 24px; }
+        .tutors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .tutor-card { background: white; border-radius: 10px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .tutor-card h3 { font-size: 18px; margin-bottom: 6px; }
+        .tutor-card .rate { color: #27ae60; font-weight: bold; margin-bottom: 8px; }
+        .tutor-card .bio { color: #666; font-size: 14px; margin-bottom: 16px; }
+        .tutor-card .subjects { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .tutor-card .subject-tag { background: #eaf0ff; color: #3455db; font-size: 12px; padding: 3px 10px; border-radius: 20px; }
+        .tutor-card button { width: 100%; background: #3498db; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .tutor-card button:hover { background: #2980b9; }
+        .loading { color: #999; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>TutwMe</h1>
+    <div>
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book a Session</a>
+        <a href="login.html">Student Login</a>
+        <a href="admin.html">Admin</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <h2>Find Your Perfect Tutor</h2>
+    <p>Expert tutors in Math, Science, English and more</p>
+    <button onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">Browse Tutors</button>
+</div>
+
+<div class="section">
+    <h2>Our Tutors</h2>
+    <div class="tutors-grid" id="tutors-grid">
+        <p class="loading">Loading tutors...</p>
+    </div>
+</div>
+
+<script>
+    async function loadTutors() {
+        const grid = document.getElementById('tutors-grid');
+        try {
+            const res = await fetch('http://localhost:8080/api/tutors');
+            const tutors = await res.json();
+
+            grid.innerHTML = '';
+            for (const tutor of tutors) {
+                const subRes = await fetch(`http://localhost:8080/api/tutors/${tutor.id}/subjects`);
+                const subjects = await subRes.json();
+
+                const tags = subjects.map(s => `<span class="subject-tag">${s.name}</span>`).join('');
+
+                grid.innerHTML += `
+        <div class="tutor-card">
+          <h3>${tutor.first_name} ${tutor.last_name}</h3>
+          <div class="rate">$${tutor.hourly_rate}/hr</div>
+          <div class="bio">${tutor.bio}</div>
+          <div class="subjects">${tags}</div>
+          <button onclick="window.location.href='booking.html?tutor_id=${tutor.id}'">Book Session</button>
+        </div>`;
+            }
+        } catch (e) {
+            grid.innerHTML = '<p class="loading">Could not load tutors. Make sure the API is running.</p>';
+        }
+    }
+
+    loadTutors();
+</script>
+
+</body>
+</html>
+```
+
+Save with **Cmd + S**, then open your browser and go to:
+```
+http://localhost:8080/index.html
