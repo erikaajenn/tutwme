@@ -1,5 +1,8 @@
 const OWNER_EMAIL = 'your@email.com';
 const OWNER_PHONE = '555-YOUR-NUMBER';
+const EMAILJS_SERVICE_ID = 'service_zoe8hn4';
+const EMAILJS_TEMPLATE_ID = 'template_m1yhv8h';
+const EMAILJS_PUBLIC_KEY = 'kuBswyPXJJIFJwu0a';
 
 const responses = {
     greetings: {
@@ -69,9 +72,9 @@ function createChatbot() {
     style.textContent = `
     #chat-bubble { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; background: #3498db; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     #chat-bubble svg { width: 24px; height: 24px; fill: white; }
-    #chat-window { position: fixed; bottom: 88px; right: 24px; width: 320px; height: 440px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: none; flex-direction: column; z-index: 9999; overflow: hidden; }
+    #chat-window { position: fixed; bottom: 88px; right: 24px; width: 320px; height: 480px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: none; flex-direction: column; z-index: 9999; overflow: hidden; }
     #chat-header { background: #2c3e50; color: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
-    #chat-header h4 { font-size: 15px; font-weight: 500; font-family: sans-serif; }
+    #chat-header h4 { font-size: 15px; font-weight: 500; font-family: sans-serif; margin: 0; }
     #chat-header span { font-size: 12px; color: #9FE1CB; font-family: sans-serif; }
     #chat-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
     #chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -81,12 +84,17 @@ function createChatbot() {
     .chat-action { align-self: flex-start; margin-top: -4px; }
     .chat-action a { display: inline-block; background: #3498db; color: white; font-size: 12px; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-family: sans-serif; }
     .chat-action a:hover { background: #2980b9; }
-    #chat-input-row { display: flex; padding: 10px 12px; border-top: 1px solid #eee; gap: 8px; }
+    #chat-input-row { display: flex; padding: 10px 12px; border-top: 1px solid #eee; gap: 8px; align-items: center; }
     #chat-input { flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 8px 14px; font-size: 13px; outline: none; font-family: sans-serif; }
     #chat-input:focus { border-color: #3498db; }
-    #chat-send { background: #3498db; color: white; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    #chat-send { background: #3498db; color: white; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     #chat-send:hover { background: #2980b9; }
+    #chat-mic { background: #f0f4f8; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    #chat-mic.listening { background: #e74c3c; }
     #chat-badge { position: absolute; top: -4px; right: -4px; background: #e74c3c; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
+    #translate-bar { background: #f0f7ff; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e0eaf5; }
+    #translate-bar label { font-size: 12px; color: #555; font-family: sans-serif; }
+    #translate-select { font-size: 12px; border: 1px solid #ddd; border-radius: 4px; padding: 2px 6px; font-family: sans-serif; }
   `;
     document.head.appendChild(style);
 
@@ -103,15 +111,29 @@ function createChatbot() {
         </div>
         <button id="chat-close" onclick="toggleChat()">×</button>
       </div>
+      <div id="translate-bar">
+        <label>🌐 Language:</label>
+        <select id="translate-select" onchange="translateChat(this.value)">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="hmn">Hmong</option>
+          <option value="pa">Punjabi</option>
+          <option value="zh">Chinese</option>
+          <option value="vi">Vietnamese</option>
+          <option value="ko">Korean</option>
+          <option value="tl">Tagalog</option>
+        </select>
+      </div>
       <div id="chat-messages"></div>
       <div id="chat-input-row">
-        <input id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <input id="chat-input" placeholder="Type or speak..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <button id="chat-mic" onclick="startVoice()" title="Speak">🎤</button>
         <button id="chat-send" onclick="sendMessage()">➤</button>
       </div>
     </div>
   `;
 
-    addBotMessage(`Hi! 👋 I'm the TutwMe assistant.\n\nI can help you find a tutor, learn about pricing, or book a session. What can I help you with?`);
+    addBotMessage(`Hi! 👋 I'm the TutwMe assistant.\n\nI can help you find a tutor, learn about pricing, or book a session. You can also tap the 🎤 mic to speak!\n\nWhat can I help you with?`);
 }
 
 function toggleChat() {
@@ -128,15 +150,14 @@ function addBotMessage(text, action) {
     msg.className = 'chat-msg bot';
     msg.textContent = text;
     messages.appendChild(msg);
-
     if (action) {
         const actionDiv = document.createElement('div');
         actionDiv.className = 'chat-action';
         actionDiv.innerHTML = `<a href="${action.url}">${action.label}</a>`;
         messages.appendChild(actionDiv);
     }
-
     messages.scrollTop = messages.scrollHeight;
+    speakText(text);
 }
 
 function addUserMessage(text) {
@@ -160,4 +181,64 @@ function sendMessage() {
     }, 400);
 }
 
+function startVoice() {
+    const mic = document.getElementById('chat-mic');
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Voice input is not supported in this browser. Please use Chrome or Safari.');
+        return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SR();
+    recognition.lang = document.getElementById('translate-select').value === 'es' ? 'es-ES' : 'en-US';
+    recognition.interimResults = false;
+    mic.classList.add('listening');
+    mic.textContent = '⏹';
+    recognition.start();
+    recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        document.getElementById('chat-input').value = text;
+        sendMessage();
+    };
+    recognition.onend = () => {
+        mic.classList.remove('listening');
+        mic.textContent = '🎤';
+    };
+    recognition.onerror = () => {
+        mic.classList.remove('listening');
+        mic.textContent = '🎤';
+    };
+}
+
+function speakText(text) {
+    if (!window.speechSynthesis) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 0.95;
+    utter.lang = 'en-US';
+    window.speechSynthesis.speak(utter);
+}
+
+function translateChat(lang) {
+    // placeholder — full translation needs Google Translate API
+    // For now the language selector sets voice recognition language
+    console.log('Language set to:', lang);
+}
+
 document.addEventListener('DOMContentLoaded', createChatbot);
+
+// EmailJS booking confirmation
+function sendBookingEmail(studentName, studentEmail, tutorName, subject, scheduledAt, duration) {
+    if (typeof emailjs === 'undefined') return;
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        student_name: studentName,
+        student_email: studentEmail,
+        tutor_name: tutorName,
+        subject: subject,
+        scheduled_at: new Date(scheduledAt).toLocaleString(),
+        duration: duration
+    }).then(() => {
+        console.log('Confirmation email sent!');
+    }).catch((err) => {
+        console.error('Email error:', err);
+    });
+}
