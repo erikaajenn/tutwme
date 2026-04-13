@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tutwme – Find a Tutor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: #f2f8f5;
+      min-height: 100vh;
+      color: #1a1a1a;
+    }
+
+    /* NAV */
+    nav {
+      background: #fff;
+      border-bottom: 1.5px solid #e0ede8;
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 22px; color: #1a1a1a; text-decoration: none; }
+    .logo span { color: #1D9E75; }
+    .nav-right { font-size: 13px; color: #666; }
+    .nav-right a { color: #1D9E75; font-weight: 600; text-decoration: none; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1D9E75 0%, #0f6e56 100%);
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: clamp(22px, 5vw, 30px);
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .hero p { font-size: 15px; color: rgba(255,255,255,0.85); }
+
+    /* FILTER PANEL */
+    .filter-panel {
+      background: #fff;
+      border-bottom: 1.5px solid #e0ede8;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .filter-label {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .filter-group { display: flex; flex-direction: column; gap: 5px; }
+
+    .filter-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    select, .pill-group {
+      width: 100%;
+    }
+
+    select {
+      appearance: none;
+      background: #f5f9f7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+      border: 1.5px solid #dce8e2;
+      border-radius: 10px;
+      padding: 9px 32px 9px 12px;
+      font-size: 14px;
+      font-family: 'Nunito Sans', sans-serif;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    select:focus { outline: none; border-color: #1D9E75; }
+
+    /* grade pills */
+    .pill-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      padding: 6px 13px;
+      border-radius: 20px;
+      border: 1.5px solid #dce8e2;
+      background: #f5f9f7;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.12s;
+      user-select: none;
+    }
+    .pill:hover { border-color: #1D9E75; color: #1D9E75; }
+    .pill.active { background: #1D9E75; border-color: #1D9E75; color: #fff; }
+
+    /* price range */
+    .price-row { display: flex; align-items: center; gap: 8px; }
+    .price-row input[type=range] {
+      flex: 1;
+      accent-color: #1D9E75;
+      height: 4px;
+      cursor: pointer;
+    }
+    .price-val {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #1D9E75;
+      min-width: 56px;
+      text-align: right;
+    }
+
+    /* availability toggle */
+    .avail-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .avail-pill {
+      padding: 6px 11px;
+      border-radius: 20px;
+      border: 1.5px solid #dce8e2;
+      background: #f5f9f7;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.12s;
+      user-select: none;
+    }
+    .avail-pill:hover { border-color: #1D9E75; color: #1D9E75; }
+    .avail-pill.active { background: #1D9E75; border-color: #1D9E75; color: #fff; }
+
+    /* result count */
+    .result-bar {
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .result-count { font-size: 13px; color: #666; }
+    .result-count strong { color: #1a1a1a; font-weight: 700; }
+    .clear-btn {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1D9E75;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.12s;
+    }
+    .clear-btn:hover { background: #e1f5ee; }
+
+    /* TUTOR GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      padding: 0 1.5rem 2rem;
+    }
+
+    /* TUTOR CARD */
+    .tutor-card {
+      background: #fff;
+      border: 1.5px solid #e0ede8;
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      animation: fadeUp 0.3s ease both;
+    }
+    .tutor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(29,158,117,0.13);
+      border-color: #1D9E75;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      padding: 1.25rem 1.25rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .tutor-info { flex: 1; min-width: 0; }
+    .tutor-name {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #1a1a1a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tutor-grade {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #e08c00;
+    }
+
+    .card-subjects {
+      padding: 0 1.25rem 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .subject-tag {
+      background: #e8f8f2;
+      color: #0f6e56;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .card-footer {
+      border-top: 1px solid #eef4f1;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .avail-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+    .avail-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: #f0f0f0;
+      color: #555;
+    }
+    .avail-badge.weekday { background: #e8f8f2; color: #0f6e56; }
+    .avail-badge.weekend { background: #fff4e0; color: #8a5800; }
+    .avail-badge.evening { background: #eeedfe; color: #4a3ab0; }
+
+    .price {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #1a1a1a;
+    }
+    .price span { font-size: 11px; font-weight: 400; color: #888; }
+
+    .book-btn {
+      width: calc(100% - 2.5rem);
+      margin: 0 1.25rem 1.25rem;
+      padding: 10px;
+      background: #1D9E75;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.12s, transform 0.1s;
+    }
+    .book-btn:hover { background: #178a64; }
+    .book-btn:active { transform: scale(0.98); }
+
+    /* no results */
+    .no-results {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #888;
+    }
+    .no-results .emoji { font-size: 40px; margin-bottom: 12px; }
+    .no-results p { font-size: 15px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Tut<span>w</span>me</a>
+  <div class="nav-right">Already have an account? <a href="/login">Log in</a></div>
+</nav>
+
+<div class="hero">
+  <h1>Find your perfect tutor 🎯</h1>
+  <p>Filter by subject, grade, availability, and budget</p>
+</div>
+
+<div class="filter-panel">
+  <div class="filters-grid">
+
+    <!-- Subject -->
+    <div class="filter-group">
+      <label>Subject</label>
+      <select id="subjectFilter" onchange="applyFilters()">
+        <option value="">All subjects</option>
+        <option value="Math">Math</option>
+        <option value="Algebra">Algebra</option>
+        <option value="Geometry">Geometry</option>
+        <option value="Calculus">Calculus</option>
+        <option value="English">English</option>
+        <option value="Writing">Writing</option>
+        <option value="Science">Science</option>
+        <option value="Biology">Biology</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Physics">Physics</option>
+        <option value="History">History</option>
+        <option value="Spanish">Spanish</option>
+        <option value="SAT/ACT Prep">SAT/ACT Prep</option>
+      </select>
+    </div>
+
+    <!-- Price -->
+    <div class="filter-group">
+      <label>Max price per hour</label>
+      <div class="price-row">
+        <input type="range" id="priceFilter" min="15" max="100" value="100" step="5" oninput="updatePrice(this.value); applyFilters()"/>
+        <div class="price-val" id="priceVal">Any</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Grade level -->
+  <div style="margin-bottom:10px;">
+    <label class="filter-label">Grade level</label>
+    <div class="pill-group" id="gradeFilter">
+      <div class="pill active" data-grade="all" onclick="toggleGrade(this)">All</div>
+      <div class="pill" data-grade="K–5" onclick="toggleGrade(this)">K–5</div>
+      <div class="pill" data-grade="6–8" onclick="toggleGrade(this)">6–8</div>
+      <div class="pill" data-grade="9–12" onclick="toggleGrade(this)">9–12</div>
+      <div class="pill" data-grade="College" onclick="toggleGrade(this)">College</div>
+    </div>
+  </div>
+
+  <!-- Availability -->
+  <div>
+    <label class="filter-label">Availability</label>
+    <div class="avail-row" id="availFilter">
+      <div class="avail-pill active" data-avail="all" onclick="toggleAvail(this)">Any time</div>
+      <div class="avail-pill" data-avail="Weekdays" onclick="toggleAvail(this)">Weekdays</div>
+      <div class="avail-pill" data-avail="Weekends" onclick="toggleAvail(this)">Weekends</div>
+      <div class="avail-pill" data-avail="Evenings" onclick="toggleAvail(this)">Evenings</div>
+    </div>
+  </div>
+</div>
+
+<div class="result-bar">
+  <div class="result-count"><strong id="countNum">8</strong> tutors found</div>
+  <button class="clear-btn" onclick="clearFilters()">Clear filters</button>
+</div>
+
+<div class="grid" id="tutorGrid"></div>
+
+<script>
+  const tutors = [
+    { name:"Maya R.",    initials:"MR", color:"#1D9E75", grade:"9–12",   subjects:["Algebra","Geometry","SAT/ACT Prep"], avail:["Weekdays","Evenings"], price:45, rating:4.9, reviews:34 },
+    { name:"James T.",   initials:"JT", color:"#178a64", grade:"College", subjects:["Calculus","Physics","Chemistry"],    avail:["Weekends","Evenings"], price:65, rating:4.8, reviews:21 },
+    { name:"Sofia L.",   initials:"SL", color:"#e08c00", grade:"K–5",    subjects:["Math","English","Writing"],           avail:["Weekdays","Weekends"], price:30, rating:5.0, reviews:18 },
+    { name:"Damon K.",   initials:"DK", color:"#5340c4", grade:"6–8",    subjects:["Science","English","History"],        avail:["Evenings"],           price:35, rating:4.7, reviews:27 },
+    { name:"Priya N.",   initials:"PN", color:"#c4404d", grade:"9–12",   subjects:["Biology","Chemistry","English"],      avail:["Weekdays","Evenings"], price:50, rating:4.9, reviews:42 },
+    { name:"Lucas M.",   initials:"LM", color:"#0a7fcb", grade:"College", subjects:["Math","Calculus","Physics"],          avail:["Weekdays","Weekends"], price:70, rating:4.6, reviews:15 },
+    { name:"Aaliyah B.", initials:"AB", color:"#b05e00", grade:"6–8",    subjects:["Spanish","English","Writing"],        avail:["Weekdays","Evenings","Weekends"], price:28, rating:4.8, reviews:31 },
+    { name:"Chen W.",    initials:"CW", color:"#2e7d32", grade:"9–12",   subjects:["SAT/ACT Prep","Math","English"],      avail:["Weekends","Evenings"], price:55, rating:4.9, reviews:56 },
+  ];
+
+  let activeGrade = "all";
+  let activeAvail = "all";
+
+  function stars(n) {
+    return "★".repeat(Math.floor(n)) + (n % 1 >= 0.5 ? "½" : "");
+  }
+
+  function availClass(a) {
+    if (a === "Weekdays") return "weekday";
+    if (a === "Weekends") return "weekend";
+    if (a === "Evenings") return "evening";
+    return "";
+  }
+
+  function renderCards(list) {
+    const grid = document.getElementById("tutorGrid");
+    document.getElementById("countNum").textContent = list.length;
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="no-results"><div class="emoji">🔍</div><p>No tutors match your filters.<br>Try adjusting your search!</p></div>`;
+      return;
+    }
+    grid.innerHTML = list.map((t, i) => `
+    <div class="tutor-card" style="animation-delay:${i * 0.05}s">
+      <div class="card-header">
+        <div class="avatar" style="background:${t.color}">${t.initials}</div>
+        <div class="tutor-info">
+          <div class="tutor-name">${t.name}</div>
+          <div class="tutor-grade">${t.grade} • ${t.reviews} reviews</div>
+        </div>
+        <div class="rating">★ ${t.rating}</div>
+      </div>
+      <div class="card-subjects">
+        ${t.subjects.map(s => `<span class="subject-tag">${s}</span>`).join("")}
+      </div>
+      <div class="card-footer">
+        <div class="avail-badges">
+          ${t.avail.map(a => `<span class="avail-badge ${availClass(a)}">${a}</span>`).join("")}
+        </div>
+        <div class="price">$${t.price}<span>/hr</span></div>
+      </div>
+      <button class="book-btn" onclick="alert('Booking ${t.name}...')">Book a session</button>
+    </div>
+  `).join("");
+  }
+
+  function applyFilters() {
+    const subject = document.getElementById("subjectFilter").value;
+    const maxPrice = parseInt(document.getElementById("priceFilter").value);
+
+    const filtered = tutors.filter(t => {
+      const subjectOk = !subject || t.subjects.includes(subject);
+      const gradeOk   = activeGrade === "all" || t.grade === activeGrade;
+      const availOk   = activeAvail === "all" || t.avail.includes(activeAvail);
+      const priceOk   = t.price <= maxPrice;
+      return subjectOk && gradeOk && availOk && priceOk;
+    });
+    renderCards(filtered);
+  }
+
+  function updatePrice(val) {
+    document.getElementById("priceVal").textContent = parseInt(val) >= 100 ? "Any" : `$${val}/hr`;
+  }
+
+  function toggleGrade(el) {
+    document.querySelectorAll("#gradeFilter .pill").forEach(p => p.classList.remove("active"));
+    el.classList.add("active");
+    activeGrade = el.dataset.grade;
+    applyFilters();
+  }
+
+  function toggleAvail(el) {
+    document.querySelectorAll("#availFilter .avail-pill").forEach(p => p.classList.remove("active"));
+    el.classList.add("active");
+    activeAvail = el.dataset.avail;
+    applyFilters();
+  }
+
+  function clearFilters() {
+    document.getElementById("subjectFilter").value = "";
+    document.getElementById("priceFilter").value = 100;
+    document.getElementById("priceVal").textContent = "Any";
+    document.querySelectorAll("#gradeFilter .pill").forEach(p => p.classList.remove("active"));
+    document.querySelector("#gradeFilter .pill[data-grade='all']").classList.add("active");
+    document.querySelectorAll("#availFilter .avail-pill").forEach(p => p.classList.remove("active"));
+    document.querySelector("#availFilter .avail-pill[data-avail='all']").classList.add("active");
+    activeGrade = "all";
+    activeAvail = "all";
+    applyFilters();
+  }
+
+  renderCards(tutors);
+</script>
+</body>
+</html>
