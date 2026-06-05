@@ -116,4 +116,41 @@ public class TutorController {
     public String generateHash() {
         return bcrypt.encode("password123");
     }
+
+    @GetMapping("/checkpoints/{tutorId}")
+    public List<Map<String, Object>> getCheckpointsByTutor(@PathVariable int tutorId) {
+        return jdbc.queryForList(
+                "SELECT * FROM progress_checkpoints WHERE tutor_id = ? ORDER BY created_at",
+                tutorId);
+    }
+
+    @GetMapping("/checkpoints/student/{studentId}")
+    public List<Map<String, Object>> getCheckpointsByStudent(@PathVariable int studentId) {
+        return jdbc.queryForList(
+                "SELECT * FROM progress_checkpoints WHERE student_id = ? ORDER BY created_at",
+                studentId);
+    }
+
+    @PostMapping("/checkpoints")
+    public String addCheckpoint(@RequestBody Map<String, Object> body) {
+        jdbc.update("""
+        INSERT INTO progress_checkpoints (tutor_id, student_id, subject_id, title)
+        VALUES (?, ?, ?, ?)
+        """,
+                body.get("tutor_id"),
+                body.get("student_id"),
+                body.get("subject_id"),
+                body.get("title")
+        );
+        return "{\"message\": \"Checkpoint added\"}";
+    }
+
+    @PatchMapping("/checkpoints/{id}")
+    public String updateCheckpoint(@PathVariable int id, @RequestBody Map<String, Object> body) {
+        boolean completed = Boolean.parseBoolean(body.get("completed").toString());
+        jdbc.update(
+                "UPDATE progress_checkpoints SET completed = ?, completed_at = ? WHERE id = ?",
+                completed, completed ? java.time.LocalDateTime.now() : null, id);
+        return "{\"message\": \"Checkpoint updated\"}";
+    }
 }

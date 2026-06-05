@@ -1,341 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TutwMe — Local Tutoring for Elk Grove & Sacramento</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background: #f0f7ff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ── Header ── */
-        header {
-            text-align: center;
-            padding: 48px 20px 32px;
-        }
-        .logo {
-            font-size: 42px;
-            font-weight: 900;
-            color: #1a4fa0;
-            letter-spacing: -1px;
-        }
-        .logo span { color: #f59e0b; }
-        .tagline {
-            font-size: 16px;
-            color: #64748b;
-            margin-top: 6px;
-            font-weight: 600;
-        }
-
-        /* ── Main question ── */
-        .question {
-            text-align: center;
-            font-size: 28px;
-            font-weight: 800;
-            color: #1e293b;
-            padding: 0 20px;
-            margin-bottom: 32px;
-        }
-
-        /* ── Role cards ── */
-        .cards {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding: 0 20px;
-            max-width: 480px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .role-card {
-            background: white;
-            border-radius: 20px;
-            padding: 28px 24px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.15s, box-shadow 0.15s;
-            border: 3px solid transparent;
-        }
-        .role-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-        }
-        .role-card.student { border-color: #3b82f6; }
-        .role-card.tutor   { border-color: #10b981; }
-        .role-card.parent  { border-color: #f59e0b; }
-
-        .card-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            flex-shrink: 0;
-        }
-        .student .card-icon { background: #eff6ff; }
-        .tutor   .card-icon { background: #ecfdf5; }
-        .parent  .card-icon { background: #fffbeb; }
-
-        .card-text h2 {
-            font-size: 20px;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-        .card-text p {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 600;
-            line-height: 1.4;
-        }
-
-        .card-arrow {
-            margin-left: auto;
-            font-size: 22px;
-            color: #cbd5e1;
-            flex-shrink: 0;
-        }
-
-        /* ── Divider ── */
-        .divider {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin: 8px 0;
-        }
-
-        /* ── Parent section ── */
-        .parent-section {
-            max-width: 480px;
-            margin: 0 auto;
-            width: 100%;
-            padding: 0 20px;
-        }
-        .parent-label {
-            text-align: center;
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        /* ── Browse tutors ── */
-        .browse-section {
-            text-align: center;
-            padding: 32px 20px;
-        }
-        .browse-section p {
-            font-size: 15px;
-            color: #64748b;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-        .browse-btn {
-            display: inline-block;
-            background: #1a4fa0;
-            color: white;
-            padding: 14px 36px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 800;
-            text-decoration: none;
-            transition: background 0.15s, transform 0.15s;
-        }
-        .browse-btn:hover {
-            background: #1e40af;
-            transform: translateY(-2px);
-        }
-
-        /* ── Community badge ── */
-        .community {
-            text-align: center;
-            padding: 0 20px 40px;
-        }
-        .community-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #475569;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        }
-        .community-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        /* ── Tutor grid (shown below fold) ── */
-        .tutors-section {
-            background: white;
-            padding: 40px 20px;
-            margin-top: 16px;
-        }
-        .tutors-section h2 {
-            text-align: center;
-            font-size: 22px;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 24px;
-        }
-        .tutors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .tutor-card {
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 20px;
-            transition: border-color 0.15s, transform 0.15s;
-        }
-        .tutor-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-        }
-        .tutor-card h3 { font-size: 17px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
-        .tutor-card .rate { color: #10b981; font-weight: 800; font-size: 15px; margin-bottom: 8px; }
-        .tutor-card .bio { font-size: 13px; color: #64748b; margin-bottom: 12px; line-height: 1.5; }
-        .tutor-card .subjects { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-        .subject-tag { background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
-        .book-btn {
-            display: block;
-            width: 100%;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            font-family: 'Nunito', sans-serif;
-            transition: background 0.15s;
-        }
-        .book-btn:hover { background: #2563eb; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TutwMe — Local Tutoring for Elk Grove & Sacramento</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-    <div class="logo">Tutw<span>Me</span></div>
-    <div class="tagline">Elk Grove & Sacramento's local tutoring community</div>
+  <div class="logo">Tutw<span>Me</span></div>
+  <div style="margin-left:auto; display:flex; gap:20px;">
+    <a href="login.html" style="color:var(--text-muted); text-decoration:none; font-weight:700; font-size:14px;">Sign in</a>
+    <a href="register.html" class="btn-primary" style="padding:8px 18px; font-size:14px;">Sign up</a>
+  </div>
 </header>
 
-<div class="question">I am a...</div>
-
-<div class="cards">
-    <a href="student-home.html" class="role-card student">
-        <div class="card-icon">🎒</div>
-        <div class="card-text">
-            <h2>Student</h2>
-            <p>Find a tutor, book sessions, track my progress</p>
-        </div>
-        <div class="card-arrow">→</div>
-    </a>
-
-    <a href="tutor-home.html" class="role-card tutor">
-        <div class="card-icon">📚</div>
-        <div class="card-text">
-            <h2>Tutor</h2>
-            <p>Manage my schedule, view my students</p>
-        </div>
-        <div class="card-arrow">→</div>
-    </a>
+<div style="text-align:center; padding:48px 20px 32px;">
+  <div style="font-size:13px; font-weight:700; color:var(--rose); background:var(--rose-light); display:inline-block; padding:6px 16px; border-radius:20px; margin-bottom:16px;">Elk Grove & Sacramento's tutoring community</div>
+  <h1 style="font-size:36px; font-weight:900; color:var(--text); margin-bottom:12px; line-height:1.2;">I am a...</h1>
+  <p style="font-size:16px; color:var(--text-muted); font-weight:600;">Choose your role to get started</p>
 </div>
 
-<div class="parent-section" style="margin-top: 16px;">
-    <div class="parent-label">Are you a parent?</div>
-    <a href="login.html?role=parent" class="role-card parent">
-        <div class="card-icon">👨‍👩‍👧</div>
-        <div class="card-text">
-            <h2>Parent</h2>
-            <p>Book a tutor for my child, track their sessions</p>
-        </div>
-        <div class="card-arrow">→</div>
-    </a>
-</div>
-
-<div class="browse-section">
-    <p>Just want to look around first?</p>
-    <a href="#tutors" class="browse-btn" onclick="document.getElementById('tutors').scrollIntoView({behavior:'smooth'}); return false;">Browse Our Tutors</a>
-</div>
-
-<div class="community">
-    <div class="community-badge">
-        <div class="community-dot"></div>
-        Serving Elk Grove & Sacramento neighbors
+<div style="display:flex; flex-direction:column; gap:14px; padding:0 20px; max-width:480px; margin:0 auto;">
+  <a href="student-home.html" style="background:var(--white); border-radius:18px; padding:22px 20px; display:flex; align-items:center; gap:16px; text-decoration:none; box-shadow:var(--shadow); border:2px solid var(--blue-light); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+    <div style="width:60px; height:60px; border-radius:16px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;">🎒</div>
+    <div>
+      <div style="font-size:19px; font-weight:900; color:var(--blue-dark); margin-bottom:3px;">Student</div>
+      <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Find a tutor, book sessions, track progress</div>
     </div>
+    <div style="margin-left:auto; font-size:20px; color:var(--blue);">→</div>
+  </a>
+
+  <a href="tutor-home.html" style="background:var(--white); border-radius:18px; padding:22px 20px; display:flex; align-items:center; gap:16px; text-decoration:none; box-shadow:var(--shadow); border:2px solid var(--sage-light); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+    <div style="width:60px; height:60px; border-radius:16px; background:var(--sage-light); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;">📚</div>
+    <div>
+      <div style="font-size:19px; font-weight:900; color:var(--sage-dark); margin-bottom:3px;">Tutor</div>
+      <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Manage schedule, view students, get paid</div>
+    </div>
+    <div style="margin-left:auto; font-size:20px; color:var(--sage);">→</div>
+  </a>
+
+  <div style="text-align:center; color:var(--text-muted); font-size:13px; font-weight:700; margin:4px 0;">Are you a parent?</div>
+
+  <a href="login.html?role=parent" style="background:var(--white); border-radius:18px; padding:22px 20px; display:flex; align-items:center; gap:16px; text-decoration:none; box-shadow:var(--shadow); border:2px solid var(--rose-light); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+    <div style="width:60px; height:60px; border-radius:16px; background:var(--rose-light); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;">👨‍👩‍👧</div>
+    <div>
+      <div style="font-size:19px; font-weight:900; color:var(--rose-dark); margin-bottom:3px;">Parent</div>
+      <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Book for my child, track their sessions</div>
+    </div>
+    <div style="margin-left:auto; font-size:20px; color:var(--rose);">→</div>
+  </a>
 </div>
 
-<div class="tutors-section" id="tutors">
-    <h2>Meet Our Tutors</h2>
-    <div class="tutors-grid" id="tutors-grid">
-        <p style="color:#94a3b8; text-align:center; grid-column:1/-1">Loading tutors...</p>
-    </div>
+<div style="text-align:center; padding:32px 20px 16px;">
+  <p style="font-size:15px; color:var(--text-muted); margin-bottom:12px; font-weight:600;">Just want to look around first?</p>
+  <a href="#tutors" class="btn-secondary" onclick="document.getElementById('tutors').scrollIntoView({behavior:'smooth'}); return false;">Browse Our Tutors</a>
 </div>
+
+<div style="text-align:center; padding:0 20px 40px;">
+  <div style="display:inline-flex; align-items:center; gap:8px; background:white; border-radius:50px; padding:10px 20px; font-size:13px; font-weight:700; color:var(--text-muted); border:1.5px solid var(--border);">
+    <div style="width:8px; height:8px; background:var(--sage); border-radius:50%; animation:pulse 2s infinite;"></div>
+    Serving Elk Grove & Sacramento neighbors
+  </div>
+</div>
+
+<div id="tutors" style="background:white; padding:40px 20px; border-top:2px solid var(--rose-light);">
+  <h2 style="text-align:center; font-size:24px; font-weight:900; color:var(--text); margin-bottom:24px;">Meet Our Tutors</h2>
+  <div id="tutors-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; max-width:900px; margin:0 auto;">
+    <p style="color:var(--text-muted); text-align:center; grid-column:1/-1;">Loading tutors...</p>
+  </div>
+</div>
+
+<style>
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+</style>
 
 <script src="chatbot.js"></script>
 <script>
-    const API = window.location.hostname === 'localhost'
-        ? 'http://localhost:8080'
-        : 'https://tutwme-production.up.railway.app';
+const API = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : 'https://tutwme-production.up.railway.app';
 
-    async function loadTutors() {
-        const grid = document.getElementById('tutors-grid');
-        try {
-            const res = await fetch(`${API}/api/tutors`);
-            const tutors = await res.json();
-            grid.innerHTML = '';
-            for (const tutor of tutors) {
-                const subRes = await fetch(`${API}/api/tutors/${tutor.id}/subjects`);
-                const subjects = await subRes.json();
-                const tags = subjects.map(s => `<span class="subject-tag">${s.name}</span>`).join('');
-                grid.innerHTML += `
-        <div class="tutor-card">
-          <h3>${tutor.first_name} ${tutor.last_name}</h3>
-          <div class="rate">$${tutor.hourly_rate}/hr</div>
-          <div class="bio">${tutor.bio}</div>
-          <div class="subjects">${tags}</div>
-          <button class="book-btn" onclick="window.location.href='booking.html?tutor_id=${tutor.id}'">Book a Session</button>
+async function loadTutors() {
+  const grid = document.getElementById('tutors-grid');
+  try {
+    const res = await fetch(`${API}/api/tutors`);
+    const tutors = await res.json();
+    grid.innerHTML = '';
+    for (const tutor of tutors) {
+      const subRes = await fetch(`${API}/api/tutors/${tutor.id}/subjects`);
+      const subjects = await subRes.json();
+      const tags = subjects.map(s => `<span class="tag-sage">${s.name}</span>`).join('');
+      grid.innerHTML += `
+        <div class="card">
+          <div style="font-size:18px; font-weight:900; color:var(--text); margin-bottom:4px;">${tutor.first_name} ${tutor.last_name}</div>
+          <div style="color:var(--sage-dark); font-weight:800; font-size:15px; margin-bottom:8px;">$${tutor.hourly_rate}/hr</div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">${tutor.bio}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">${tags}</div>
+          <button class="btn-primary" style="width:100%; padding:10px;" onclick="window.location.href='booking.html?tutor_id=${tutor.id}'">Book a Session</button>
         </div>`;
-            }
-        } catch(e) {
-            grid.innerHTML = '<p style="color:#94a3b8;text-align:center;grid-column:1/-1">Could not load tutors. Please try again shortly.</p>';
-        }
     }
-    loadTutors();
+  } catch(e) {
+    grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;">Could not load tutors. Please try again shortly.</p>';
+  }
+}
+loadTutors();
 </script>
-
 </body>
 </html>

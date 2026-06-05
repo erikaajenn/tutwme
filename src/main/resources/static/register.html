@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — TutwMe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; background: #f0f7ff; min-height: 100vh; }
+    header { background: white; padding: 16px 24px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .back { font-size: 22px; text-decoration: none; color: #64748b; }
+    .logo { font-size: 24px; font-weight: 900; color: #1a4fa0; }
+    .logo span { color: #f59e0b; }
+    .container { max-width: 520px; margin: 32px auto; background: white; border-radius: 20px; padding: 32px 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    h1 { font-size: 24px; font-weight: 900; color: #1e293b; margin-bottom: 6px; }
+    .subtitle { font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+    input, select { width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: 'Nunito', sans-serif; transition: border-color 0.15s; }
+    input:focus, select:focus { outline: none; border-color: #3b82f6; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .hint { font-size: 12px; color: #94a3b8; font-weight: 600; margin-top: 4px; }
+    .minor-section { background: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 16px; margin-bottom: 18px; display: none; }
+    .minor-section h3 { font-size: 15px; font-weight: 800; color: #92400e; margin-bottom: 6px; }
+    .minor-section p { font-size: 13px; color: #78350f; font-weight: 600; margin-bottom: 12px; }
+    .domain-badge { display: inline-block; background: #eff6ff; color: #1d4ed8; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-top: 6px; display: none; }
+    .domain-error { display: inline-block; background: #fef2f2; color: #dc2626; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-top: 6px; display: none; }
+    .submit-btn { width: 100%; background: #1a4fa0; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; transition: background 0.15s; margin-top: 8px; }
+    .submit-btn:hover { background: #1e40af; }
+    .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .success-box { background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 20px; text-align: center; display: none; }
+    .success-box h2 { font-size: 20px; font-weight: 900; color: #15803d; margin-bottom: 8px; }
+    .success-box p { font-size: 14px; color: #166534; font-weight: 600; line-height: 1.6; }
+    .error-box { background: #fef2f2; border: 2px solid #fca5a5; border-radius: 12px; padding: 14px; font-size: 13px; color: #dc2626; font-weight: 700; display: none; margin-bottom: 16px; }
+    .divider { text-align: center; color: #94a3b8; font-size: 13px; font-weight: 700; margin: 20px 0 16px; }
+    .login-link { display: block; text-align: center; color: #3b82f6; font-size: 14px; font-weight: 700; text-decoration: none; }
+    .school-domains { font-size: 12px; color: #64748b; margin-top: 8px; line-height: 1.8; }
+    .school-domains span { display: inline-block; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; margin: 2px; font-weight: 600; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+</header>
+
+<div class="container" style="margin: 32px auto; padding: 0 16px; max-width: 552px;">
+  <div style="background:white; border-radius:20px; padding:32px 28px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+
+    <div id="form-section">
+      <h1>Create your account</h1>
+      <p class="subtitle">Join TutwMe — Elk Grove & Sacramento's tutoring community</p>
+
+      <div class="error-box" id="error-box"></div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>First name</label>
+          <input type="text" id="first_name" placeholder="Alex">
+        </div>
+        <div class="form-group">
+          <label>Last name</label>
+          <input type="text" id="last_name" placeholder="Kim">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>School or personal email</label>
+        <input type="email" id="email" placeholder="you@egusd.net" oninput="checkEmail(this.value)">
+        <span class="domain-badge" id="domain-badge"></span>
+        <span class="domain-error" id="domain-error"></span>
+        <div class="school-domains">
+          Accepted school emails:
+          <span>@egusd.net</span>
+          <span>@scusd.edu</span>
+          <span>@sanjuan.edu</span>
+          <span>@fcusd.org</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="At least 8 characters">
+      </div>
+
+      <div class="form-group">
+        <label>Date of birth</label>
+        <input type="date" id="dob" onchange="checkAge(this.value)">
+        <div class="hint">We use this to keep students under 18 safe</div>
+      </div>
+
+      <div class="form-group">
+        <label>Grade level</label>
+        <select id="grade_level">
+          <option value="">Select grade</option>
+          <option>6th</option><option>7th</option><option>8th</option>
+          <option>9th</option><option>10th</option><option>11th</option>
+          <option>12th</option><option>College freshman</option>
+          <option>College sophomore</option><option>College junior</option>
+          <option>College senior</option><option>Adult learner</option>
+        </select>
+      </div>
+
+      <div class="minor-section" id="minor-section">
+        <h3>Parent or guardian approval required</h3>
+        <p>Since you're under 18, a parent or guardian must approve your account before you can book sessions.</p>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Parent or guardian email</label>
+          <input type="email" id="parent_email" placeholder="parent@email.com">
+          <div class="hint">They'll receive an approval email from TutwMe</div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="register()">Create Account</button>
+
+      <div class="divider">Already have an account?</div>
+      <a href="login.html" class="login-link">Sign in here</a>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <h2>Account created!</h2>
+      <p id="success-msg"></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : 'https://tutwme-production.up.railway.app';
+
+const ALLOWED_DOMAINS = ['egusd.net','scusd.edu','sanjuan.edu','fcusd.org','glendale.k12.ca.us'];
+let isMinor = false;
+let isSchoolEmail = false;
+
+function checkEmail(email) {
+  const badge = document.getElementById('domain-badge');
+  const error = document.getElementById('domain-error');
+  const domain = email.split('@')[1] || '';
+  const match = ALLOWED_DOMAINS.find(d => domain === d);
+  if (match) {
+    badge.textContent = 'Verified school email';
+    badge.style.display = 'inline-block';
+    error.style.display = 'none';
+    isSchoolEmail = true;
+  } else if (domain && email.includes('@')) {
+    badge.style.display = 'none';
+    error.textContent = 'Not a recognized school email — you can still register but may need to upload a student ID';
+    error.style.display = 'inline-block';
+    isSchoolEmail = false;
+  } else {
+    badge.style.display = 'none';
+    error.style.display = 'none';
+    isSchoolEmail = false;
+  }
+}
+
+function checkAge(dob) {
+  if (!dob) return;
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+  isMinor = age < 18;
+  document.getElementById('minor-section').style.display = isMinor ? 'block' : 'none';
+}
+
+async function register() {
+  const btn = document.getElementById('submit-btn');
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+
+  const first_name = document.getElementById('first_name').value.trim();
+  const last_name = document.getElementById('last_name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const dob = document.getElementById('dob').value;
+  const grade_level = document.getElementById('grade_level').value;
+  const parent_email = document.getElementById('parent_email').value.trim();
+
+  if (!first_name || !last_name || !email || !password || !dob) {
+    errorBox.textContent = 'Please fill in all required fields.';
+    errorBox.style.display = 'block';
+    return;
+  }
+  if (password.length < 8) {
+    errorBox.textContent = 'Password must be at least 8 characters.';
+    errorBox.style.display = 'block';
+    return;
+  }
+  if (isMinor && !parent_email) {
+    errorBox.textContent = 'Please enter a parent or guardian email address.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  try {
+    const res = await fetch(`${API}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name, last_name, email, password, dob, grade_level, parent_email, is_minor: isMinor })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('form-section').style.display = 'none';
+      const successBox = document.getElementById('success-box');
+      successBox.style.display = 'block';
+      const msg = isMinor
+        ? `We've sent a verification email to ${email}. We've also sent an approval request to ${parent_email}. Your account will be activated once your parent approves.`
+        : `We've sent a verification email to ${email}. Click the link in the email to activate your account.`;
+      document.getElementById('success-msg').textContent = msg;
+    } else {
+      errorBox.textContent = data.error || 'Something went wrong. Please try again.';
+      errorBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  } catch(e) {
+    errorBox.textContent = 'Could not connect to server. Please try again.';
+    errorBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+  }
+}
+</script>
+</body>
+</html>
