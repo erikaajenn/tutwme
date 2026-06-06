@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Avatar — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--pink);">Avatar Builder</div>
+</header>
+
+<div class="page-container" style="max-width:680px;">
+  <div style="text-align:center; margin-bottom:32px;">
+    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">Create your avatar</h1>
+    <p style="font-size:15px; color:var(--text-muted);">Pick a style that represents you. Your avatar appears on your tutor profile.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:20px; text-align:center; padding:32px;">
+    <img id="avatar-preview" src="" alt="Your avatar" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--pink-light); margin-bottom:16px;">
+    <div style="font-size:16px; font-weight:700; color:var(--navy);" id="avatar-name">Your Avatar</div>
+    <div style="font-size:13px; color:var(--text-muted); margin-top:4px;" id="avatar-style-label">Adventurer style</div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="section-title" style="margin-bottom:14px;">Choose your style</div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px;" id="style-grid"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="section-title" style="margin-bottom:14px;">Customize seed</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Change the seed to get a different look within the same style.</p>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="seed-input" placeholder="Enter your name or any word" style="flex:1;">
+      <button class="btn-outline" onclick="updateSeed()" style="white-space:nowrap;">Apply</button>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;" id="seed-suggestions"></div>
+  </div>
+
+  <button class="btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="saveAvatar()">Save My Avatar</button>
+  <div style="text-align:center; margin-top:12px;">
+    <a href="tutor-dashboard.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Skip for now</a>
+  </div>
+
+  <div id="save-success" style="display:none; background:var(--green-soft); border:1px solid #a5d6a7; border-radius:10px; padding:14px; text-align:center; margin-top:16px; font-size:14px; font-weight:600; color:var(--green-mid);">
+    Avatar saved! Redirecting to your dashboard...
+  </div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : 'https://tutwme-production.up.railway.app';
+
+const STYLES = [
+  { id: 'adventurer', label: 'Adventurer' },
+  { id: 'adventurer-neutral', label: 'Neutral' },
+  { id: 'avataaars', label: 'Avataaars' },
+  { id: 'big-ears', label: 'Big Ears' },
+  { id: 'big-smile', label: 'Big Smile' },
+  { id: 'bottts', label: 'Robot' },
+  { id: 'croodles', label: 'Croodles' },
+  { id: 'fun-emoji', label: 'Emoji' },
+  { id: 'icons', label: 'Icons' },
+  { id: 'identicon', label: 'Identicon' },
+  { id: 'lorelei', label: 'Lorelei' },
+  { id: 'micah', label: 'Micah' },
+  { id: 'miniavs', label: 'Mini' },
+  { id: 'notionists', label: 'Notion' },
+  { id: 'open-peeps', label: 'Open Peeps' },
+  { id: 'personas', label: 'Personas' },
+  { id: 'pixel-art', label: 'Pixel Art' },
+  { id: 'shapes', label: 'Shapes' },
+  { id: 'thumbs', label: 'Thumbs' },
+];
+
+let currentStyle = 'adventurer';
+let currentSeed = 'TutwMe';
+const TUTOR_ID = 1;
+
+function avatarUrl(style, seed) {
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}&size=120`;
+}
+
+function updatePreview() {
+  document.getElementById('avatar-preview').src = avatarUrl(currentStyle, currentSeed);
+  const styleLabel = STYLES.find(s => s.id === currentStyle)?.label || currentStyle;
+  document.getElementById('avatar-style-label').textContent = `${styleLabel} style`;
+  document.querySelectorAll('.style-btn').forEach(btn => {
+    btn.style.borderColor = btn.dataset.style === currentStyle ? 'var(--pink)' : 'var(--border-light)';
+    btn.style.background = btn.dataset.style === currentStyle ? 'var(--pink-light)' : 'white';
+  });
+}
+
+function buildStyleGrid() {
+  const grid = document.getElementById('style-grid');
+  grid.innerHTML = STYLES.map(s => `
+    <button class="style-btn" data-style="${s.id}" onclick="selectStyle('${s.id}')"
+      style="border:2px solid var(--border-light); border-radius:10px; padding:8px; cursor:pointer; background:white; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <img src="${avatarUrl(s.id, currentSeed)}" style="width:48px; height:48px; border-radius:50%;" loading="lazy">
+      <span style="font-size:11px; font-weight:500; color:var(--text-muted);">${s.label}</span>
+    </button>`).join('');
+}
+
+function selectStyle(style) {
+  currentStyle = style;
+  updatePreview();
+  document.querySelectorAll('.style-btn').forEach(btn => {
+    btn.style.borderColor = btn.dataset.style === style ? 'var(--pink)' : 'var(--border-light)';
+    btn.style.background = btn.dataset.style === style ? 'var(--pink-light)' : 'white';
+  });
+}
+
+function updateSeed() {
+  const val = document.getElementById('seed-input').value.trim();
+  if (val) { currentSeed = val; updatePreview(); buildStyleGrid(); }
+}
+
+function buildSeedSuggestions() {
+  const suggestions = ['Sunny', 'Nova', 'Pixel', 'Spark', 'Ace', 'Bloom', 'Zara', 'Rio'];
+  document.getElementById('seed-suggestions').innerHTML = suggestions.map(s =>
+    `<button onclick="applySeed('${s}')" class="tag-pink" style="cursor:pointer; border:none; font-family:Inter,sans-serif;">${s}</button>`
+  ).join('');
+}
+
+function applySeed(seed) {
+  currentSeed = seed;
+  document.getElementById('seed-input').value = seed;
+  updatePreview();
+  buildStyleGrid();
+}
+
+async function saveAvatar() {
+  try {
+    await fetch(`${API}/api/tutors/${TUTOR_ID}/avatar`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ avatar_style: currentStyle, avatar_seed: currentSeed })
+    });
+    document.getElementById('save-success').style.display = 'block';
+    setTimeout(() => window.location.href = 'tutor-dashboard.html', 2000);
+  } catch(e) {
+    alert('Could not save. Please try again.');
+  }
+}
+
+const tutor = JSON.parse(localStorage.getItem('tutor') || '{}');
+if (tutor.first_name) {
+  currentSeed = tutor.first_name + (tutor.last_name || '');
+  document.getElementById('avatar-name').textContent = `${tutor.first_name} ${tutor.last_name || ''}`;
+  document.getElementById('seed-input').value = currentSeed;
+}
+
+buildStyleGrid();
+buildSeedSuggestions();
+updatePreview();
+</script>
+</body>
+</html>

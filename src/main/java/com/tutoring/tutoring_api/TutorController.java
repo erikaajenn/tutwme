@@ -152,5 +152,14 @@ public class TutorController {
                 "UPDATE progress_checkpoints SET completed = ?, completed_at = ? WHERE id = ?",
                 completed, completed ? java.time.LocalDateTime.now() : null, id);
         return "{\"message\": \"Checkpoint updated\"}";
+
+        @PatchMapping("/tutors/{id}/avatar")
+        public String updateAvatar(@PathVariable int id, @RequestBody Map<String, Object> body) {
+            jdbc.update(
+                    "UPDATE tutors SET avatar_style = ? WHERE id = ?",
+                    body.get("avatar_style"), id
+            );
+            return "{\"message\": \"Avatar updated\"}";
+        }
     }
 }
