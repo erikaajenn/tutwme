@@ -11,6 +11,19 @@
 <header>
   <div class="logo">Tutw<span>Me</span></div>
   <nav style="display:flex; gap:24px; margin-left:40px;">
+    sed -i '' 's|<!-- Browse Tutors -->|<!-- Quiz Banner -->
+    <div style="background:linear-gradient(135deg,#e91e8c,#c41677); padding:32px 20px; text-align:center;">
+      <div style="max-width:700px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+        <div style="text-align:left;">
+          <div style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.7); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.08em;">New feature ✨</div>
+          <div style="font-size:22px; font-weight:800; color:white; margin-bottom:6px;">Not sure which tutor is right for you?</div>
+          <div style="font-size:15px; color:rgba(255,255,255,0.85);">Take our 2-minute quiz and we will find your perfect match</div>
+        </div>
+        <a href="quiz.html" style="background:white; color:#e91e8c; padding:14px 28px; border-radius:50px; font-size:15px; font-weight:800; text-decoration:none; white-space:nowrap; flex-shrink:0; box-shadow:0 4px 14px rgba(0,0,0,0.15);">Take the quiz →</a>
+      </div>
+    </div>
+
+    <!-- Browse Tutors -->|g' ~/Downloads/tutoring-api/src/main/resources/static/index.html
     <a href="#tutors" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Browse Tutors</a>
     <a href="#how-it-works" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">How it works</a>
     <a href="#testimonials" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Reviews</a>
@@ -29,7 +42,7 @@
   <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:48px;">
     <a href="student-home.html" class="btn-primary" style="padding:14px 28px; font-size:16px;">I'm a Student</a>
     <a href="tutor-home.html" class="btn-outline" style="padding:14px 28px; font-size:16px;">Become a Tutor</a>
-    <a href="login.html?role=parent" class="btn-ghost" style="padding:14px 28px; font-size:16px;">I'm a Parent</a>
+    <a href="parent-dashboard.html" class="btn-ghost" style="padding:14px 28px; font-size:16px;">I'm a Parent</a>
   </div>
   <div style="display:flex; gap:32px; justify-content:center; flex-wrap:wrap;">
     <div style="text-align:center;">

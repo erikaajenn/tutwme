@@ -242,3 +242,33 @@ function sendBookingEmail(studentName, studentEmail, tutorName, subject, schedul
         console.error('Email error:', err);
     });
 }
+// ── Quiz floating button ──────────────────────────────────────
+function createQuizButton() {
+  const style = document.createElement('style');
+  style.textContent = `
+    #quiz-float {
+      position: fixed; bottom: 24px; left: 24px;
+      background: #e91e8c; color: white;
+      padding: 12px 20px; border-radius: 50px;
+      font-size: 14px; font-weight: 700;
+      text-decoration: none; z-index: 9998;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(233,30,140,0.4);
+      font-family: 'Inter', sans-serif;
+      animation: quizPulse 2.5s infinite;
+      cursor: pointer; border: none;
+    }
+    @keyframes quizPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(233,30,140,0.4); transform: scale(1); }
+      50% { box-shadow: 0 4px 32px rgba(233,30,140,0.7); transform: scale(1.04); }
+    }
+    #quiz-float:hover { background: #c41677; transform: scale(1.06) !important; }
+  `;
+  document.head.appendChild(style);
+  const btn = document.createElement('a');
+  btn.id = 'quiz-float';
+  btn.href = 'quiz.html';
+  btn.innerHTML = '✨ Find My Tutor Match';
+  document.body.appendChild(btn);
+}
+document.addEventListener('DOMContentLoaded', createQuizButton);

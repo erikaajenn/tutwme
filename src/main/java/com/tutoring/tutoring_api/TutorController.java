@@ -309,5 +309,32 @@ public class TutorController {
         WHERE r.reviewee_id = ? AND r.reviewee_type = 'tutor' AND r.is_private = false
         ORDER BY r.created_at DESC
         """, tutorId);
+
+
+        @GetMapping("/reviews/pending")
+        public List<Map<String, Object>> getPendingReviews() {
+            return jdbc.queryForList("""
+        SELECT r.*, s.first_name as reviewer_name,
+               t.first_name as reviewee_name
+        FROM reviews r
+        LEFT JOIN students s ON s.id = r.reviewer_id AND r.reviewer_type = 'student'
+        LEFT JOIN tutors t ON t.id = r.reviewee_id AND r.reviewee_type = 'tutor'
+        WHERE r.is_private = false AND r.comment IS NOT NULL
+        ORDER BY r.created_at DESC
+        """);
+        }
+
+        @PatchMapping("/reviews/{id}/approve")
+        public String approveReview(@PathVariable int id) {
+            jdbc.update("UPDATE reviews SET is_private = false WHERE id = ?", id);
+            jdbc.update("UPDATE metrics SET value = value + 1, updated_at = NOW() WHERE metric = 'reviews_submitted'");
+            return "{\"message\": \"Review approved\"}";
+        }
+
+        @PatchMapping("/reviews/{id}/reject")
+        public String rejectReview(@PathVariable int id) {
+            jdbc.update("DELETE FROM reviews WHERE id = ?", id);
+            return "{\"message\": \"Review rejected\"}";
+        }
     }
 }

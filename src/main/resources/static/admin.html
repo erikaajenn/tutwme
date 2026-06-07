@@ -48,6 +48,46 @@
 
 <script src="chatbot.js"></script>
 <script>
+
+  function renderReviews() {
+    fetch(`${API}/api/reviews/pending`)
+            .then(r => r.json())
+            .then(reviews => {
+              document.getElementById('tab-content').innerHTML = reviews.length === 0
+                      ? '<p style="padding:20px; color:var(--text-muted);">No pending reviews.</p>'
+                      : `<table style="${tableStyle}">
+          <thead><tr>
+            <th style="${thStyle}">Student</th>
+            <th style="${thStyle}">Tutor</th>
+            <th style="${thStyle}">Rating</th>
+            <th style="${thStyle}">Review</th>
+            <th style="${thStyle}">Action</th>
+          </tr></thead>
+          <tbody>${reviews.map(r => `<tr>
+            <td style="${tdStyle}">${r.reviewer_name || 'Student'}</td>
+            <td style="${tdStyle}">${r.reviewee_name || 'Tutor'}</td>
+            <td style="${tdStyle}">${'★'.repeat(r.rating)}</td>
+            <td style="${tdStyle}" style="max-width:200px;">${r.comment || ''}</td>
+            <td style="${tdStyle}">
+              <button onclick="approveReview(${r.id})" style="background:var(--green-mid); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:6px;">Approve</button>
+              <button onclick="rejectReview(${r.id})" style="background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">Reject</button>
+            </td>
+          </tr>`).join('')}</tbody>
+        </table>`;
+            }).catch(() => {
+      document.getElementById('tab-content').innerHTML = '<p style="padding:20px; color:var(--text-muted);">Could not load reviews.</p>';
+    });
+  }
+
+  async function approveReview(id) {
+    await fetch(`${API}/api/reviews/${id}/approve`, { method: 'PATCH' });
+    renderReviews();
+  }
+
+  async function rejectReview(id) {
+    await fetch(`${API}/api/reviews/${id}/reject`, { method: 'PATCH' });
+    renderReviews();
+  }
 const API = window.location.hostname === 'localhost'
   ? 'http://localhost:8080'
   : 'https://tutwme-production.up.railway.app';
@@ -131,6 +171,9 @@ function renderStudents() {
         <td style="${tdStyle}">${s.grade_level || '—'}</td>
       </tr>`).join('')}</tbody>
     </table>`;
+
+  <button style="padding:8px 20px; font-size:13px; background:#f59e0b; color:white; border:none; border-radius:50px; font-family:Inter,sans-serif; font-weight:800; cursor:pointer;"
+          onClick="showTab('reviews', this)">Reviews ⭐</button>
 }
 
 loadAll();

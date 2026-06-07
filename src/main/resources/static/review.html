@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave a Review — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="login.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+</header>
+<div class="page-container" style="max-width:520px;">
+  <div style="text-align:center; margin-bottom:28px;">
+    <div style="font-size:40px; margin-bottom:12px;">⭐</div>
+    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">How was your session?</h1>
+    <p style="font-size:15px; color:var(--text-muted);">Your review helps other students and parents in the community</p>
+  </div>
+
+  <div class="card" id="review-form">
+    <div id="review-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-bottom:14px;"></div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Select the session you're reviewing</label>
+      <select id="booking-select" style="font-size:14px;">
+        <option value="">-- Choose a session --</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px;">Your rating</label>
+      <div style="display:flex; gap:8px;" id="star-rating">
+        <button onclick="setRating(1)" data-star="1" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
+        <button onclick="setRating(2)" data-star="2" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
+        <button onclick="setRating(3)" data-star="3" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
+        <button onclick="setRating(4)" data-star="4" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
+        <button onclick="setRating(5)" data-star="5" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
+      </div>
+      <div id="rating-label" style="font-size:13px; color:var(--text-muted); margin-top:6px;">Click a star to rate</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Your review</label>
+      <textarea id="review-comment" placeholder="Tell others about your experience. Was the tutor helpful? Patient? Did you improve?" style="height:120px; resize:none; font-size:14px; line-height:1.6;"></textarea>
+    </div>
+
+    <div style="background:var(--pink-light); border-radius:10px; padding:14px; margin-bottom:20px;">
+      <div style="font-size:13px; font-weight:700; color:var(--pink-dark); margin-bottom:6px;">📋 Review policy</div>
+      <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">All reviews are submitted to our admin team for approval before being published. This keeps our community safe and trustworthy. Reviews are usually approved within 24 hours.</div>
+    </div>
+
+    <button class="btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="submitReview()">Submit Review</button>
+  </div>
+
+  <div id="success-box" style="display:none;" class="card">
+    <div style="text-align:center; padding:20px;">
+      <div style="font-size:40px; margin-bottom:12px;">🎉</div>
+      <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:8px;">Review submitted!</h2>
+      <p style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:20px;">Thank you! Your review is pending admin approval and will be published within 24 hours.</p>
+      <a href="login.html" class="btn-primary" style="padding:12px 24px;">Back to my dashboard</a>
+    </div>
+  </div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+let selectedRating = 0;
+const student = JSON.parse(localStorage.getItem('student') || '{}');
+
+async function loadBookings() {
+  if (!student.id) return;
+  try {
+    const bookings = await fetch(`${API}/api/students/${student.id}/bookings`).then(r => r.json());
+    const select = document.getElementById('booking-select');
+    bookings.forEach(b => {
+      select.innerHTML += `<option value="${b.id}" data-tutor="${b.tutor_id}" data-name="${b.tutor_first} ${b.tutor_last}">${b.subject_name} with ${b.tutor_first} ${b.tutor_last} — ${new Date(b.scheduled_at).toLocaleDateString()}</option>`;
+    });
+  } catch(e) {}
+}
+
+function setRating(n) {
+  selectedRating = n;
+  const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'];
+  document.getElementById('rating-label').textContent = labels[n] + ' (' + n + '/5)';
+  document.getElementById('rating-label').style.color = 'var(--pink)';
+  document.querySelectorAll('#star-rating button').forEach(btn => {
+    btn.style.opacity = parseInt(btn.dataset.star) <= n ? '1' : '0.3';
+    btn.style.color = parseInt(btn.dataset.star) <= n ? '#f59e0b' : '#ccc';
+  });
+}
+
+async function submitReview() {
+  const errEl = document.getElementById('review-error');
+  errEl.style.display = 'none';
+  const bookingSelect = document.getElementById('booking-select');
+  const bookingId = bookingSelect.value;
+  const tutorId = bookingSelect.options[bookingSelect.selectedIndex]?.dataset.tutor;
+  const comment = document.getElementById('review-comment').value.trim();
+  if (!bookingId) { errEl.textContent = 'Please select a session.'; errEl.style.display = 'block'; return; }
+  if (!selectedRating) { errEl.textContent = 'Please select a star rating.'; errEl.style.display = 'block'; return; }
+  if (!comment) { errEl.textContent = 'Please write a short review.'; errEl.style.display = 'block'; return; }
+  try {
+    const res = await fetch(`${API}/api/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        reviewer_id: student.id || 1,
+        reviewer_type: 'student',
+        reviewee_id: parseInt(tutorId),
+        reviewee_type: 'tutor',
+        booking_id: parseInt(bookingId),
+        rating: selectedRating,
+        comment,
+        is_private: false
+      })
+    });
+    if (res.ok) {
+      document.getElementById('review-form').style.display = 'none';
+      document.getElementById('success-box').style.display = 'block';
+    } else {
+      const data = await res.json();
+      errEl.textContent = data.error || 'Could not submit review.';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = 'Could not connect. Please try again.';
+    errEl.style.display = 'block';
+  }
+}
+
+loadBookings();
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Your Match — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+</header>
+<div class="page-container" style="max-width:600px;">
+  <div style="text-align:center; margin-bottom:32px;">
+    <h1 style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:8px;">Find your perfect tutor match</h1>
+    <p style="font-size:15px; color:var(--text-muted);">Answer a few quick questions and we'll match you with the right tutor</p>
+  </div>
+  <div id="quiz-container">
+    <div style="background:var(--pink-light); border-radius:10px; height:6px; margin-bottom:28px;">
+      <div id="progress-bar" style="background:var(--pink); border-radius:10px; height:6px; width:14%; transition:width 0.4s;"></div>
+    </div>
+    <div class="card" id="question-card"></div>
+    <div style="display:flex; justify-content:space-between; margin-top:16px;">
+      <button id="back-btn" onclick="prevQuestion()" class="btn-ghost" style="padding:10px 20px; display:none;">← Back</button>
+      <button id="next-btn" onclick="nextQuestion()" class="btn-primary" style="padding:10px 20px; margin-left:auto;">Next →</button>
+    </div>
+  </div>
+  <div id="results-container" style="display:none;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="font-size:36px; margin-bottom:12px;">🎉</div>
+      <h2 style="font-size:24px; font-weight:800; color:var(--navy); margin-bottom:8px;">Your top matches!</h2>
+      <p style="font-size:14px; color:var(--text-muted);">Based on your learning style and goals</p>
+    </div>
+    <div id="matched-tutors"></div>
+    <div style="text-align:center; margin-top:20px;">
+      <button onclick="resetQuiz()" class="btn-ghost" style="padding:10px 20px;">Retake quiz</button>
+    </div>
+  </div>
+</div>
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const questions = [
+  { id: 'subject', text: 'What subject do you need help with?', options: ['Math', 'Science', 'English', 'SAT Prep', 'Multiple subjects'] },
+  { id: 'grade', text: "What's your grade level?", options: ['Middle school (6-8)', 'High school (9-12)', 'College', 'Adult learner'] },
+  { id: 'style', text: 'How do you learn best?', options: ['Visual — diagrams and examples', 'Step-by-step walkthroughs', 'Practice problems', 'Conversation and discussion'] },
+  { id: 'session', text: 'What type of session do you prefer?', options: ['Virtual — from home', 'In-person — meet locally', 'Either works for me'] },
+  { id: 'goal', text: "What's your main goal?", options: ['Improve grades', 'SAT/ACT test prep', 'Homework help', 'Learn ahead of class', 'Build confidence'] },
+  { id: 'accountability', text: 'Do you need accountability and structure?', options: ['Yes — I need lots of structure', 'Somewhat — a little guidance helps', 'No — I work well independently'] },
+  { id: 'frequency', text: 'How often would you like to meet?', options: ['Once a week', 'Twice a week', 'As needed'] }
+];
+let current = 0, answers = {};
+function renderQuestion() {
+  const q = questions[current];
+  const pct = Math.round(((current+1)/questions.length)*100);
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('question-card').innerHTML = `
+    <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Question ${current+1} of ${questions.length}</div>
+    <h2 style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:20px;">${q.text}</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${q.options.map(opt => `
+        <button onclick="selectOption('${q.id}','${opt}',this)"
+          style="text-align:left;padding:14px 16px;border-radius:10px;border:2px solid ${answers[q.id]===opt?'var(--pink)':'var(--border-light)'};background:${answers[q.id]===opt?'var(--pink-light)':'white'};cursor:pointer;font-size:14px;font-weight:${answers[q.id]===opt?'700':'500'};color:${answers[q.id]===opt?'var(--pink-dark)':'var(--text)'};font-family:Inter,sans-serif;transition:all 0.15s;">
+          ${answers[q.id]===opt?'✓ ':''}${opt}
+        </button>`).join('')}
+    </div>`;
+  document.getElementById('back-btn').style.display = current>0?'block':'none';
+  document.getElementById('next-btn').textContent = current===questions.length-1?'Find my match! 🎉':'Next →';
+}
+function selectOption(id, value, btn) {
+  answers[id] = value;
+  document.querySelectorAll('#question-card button').forEach(b => {
+    b.style.borderColor='var(--border-light)'; b.style.background='white';
+    b.style.fontWeight='500'; b.style.color='var(--text)';
+    b.textContent = b.textContent.replace('✓ ','');
+  });
+  btn.style.borderColor='var(--pink)'; btn.style.background='var(--pink-light)';
+  btn.style.fontWeight='700'; btn.style.color='var(--pink-dark)';
+  btn.textContent='✓ '+value;
+}
+function nextQuestion() {
+  if (!answers[questions[current].id]) { alert('Please select an answer.'); return; }
+  if (current===questions.length-1) { showResults(); return; }
+  current++; renderQuestion();
+}
+function prevQuestion() { if (current>0) { current--; renderQuestion(); } }
+async function showResults() {
+  document.getElementById('quiz-container').style.display='none';
+  document.getElementById('results-container').style.display='block';
+  try {
+    const tutors = await fetch(`${API}/api/tutors`).then(r=>r.json());
+    document.getElementById('matched-tutors').innerHTML = tutors.map((t,i) => {
+      const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=64`;
+      const score = [95,88,82][i]||75;
+      return `<div class="card card-hover" style="margin-bottom:14px;cursor:pointer;" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
+        <div style="display:flex;gap:14px;align-items:center;">
+          <img src="${avatarUrl}" style="width:56px;height:56px;border-radius:50%;border:3px solid var(--pink-light);flex-shrink:0;">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+              <div style="font-size:16px;font-weight:700;color:var(--navy);">${t.first_name} ${t.last_name}</div>
+              <span style="background:var(--pink-light);color:var(--pink-dark);font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;">${score}% match</span>
+            </div>
+            <div style="font-size:13px;color:var(--pink);font-weight:600;">$${t.hourly_rate}/hr</div>
+            <div style="font-size:13px;color:var(--text-muted);">${t.bio}</div>
+          </div>
+          <a href="booking.html?tutor_id=${t.id}" class="btn-primary" style="padding:10px 16px;font-size:13px;flex-shrink:0;" onclick="event.stopPropagation()">Book</a>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { document.getElementById('matched-tutors').innerHTML='<p style="color:var(--text-muted);">Could not load matches.</p>'; }
+}
+function resetQuiz() {
+  current=0; answers={};
+  document.getElementById('quiz-container').style.display='block';
+  document.getElementById('results-container').style.display='none';
+  renderQuestion();
+}
+renderQuestion();
+</script>
+</body>
+</html>
