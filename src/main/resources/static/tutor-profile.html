@@ -41,6 +41,9 @@ async function loadProfile() {
     const avatarSeed = tutor.avatar_seed || tutor.first_name + tutor.last_name;
     const avatarUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(avatarSeed)}&size=120`;
     const tags = subjects.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
+    const keywordTags = tutor.keywords
+            ? tutor.keywords.split(',').map(k => `<span class="tag-green" style="font-size:11px;">${k.trim()}</span>`).join('')
+            : '';
     const stars = tutor.rating ? Math.round(tutor.rating) : 5;
     document.getElementById('profile-content').innerHTML = `
       <div class="card" style="margin-bottom:20px;">
@@ -54,6 +57,8 @@ async function loadProfile() {
             <div style="font-size:22px; font-weight:700; color:var(--pink); margin-bottom:8px;">$${tutor.hourly_rate}/hr</div>
             <div style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">${tags}</div>
             <div style="display:flex; gap:6px; margin-bottom:16px;">
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">${tags}</div>
+            ${keywordTags ? `<div style="margin-bottom:12px;"><div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">TEACHING STYLE</div><div style="display:flex; flex-wrap:wrap; gap:6px;">${keywordTags}</div></div>` : ''}
               <span class="tag-blue">${tutor.session_types === 'virtual' ? 'Virtual only' : tutor.session_types === 'in-person' ? 'In-person only' : '💻 Virtual & 📍 In-person'}</span>
             </div>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
@@ -106,3 +111,7 @@ loadProfile();
 </script>
 </body>
 </html>
+<script>
+// Inject keywords into profile after load
+const _origLoad = loadProfile;
+</script>

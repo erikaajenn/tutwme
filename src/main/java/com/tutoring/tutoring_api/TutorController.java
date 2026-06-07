@@ -304,12 +304,12 @@ public class TutorController {
     @GetMapping("/reviews/tutor/{tutorId}")
     public List<Map<String, Object>> getTutorReviews(@PathVariable int tutorId) {
         return jdbc.queryForList("""
-        SELECT r.*, s.first_name as reviewer_name FROM reviews r
-        LEFT JOIN students s ON s.id = r.reviewer_id
-        WHERE r.reviewee_id = ? AND r.reviewee_type = 'tutor' AND r.is_private = false
-        ORDER BY r.created_at DESC
-        """, tutorId);
-
+                SELECT r.*, s.first_name as reviewer_name FROM reviews r
+                LEFT JOIN students s ON s.id = r.reviewer_id
+                WHERE r.reviewee_id = ? AND r.reviewee_type = 'tutor' AND r.is_private = false
+                ORDER BY r.created_at DESC
+                """, tutorId);
+    }
 
         @GetMapping("/reviews/pending")
         public List<Map<String, Object>> getPendingReviews() {
@@ -337,4 +337,3 @@ public class TutorController {
             return "{\"message\": \"Review rejected\"}";
         }
     }
-}

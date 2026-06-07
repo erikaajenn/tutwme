@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Your Match — TutwMe</title>
+  <title>Find Your Tutor Match — TutwMe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,11 +11,14 @@
   <a href="index.html" class="back">←</a>
   <div class="logo">Tutw<span>Me</span></div>
 </header>
+
 <div class="page-container" style="max-width:600px;">
   <div style="text-align:center; margin-bottom:32px;">
+    <div style="font-size:36px; margin-bottom:12px;">✨</div>
     <h1 style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:8px;">Find your perfect tutor match</h1>
-    <p style="font-size:15px; color:var(--text-muted);">Answer a few quick questions and we'll match you with the right tutor</p>
+    <p style="font-size:15px; color:var(--text-muted);">Answer 7 quick questions — we'll match you based on your learning style, goals and needs</p>
   </div>
+
   <div id="quiz-container">
     <div style="background:var(--pink-light); border-radius:10px; height:6px; margin-bottom:28px;">
       <div id="progress-bar" style="background:var(--pink); border-radius:10px; height:6px; width:14%; transition:width 0.4s;"></div>
@@ -26,96 +29,244 @@
       <button id="next-btn" onclick="nextQuestion()" class="btn-primary" style="padding:10px 20px; margin-left:auto;">Next →</button>
     </div>
   </div>
+
   <div id="results-container" style="display:none;">
-    <div style="text-align:center; margin-bottom:24px;">
+    <div style="text-align:center; margin-bottom:28px;">
       <div style="font-size:36px; margin-bottom:12px;">🎉</div>
-      <h2 style="font-size:24px; font-weight:800; color:var(--navy); margin-bottom:8px;">Your top matches!</h2>
-      <p style="font-size:14px; color:var(--text-muted);">Based on your learning style and goals</p>
+      <h2 style="font-size:24px; font-weight:800; color:var(--navy); margin-bottom:8px;">Your tutor matches!</h2>
+      <p style="font-size:14px; color:var(--text-muted);">Ranked by compatibility with your learning style and goals</p>
     </div>
     <div id="matched-tutors"></div>
-    <div style="text-align:center; margin-top:20px;">
+    <div style="text-align:center; margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
       <button onclick="resetQuiz()" class="btn-ghost" style="padding:10px 20px;">Retake quiz</button>
+      <a href="find-tutor.html" class="btn-outline" style="padding:10px 20px;">Browse all tutors</a>
     </div>
   </div>
 </div>
+
 <script src="chatbot.js"></script>
 <script>
 const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+
+// Each answer maps to keywords that will match tutor profiles
 const questions = [
-  { id: 'subject', text: 'What subject do you need help with?', options: ['Math', 'Science', 'English', 'SAT Prep', 'Multiple subjects'] },
-  { id: 'grade', text: "What's your grade level?", options: ['Middle school (6-8)', 'High school (9-12)', 'College', 'Adult learner'] },
-  { id: 'style', text: 'How do you learn best?', options: ['Visual — diagrams and examples', 'Step-by-step walkthroughs', 'Practice problems', 'Conversation and discussion'] },
-  { id: 'session', text: 'What type of session do you prefer?', options: ['Virtual — from home', 'In-person — meet locally', 'Either works for me'] },
-  { id: 'goal', text: "What's your main goal?", options: ['Improve grades', 'SAT/ACT test prep', 'Homework help', 'Learn ahead of class', 'Build confidence'] },
-  { id: 'accountability', text: 'Do you need accountability and structure?', options: ['Yes — I need lots of structure', 'Somewhat — a little guidance helps', 'No — I work well independently'] },
-  { id: 'frequency', text: 'How often would you like to meet?', options: ['Once a week', 'Twice a week', 'As needed'] }
+  {
+    id: 'subject',
+    text: 'What subject do you need help with?',
+    options: [
+      { label: 'Math (Algebra, Calculus)', keywords: ['math','algebra','calculus'] },
+      { label: 'Science (Biology, Chemistry)', keywords: ['science','biology','chemistry'] },
+      { label: 'English & Writing', keywords: ['english','writing','essays','reading'] },
+      { label: 'SAT / Test Prep', keywords: ['SAT','test prep','college prep'] },
+      { label: 'Multiple subjects', keywords: ['math','science','english','SAT'] }
+    ]
+  },
+  {
+    id: 'grade',
+    text: "What's your grade level?",
+    options: [
+      { label: 'Middle school (6-8)', keywords: ['middle school'] },
+      { label: 'High school (9-12)', keywords: ['high school'] },
+      { label: 'College', keywords: ['college'] },
+      { label: 'Adult learner', keywords: ['flexible','conversation'] }
+    ]
+  },
+  {
+    id: 'style',
+    text: 'How do you learn best?',
+    options: [
+      { label: '👁 Visual — diagrams and examples', keywords: ['visual'] },
+      { label: '📋 Step-by-step walkthroughs', keywords: ['step-by-step','structured'] },
+      { label: '✏️ Lots of practice problems', keywords: ['homework help','structured'] },
+      { label: '💬 Conversation and discussion', keywords: ['conversation','discussion','flexible'] }
+    ]
+  },
+  {
+    id: 'session',
+    text: 'What type of session do you prefer?',
+    options: [
+      { label: '💻 Virtual — from home', keywords: ['virtual'] },
+      { label: '📍 In-person — meet locally', keywords: ['in-person'] },
+      { label: '🤷 Either works for me', keywords: ['virtual','in-person'] }
+    ]
+  },
+  {
+    id: 'goal',
+    text: "What's your main goal?",
+    options: [
+      { label: '📈 Improve my grades', keywords: ['structured','homework help','patient'] },
+      { label: '🎓 SAT/ACT test prep', keywords: ['SAT','test prep','college prep','accountability'] },
+      { label: '📚 Homework help', keywords: ['homework help','patient','structured'] },
+      { label: '🚀 Learn ahead of class', keywords: ['flexible','step-by-step'] },
+      { label: '💪 Build confidence', keywords: ['patient','structured','visual'] }
+    ]
+  },
+  {
+    id: 'accountability',
+    text: 'Do you need accountability and structure?',
+    options: [
+      { label: '✅ Yes — I need lots of structure', keywords: ['structured','accountability','step-by-step'] },
+      { label: '🙂 Somewhat — a little guidance helps', keywords: ['structured','flexible'] },
+      { label: '😎 No — I work independently', keywords: ['flexible','conversation'] }
+    ]
+  },
+  {
+    id: 'frequency',
+    text: 'How often would you like sessions?',
+    options: [
+      { label: '📅 Once a week', keywords: ['flexible'] },
+      { label: '📅📅 Twice a week', keywords: ['structured','accountability'] },
+      { label: '🗓 As needed', keywords: ['flexible'] }
+    ]
+  }
 ];
-let current = 0, answers = {};
+
+let current = 0;
+let answers = {};
+let selectedKeywords = [];
+
 function renderQuestion() {
   const q = questions[current];
   const pct = Math.round(((current+1)/questions.length)*100);
   document.getElementById('progress-bar').style.width = pct+'%';
   document.getElementById('question-card').innerHTML = `
-    <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Question ${current+1} of ${questions.length}</div>
-    <h2 style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:20px;">${q.text}</h2>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      ${q.options.map(opt => `
-        <button onclick="selectOption('${q.id}','${opt}',this)"
-          style="text-align:left;padding:14px 16px;border-radius:10px;border:2px solid ${answers[q.id]===opt?'var(--pink)':'var(--border-light)'};background:${answers[q.id]===opt?'var(--pink-light)':'white'};cursor:pointer;font-size:14px;font-weight:${answers[q.id]===opt?'700':'500'};color:${answers[q.id]===opt?'var(--pink-dark)':'var(--text)'};font-family:Inter,sans-serif;transition:all 0.15s;">
-          ${answers[q.id]===opt?'✓ ':''}${opt}
+    <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Question ${current+1} of ${questions.length}</div>
+    <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:20px;">${q.text}</h2>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      ${q.options.map((opt, i) => `
+        <button onclick="selectOption('${q.id}', ${i}, this)"
+          style="text-align:left; padding:14px 16px; border-radius:10px; border:2px solid ${answers[q.id]===i ? 'var(--pink)' : 'var(--border-light)'}; background:${answers[q.id]===i ? 'var(--pink-light)' : 'white'}; cursor:pointer; font-size:14px; font-weight:${answers[q.id]===i ? '700' : '500'}; color:${answers[q.id]===i ? 'var(--pink-dark)' : 'var(--text)'}; font-family:Inter,sans-serif; transition:all 0.15s;">
+          ${answers[q.id]===i ? '✓ ' : ''}${opt.label}
         </button>`).join('')}
     </div>`;
-  document.getElementById('back-btn').style.display = current>0?'block':'none';
-  document.getElementById('next-btn').textContent = current===questions.length-1?'Find my match! 🎉':'Next →';
+  document.getElementById('back-btn').style.display = current > 0 ? 'block' : 'none';
+  document.getElementById('next-btn').textContent = current === questions.length-1 ? 'Find my match! 🎉' : 'Next →';
 }
-function selectOption(id, value, btn) {
-  answers[id] = value;
+
+function selectOption(id, index, btn) {
+  answers[id] = index;
   document.querySelectorAll('#question-card button').forEach(b => {
-    b.style.borderColor='var(--border-light)'; b.style.background='white';
-    b.style.fontWeight='500'; b.style.color='var(--text)';
-    b.textContent = b.textContent.replace('✓ ','');
+    b.style.borderColor = 'var(--border-light)';
+    b.style.background = 'white';
+    b.style.fontWeight = '500';
+    b.style.color = 'var(--text)';
+    b.textContent = b.textContent.replace('✓ ', '');
   });
-  btn.style.borderColor='var(--pink)'; btn.style.background='var(--pink-light)';
-  btn.style.fontWeight='700'; btn.style.color='var(--pink-dark)';
-  btn.textContent='✓ '+value;
+  btn.style.borderColor = 'var(--pink)';
+  btn.style.background = 'var(--pink-light)';
+  btn.style.fontWeight = '700';
+  btn.style.color = 'var(--pink-dark)';
+  btn.textContent = '✓ ' + questions[current].options[index].label;
 }
+
 function nextQuestion() {
-  if (!answers[questions[current].id]) { alert('Please select an answer.'); return; }
-  if (current===questions.length-1) { showResults(); return; }
-  current++; renderQuestion();
-}
-function prevQuestion() { if (current>0) { current--; renderQuestion(); } }
-async function showResults() {
-  document.getElementById('quiz-container').style.display='none';
-  document.getElementById('results-container').style.display='block';
-  try {
-    const tutors = await fetch(`${API}/api/tutors`).then(r=>r.json());
-    document.getElementById('matched-tutors').innerHTML = tutors.map((t,i) => {
-      const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=64`;
-      const score = [95,88,82][i]||75;
-      return `<div class="card card-hover" style="margin-bottom:14px;cursor:pointer;" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
-        <div style="display:flex;gap:14px;align-items:center;">
-          <img src="${avatarUrl}" style="width:56px;height:56px;border-radius:50%;border:3px solid var(--pink-light);flex-shrink:0;">
-          <div style="flex:1;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-              <div style="font-size:16px;font-weight:700;color:var(--navy);">${t.first_name} ${t.last_name}</div>
-              <span style="background:var(--pink-light);color:var(--pink-dark);font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;">${score}% match</span>
-            </div>
-            <div style="font-size:13px;color:var(--pink);font-weight:600;">$${t.hourly_rate}/hr</div>
-            <div style="font-size:13px;color:var(--text-muted);">${t.bio}</div>
-          </div>
-          <a href="booking.html?tutor_id=${t.id}" class="btn-primary" style="padding:10px 16px;font-size:13px;flex-shrink:0;" onclick="event.stopPropagation()">Book</a>
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) { document.getElementById('matched-tutors').innerHTML='<p style="color:var(--text-muted);">Could not load matches.</p>'; }
-}
-function resetQuiz() {
-  current=0; answers={};
-  document.getElementById('quiz-container').style.display='block';
-  document.getElementById('results-container').style.display='none';
+  if (answers[questions[current].id] === undefined) { alert('Please select an answer to continue.'); return; }
+  if (current === questions.length-1) { calculateMatches(); return; }
+  current++;
   renderQuestion();
 }
+
+function prevQuestion() {
+  if (current > 0) { current--; renderQuestion(); }
+}
+
+function buildKeywordSet() {
+  const keywords = new Set();
+  questions.forEach(q => {
+    const idx = answers[q.id];
+    if (idx !== undefined) {
+      q.options[idx].keywords.forEach(k => keywords.add(k.toLowerCase()));
+    }
+  });
+  return keywords;
+}
+
+function scoretutor(tutor, keywords) {
+  if (!tutor.keywords) return 0;
+  const tutorKws = tutor.keywords.toLowerCase().split(',').map(k => k.trim());
+  let matches = 0;
+  let total = keywords.size;
+  keywords.forEach(kw => {
+    if (tutorKws.some(tk => tk.includes(kw) || kw.includes(tk))) matches++;
+  });
+  // also check bio and philosophy
+  const text = `${tutor.bio || ''} ${tutor.teaching_philosophy || ''}`.toLowerCase();
+  keywords.forEach(kw => { if (text.includes(kw)) matches += 0.5; });
+  // session type match
+  const sessionAnswer = answers['session'];
+  if (sessionAnswer !== undefined) {
+    const pref = questions[1+1+1].options[sessionAnswer].label;
+    if (pref.includes('Virtual') && (tutor.session_types === 'virtual' || tutor.session_types === 'both')) matches++;
+    if (pref.includes('In-person') && (tutor.session_types === 'in-person' || tutor.session_types === 'both')) matches++;
+  }
+  return Math.min(99, Math.round((matches / Math.max(total, 1)) * 100));
+}
+
+async function calculateMatches() {
+  document.getElementById('quiz-container').style.display = 'none';
+  document.getElementById('results-container').style.display = 'block';
+  const keywords = buildKeywordSet();
+  try {
+    const tutors = await fetch(`${API}/api/tutors`).then(r => r.json());
+    const scored = await Promise.all(tutors.map(async t => {
+      const subjects = await fetch(`${API}/api/tutors/${t.id}/subjects`).then(r => r.json()).catch(() => []);
+      t.subjectList = subjects;
+      t.score = scoretutor(t, keywords);
+      return t;
+    }));
+    scored.sort((a, b) => b.score - a.score);
+    const el = document.getElementById('matched-tutors');
+    el.innerHTML = scored.map((t, i) => {
+      const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=72`;
+      const tags = t.subjectList.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
+      const matchColor = t.score >= 80 ? 'var(--green-mid)' : t.score >= 60 ? 'var(--amber-mid)' : 'var(--text-muted)';
+      const matchBg = t.score >= 80 ? 'var(--green-soft)' : t.score >= 60 ? 'var(--amber-soft)' : '#f1f5f9';
+      const matchLabel = t.score >= 80 ? 'Great match' : t.score >= 60 ? 'Good match' : 'Possible match';
+      // find matching keywords to highlight
+      const tutorKws = (t.keywords || '').split(',').map(k => k.trim());
+      const sharedKws = tutorKws.filter(k => [...keywords].some(qk => k.toLowerCase().includes(qk) || qk.includes(k.toLowerCase())));
+      return `
+        <div class="card card-hover" style="margin-bottom:16px; cursor:pointer; ${i===0 ? 'border:2px solid var(--pink);' : ''}" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
+          ${i===0 ? '<div style="background:var(--pink); color:white; font-size:11px; font-weight:700; padding:4px 12px; margin:-20px -20px 16px; border-radius:10px 10px 0 0; text-align:center;">⭐ Best Match for You</div>' : ''}
+          <div style="display:flex; gap:16px; align-items:flex-start;">
+            <div style="position:relative; flex-shrink:0;">
+              <img src="${avatarUrl}" style="width:64px; height:64px; border-radius:50%; border:3px solid var(--pink-light);" onerror="this.style.display='none'">
+              <div style="position:absolute; bottom:-4px; right:-4px; background:${matchBg}; color:${matchColor}; font-size:11px; font-weight:800; padding:2px 6px; border-radius:20px; white-space:nowrap;">${t.score}%</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
+                <div style="font-size:17px; font-weight:800; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+                <span style="background:${matchBg}; color:${matchColor}; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px;">${matchLabel}</span>
+              </div>
+              <div style="font-size:13px; color:var(--pink); font-weight:600; margin-bottom:6px;">$${t.hourly_rate}/hr · ${t.session_types === 'virtual' ? '💻 Virtual' : t.session_types === 'in-person' ? '📍 In-person' : '💻📍 Both'}</div>
+              <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px; line-height:1.5;">${t.bio}</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">${tags}</div>
+              ${sharedKws.length ? `
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+                  <strong style="color:var(--navy);">Why this match:</strong>
+                  ${sharedKws.slice(0,4).map(k => `<span style="background:var(--green-soft); color:var(--green-mid); font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; margin-left:4px;">${k}</span>`).join('')}
+                </div>` : ''}
+              <div style="display:flex; gap:8px;">
+                <a href="tutor-profile.html?id=${t.id}" class="btn-outline" style="padding:8px 16px; font-size:13px;" onclick="event.stopPropagation()">View profile</a>
+                <a href="booking.html?tutor_id=${t.id}" class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="event.stopPropagation()">Book session</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('matched-tutors').innerHTML = '<p style="color:var(--text-muted);">Could not load matches. Please try again.</p>';
+  }
+}
+
+function resetQuiz() {
+  current = 0;
+  answers = {};
+  document.getElementById('quiz-container').style.display = 'block';
+  document.getElementById('results-container').style.display = 'none';
+  renderQuestion();
+}
+
 renderQuestion();
 </script>
 </body>
