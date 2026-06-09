@@ -441,4 +441,3 @@ public class TutorController {
             return org.springframework.http.ResponseEntity.status(500)
                     .body(Map.of("error", e.getMessage()));
         }
-    }
