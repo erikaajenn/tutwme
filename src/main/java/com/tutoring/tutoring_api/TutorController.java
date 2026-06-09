@@ -19,7 +19,7 @@ public class TutorController {
 
     @GetMapping("/tutors")
     public List<Map<String, Object>> getTutors() {
-        return jdbc.queryForList("SELECT * FROM tutors");
+        return jdbc.queryForList("SELECT * FROM tutors WHERE status = 'approved'");
     }
 
     @GetMapping("/tutors/{id}")
@@ -335,5 +335,110 @@ public class TutorController {
         public String rejectReview(@PathVariable int id) {
             jdbc.update("DELETE FROM reviews WHERE id = ?", id);
             return "{\"message\": \"Review rejected\"}";
+        }
+
+    // ── Tutor approval ────────────────────────────────────────────
+    @GetMapping("/admin/tutors/pending")
+    public List<Map<String, Object>> getPendingTutors() {
+        return jdbc.queryForList("""
+        SELECT t.*, string_agg(s.name, ', ') as subject_names
+        FROM tutors t
+        LEFT JOIN tutor_subjects ts ON ts.tutor_id = t.id
+        LEFT JOIN subjects s ON s.id = ts.subject_id
+        WHERE t.status = 'pending'
+        GROUP BY t.id
+        ORDER BY t.submitted_at DESC
+        """);
+    }
+
+    @GetMapping("/admin/tutors/all")
+    public List<Map<String, Object>> getAllTutors() {
+        return jdbc.queryForList("""
+        SELECT t.*, string_agg(s.name, ', ') as subject_names
+        FROM tutors t
+        LEFT JOIN tutor_subjects ts ON ts.tutor_id = t.id
+        LEFT JOIN subjects s ON s.id = ts.subject_id
+        GROUP BY t.id
+        ORDER BY t.status, t.created_at DESC
+        """);
+    }
+
+    @PatchMapping("/admin/tutors/{id}/approve")
+    public org.springframework.http.ResponseEntity<?> approveTutor(@PathVariable int id) {
+        jdbc.update("UPDATE tutors SET status = 'approved' WHERE id = ?", id);
+        jdbc.update("UPDATE metrics SET value = value + 1, updated_at = NOW() WHERE metric = 'tutors_onboarded'");
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Tutor approved"));
+    }
+
+    @PatchMapping("/admin/tutors/{id}/suspend")
+    public org.springframework.http.ResponseEntity<?> suspendTutor(@PathVariable int id) {
+        jdbc.update("UPDATE tutors SET status = 'suspended' WHERE id = ?", id);
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Tutor suspended"));
+    }
+
+    @PatchMapping("/admin/tutors/{id}/reject")
+    public org.springframework.http.ResponseEntity<?> rejectTutor(@PathVariable int id) {
+        jdbc.update("DELETE FROM tutors WHERE id = ? AND status = 'pending'", id);
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Tutor rejected"));
+    }
+
+    // ── Google Sheets webhook ─────────────────────────────────────
+    @PostMapping("/webhook/tutor-signup")
+    public org.springframework.http.ResponseEntity<?> tutorSignupWebhook(@RequestBody Map<String, Object> body) {
+        try {
+            String firstName = body.getOrDefault("first_name", "").toString();
+            String lastName = body.getOrDefault("last_name", "").toString();
+            String email = body.getOrDefault("email", "").toString();
+            String phone = body.getOrDefault("phone", "").toString();
+            String bio = body.getOrDefault("bio", "").toString();
+            String philosophy = body.getOrDefault("teaching_philosophy", "").toString();
+            String sessionTypes = body.getOrDefault("session_types", "both").toString();
+            String zoomLink = body.getOrDefault("zoom_link", "").toString();
+            String venmo = body.getOrDefault("venmo", "").toString();
+            String cashapp = body.getOrDefault("cashapp", "").toString();
+            String zelle = body.getOrDefault("zelle", "").toString();
+            String keywordsRaw = body.getOrDefault("keywords", "").toString();
+            double hourlyRate = 0;
+            try { hourlyRate = Double.parseDouble(body.getOrDefault("hourly_rate", "0").toString()); } catch(Exception ignored) {}
+
+            // check duplicate
+            List<Map<String,Object>> existing = jdbc.queryForList("SELECT id FROM tutors WHERE email = ?", email);
+            if (!existing.isEmpty()) {
+                return org.springframework.http.ResponseEntity.status(409)
+                        .body(Map.of("error", "Tutor with this email already exists"));
+            }
+
+            // insert tutor
+            jdbc.update("""
+            INSERT INTO tutors (first_name, last_name, email, phone, bio, hourly_rate,
+                teaching_philosophy, session_types, zoom_link, venmo, cashapp, zelle,
+                keywords, status, submitted_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',NOW())
+            """,
+                    firstName, lastName, email, phone, bio, hourlyRate,
+                    philosophy, sessionTypes, zoomLink, venmo, cashapp, zelle, keywordsRaw
+            );
+
+            // insert subjects if provided
+            String subjectsRaw = body.getOrDefault("subjects", "").toString();
+            if (!subjectsRaw.isEmpty()) {
+                Map<String, Object> newTutor = jdbc.queryForMap("SELECT id FROM tutors WHERE email = ?", email);
+                int tutorId = ((Number) newTutor.get("id")).intValue();
+                for (String subjectName : subjectsRaw.split(",")) {
+                    String trimmed = subjectName.trim();
+                    try {
+                        Map<String, Object> subject = jdbc.queryForMap(
+                                "SELECT id FROM subjects WHERE LOWER(name) = LOWER(?)", trimmed);
+                        jdbc.update("INSERT INTO tutor_subjects (tutor_id, subject_id) VALUES (?,?) ON CONFLICT DO NOTHING",
+                                tutorId, subject.get("id"));
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            return org.springframework.http.ResponseEntity.ok(
+                    Map.of("message", "Tutor application received — pending admin approval"));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500)
+                    .body(Map.of("error", e.getMessage()));
         }
     }

@@ -10,134 +10,163 @@
 <header>
   <a href="index.html" class="back">←</a>
   <div class="logo">Tutw<span>Me</span></div>
-  <div style="margin-left:auto; font-size:13px; font-weight:700; color:var(--rose);">Admin Panel</div>
+  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--pink);">Admin Panel</div>
 </header>
 
-<div style="max-width:960px; margin:32px auto; padding:0 20px;">
-  <h1 style="font-size:24px; font-weight:900; color:var(--text); margin-bottom:24px;">Admin Panel</h1>
+<div class="page-container">
+  <h1 style="font-size:24px; font-weight:800; color:var(--navy); margin-bottom:24px;">Admin Panel</h1>
 
-  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px;">
-    <div class="card" style="text-align:center; padding:20px;">
-      <div style="font-size:32px; font-weight:900; color:var(--rose);" id="stat-tutors">-</div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:700;">Tutors</div>
-    </div>
-    <div class="card" style="text-align:center; padding:20px;">
-      <div style="font-size:32px; font-weight:900; color:var(--blue);" id="stat-students">-</div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:700;">Students</div>
-    </div>
-    <div class="card" style="text-align:center; padding:20px;">
-      <div style="font-size:32px; font-weight:900; color:var(--sage);" id="stat-bookings">-</div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:700;">Bookings</div>
-    </div>
-    <div class="card" style="text-align:center; padding:20px;">
-      <div style="font-size:32px; font-weight:900; color:#b89300;" id="stat-subjects">-</div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:700;">Subjects</div>
-    </div>
+  <!-- Stats -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:28px;">
+    <div class="stat-card"><div class="stat-number" style="color:var(--pink);" id="stat-tutors">-</div><div class="stat-label">Live tutors</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#f59e0b;" id="stat-pending">-</div><div class="stat-label">Pending approval</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#7ab3d4;" id="stat-students">-</div><div class="stat-label">Students</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#6aaa7e;" id="stat-bookings">-</div><div class="stat-label">Bookings</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#f59e0b;" id="stat-subjects">-</div><div class="stat-label">Subjects</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:var(--navy);" id="stat-reviews">-</div><div class="stat-label">Reviews</div></div>
   </div>
 
-  <div style="display:flex; gap:8px; margin-bottom:20px;">
-    <button class="btn-primary" style="padding:8px 20px; font-size:13px;" onclick="showTab('tutors', this)">Tutors</button>
-    <button class="btn-secondary" style="padding:8px 20px; font-size:13px;" onclick="showTab('bookings', this)">Bookings</button>
-    <button style="padding:8px 20px; font-size:13px; background:var(--blue); color:white; border:none; border-radius:50px; font-family:Nunito,sans-serif; font-weight:800; cursor:pointer;" onclick="showTab('students', this)">Students</button>
+  <!-- Tabs -->
+  <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+    <button class="tab-btn active" onclick="showTab('pending')" id="tab-pending">
+      Pending tutors <span id="pending-count" style="background:#f59e0b; color:white; font-size:11px; padding:1px 6px; border-radius:20px; margin-left:4px;"></span>
+    </button>
+    <button class="tab-btn" onclick="showTab('tutors')" id="tab-tutors">All tutors</button>
+    <button class="tab-btn" onclick="showTab('bookings')" id="tab-bookings">Bookings</button>
+    <button class="tab-btn" onclick="showTab('students')" id="tab-students">Students</button>
+    <button class="tab-btn" onclick="showTab('reviews')" id="tab-reviews">Reviews ⭐</button>
+    <button class="tab-btn" onclick="showTab('metrics')" id="tab-metrics">Metrics</button>
   </div>
 
-  <div class="card" id="tab-content" style="padding:0; overflow:hidden;">
-    <p style="color:var(--text-muted); padding:20px;">Loading...</p>
+  <div id="tab-content" class="card" style="padding:0; overflow:hidden; min-height:200px;">
+    <div style="padding:20px; color:var(--text-muted);">Loading...</div>
   </div>
 </div>
 
+<style>
+.tab-btn { padding:8px 18px; font-size:13px; background:white; color:var(--text-muted); border:1px solid var(--border-light); border-radius:8px; cursor:pointer; font-family:Inter,sans-serif; font-weight:600; transition:all 0.15s; }
+.tab-btn.active { background:var(--pink); color:white; border-color:var(--pink); }
+.tab-btn:hover:not(.active) { background:var(--pink-light); color:var(--pink-dark); border-color:var(--pink); }
+.approve-btn { background:#16a34a; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; font-family:Inter,sans-serif; }
+.reject-btn { background:#dc2626; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; font-family:Inter,sans-serif; }
+.suspend-btn { background:#d97706; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; font-family:Inter,sans-serif; }
+.status-approved { background:var(--green-soft); color:var(--green-mid); font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.status-pending { background:var(--amber-soft); color:var(--amber-mid); font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.status-suspended { background:#fef2f2; color:#dc2626; font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+</style>
+
 <script src="chatbot.js"></script>
 <script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+let currentTab = 'pending';
 
-  function renderReviews() {
-    fetch(`${API}/api/reviews/pending`)
-            .then(r => r.json())
-            .then(reviews => {
-              document.getElementById('tab-content').innerHTML = reviews.length === 0
-                      ? '<p style="padding:20px; color:var(--text-muted);">No pending reviews.</p>'
-                      : `<table style="${tableStyle}">
-          <thead><tr>
-            <th style="${thStyle}">Student</th>
-            <th style="${thStyle}">Tutor</th>
-            <th style="${thStyle}">Rating</th>
-            <th style="${thStyle}">Review</th>
-            <th style="${thStyle}">Action</th>
-          </tr></thead>
-          <tbody>${reviews.map(r => `<tr>
-            <td style="${tdStyle}">${r.reviewer_name || 'Student'}</td>
-            <td style="${tdStyle}">${r.reviewee_name || 'Tutor'}</td>
-            <td style="${tdStyle}">${'★'.repeat(r.rating)}</td>
-            <td style="${tdStyle}" style="max-width:200px;">${r.comment || ''}</td>
-            <td style="${tdStyle}">
-              <button onclick="approveReview(${r.id})" style="background:var(--green-mid); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:6px;">Approve</button>
-              <button onclick="rejectReview(${r.id})" style="background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">Reject</button>
-            </td>
-          </tr>`).join('')}</tbody>
-        </table>`;
-            }).catch(() => {
-      document.getElementById('tab-content').innerHTML = '<p style="padding:20px; color:var(--text-muted);">Could not load reviews.</p>';
-    });
-  }
+const tableStyle = 'width:100%; border-collapse:collapse; font-size:13px;';
+const thStyle = 'background:var(--pink-light); color:var(--pink-dark); padding:11px 16px; text-align:left; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.04em;';
+const tdStyle = 'padding:12px 16px; border-bottom:1px solid var(--border-light); color:var(--text); vertical-align:top;';
 
-  async function approveReview(id) {
-    await fetch(`${API}/api/reviews/${id}/approve`, { method: 'PATCH' });
-    renderReviews();
-  }
-
-  async function rejectReview(id) {
-    await fetch(`${API}/api/reviews/${id}/reject`, { method: 'PATCH' });
-    renderReviews();
-  }
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
-
-let allTutors = [], allBookings = [], allStudents = [];
-
-const tableStyle = `width:100%; border-collapse:collapse; font-size:14px;`;
-const thStyle = `background:var(--rose-light); color:var(--rose-dark); padding:12px 16px; text-align:left; font-weight:700; font-size:13px;`;
-const tdStyle = `padding:12px 16px; border-bottom:1px solid var(--border); color:var(--text);`;
-
-async function loadAll() {
-  const [tutors, bookings, students, subjects] = await Promise.all([
-    fetch(`${API}/api/tutors`).then(r => r.json()),
-    fetch(`${API}/api/bookings`).then(r => r.json()),
-    fetch(`${API}/api/students`).then(r => r.json()),
-    fetch(`${API}/api/subjects`).then(r => r.json())
+async function loadStats() {
+  const [tutors, allTutors, students, bookings, subjects, reviews] = await Promise.all([
+    fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/admin/tutors/all`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/students`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/bookings`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/subjects`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/reviews/pending`).then(r=>r.json()).catch(()=>[])
   ]);
-  allTutors = tutors; allBookings = bookings; allStudents = students;
+  const pending = allTutors.filter(t => t.status === 'pending');
   document.getElementById('stat-tutors').textContent = tutors.length;
-  document.getElementById('stat-bookings').textContent = bookings.length;
+  document.getElementById('stat-pending').textContent = pending.length;
   document.getElementById('stat-students').textContent = students.length;
+  document.getElementById('stat-bookings').textContent = bookings.length;
   document.getElementById('stat-subjects').textContent = subjects.length;
-  renderTutors();
+  document.getElementById('stat-reviews').textContent = reviews.length;
+  if (pending.length > 0) {
+    document.getElementById('pending-count').textContent = pending.length;
+  } else {
+    document.getElementById('pending-count').style.display = 'none';
+  }
 }
 
-function showTab(tab, btn) {
-  if (tab === 'tutors') renderTutors();
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const el = document.getElementById('tab-content');
+  el.innerHTML = '<div style="padding:20px; color:var(--text-muted);">Loading...</div>';
+  if (tab === 'pending') renderPending();
+  if (tab === 'tutors') renderAllTutors();
   if (tab === 'bookings') renderBookings();
   if (tab === 'students') renderStudents();
+  if (tab === 'reviews') renderReviews();
+  if (tab === 'metrics') renderMetrics();
 }
 
-function renderTutors() {
+async function renderPending() {
+  const tutors = await fetch(`${API}/api/admin/tutors/pending`).then(r=>r.json()).catch(()=>[]);
+  if (!tutors.length) {
+    document.getElementById('tab-content').innerHTML = `
+      <div style="padding:40px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:12px;">✅</div>
+        <div style="font-size:16px; font-weight:700; color:var(--navy); margin-bottom:6px;">All caught up!</div>
+        <div style="font-size:14px; color:var(--text-muted);">No tutors pending approval.</div>
+      </div>`;
+    return;
+  }
+  document.getElementById('tab-content').innerHTML = tutors.map(t => `
+    <div style="padding:20px; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+        <div style="width:52px; height:52px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:var(--pink-dark); flex-shrink:0;">${(t.first_name||'?')[0]}${(t.last_name||'')[0]}</div>
+        <div style="flex:1; min-width:200px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
+            <div style="font-size:16px; font-weight:800; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+            <span class="status-pending">Pending review</span>
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">${t.email} · ${t.phone || 'No phone'}</div>
+          <div style="font-size:13px; color:var(--pink); font-weight:600; margin-bottom:6px;">$${t.hourly_rate}/hr · ${t.session_types || 'both'}</div>
+          ${t.subject_names ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;"><strong>Subjects:</strong> ${t.subject_names}</div>` : ''}
+          ${t.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px; line-height:1.5;">${t.bio}</div>` : ''}
+          ${t.teaching_philosophy ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;"><strong>Philosophy:</strong> ${t.teaching_philosophy}</div>` : ''}
+          ${t.keywords ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px;">${t.keywords.split(',').map(k=>`<span style="background:var(--pink-light); color:var(--pink-dark); font-size:11px; padding:2px 8px; border-radius:20px;">${k.trim()}</span>`).join('')}</div>` : ''}
+          ${t.submitted_at ? `<div style="font-size:12px; color:var(--text-muted);">Submitted: ${new Date(t.submitted_at).toLocaleString()}</div>` : ''}
+        </div>
+        <div style="display:flex; gap:8px; flex-shrink:0; align-items:flex-start;">
+          <button class="approve-btn" onclick="approveTutor(${t.id})">✓ Approve</button>
+          <button class="reject-btn" onclick="rejectTutor(${t.id})">✗ Reject</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function renderAllTutors() {
+  const tutors = await fetch(`${API}/api/admin/tutors/all`).then(r=>r.json()).catch(()=>[]);
   document.getElementById('tab-content').innerHTML = `
     <table style="${tableStyle}">
       <thead><tr>
-        <th style="${thStyle}">Name</th>
-        <th style="${thStyle}">Email</th>
-        <th style="${thStyle}">Phone</th>
+        <th style="${thStyle}">Tutor</th>
+        <th style="${thStyle}">Subjects</th>
         <th style="${thStyle}">Rate</th>
+        <th style="${thStyle}">Status</th>
+        <th style="${thStyle}">Actions</th>
       </tr></thead>
-      <tbody>${allTutors.map(t => `<tr>
-        <td style="${tdStyle}">${t.first_name} ${t.last_name}</td>
-        <td style="${tdStyle}">${t.email}</td>
-        <td style="${tdStyle}">${t.phone}</td>
-        <td style="${tdStyle}"><span class="tag-sage">$${t.hourly_rate}/hr</span></td>
+      <tbody>${tutors.map(t => `<tr>
+        <td style="${tdStyle}">
+          <div style="font-weight:700; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+          <div style="font-size:12px; color:var(--text-muted);">${t.email}</div>
+        </td>
+        <td style="${tdStyle}; font-size:12px; color:var(--text-muted);">${t.subject_names || '—'}</td>
+        <td style="${tdStyle}; color:var(--pink); font-weight:600;">$${t.hourly_rate}/hr</td>
+        <td style="${tdStyle}"><span class="status-${t.status}">${t.status}</span></td>
+        <td style="${tdStyle}">
+          ${t.status === 'pending' ? `<button class="approve-btn" onclick="approveTutor(${t.id})" style="margin-right:6px;">Approve</button>` : ''}
+          ${t.status === 'approved' ? `<button class="suspend-btn" onclick="suspendTutor(${t.id})">Suspend</button>` : ''}
+          ${t.status === 'suspended' ? `<button class="approve-btn" onclick="approveTutor(${t.id})">Reinstate</button>` : ''}
+        </td>
       </tr>`).join('')}</tbody>
     </table>`;
 }
 
-function renderBookings() {
+async function renderBookings() {
+  const bookings = await fetch(`${API}/api/bookings`).then(r=>r.json()).catch(()=>[]);
   document.getElementById('tab-content').innerHTML = `
     <table style="${tableStyle}">
       <thead><tr>
@@ -145,38 +174,386 @@ function renderBookings() {
         <th style="${thStyle}">Tutor</th>
         <th style="${thStyle}">Subject</th>
         <th style="${thStyle}">Date</th>
+        <th style="${thStyle}">Type</th>
         <th style="${thStyle}">Status</th>
       </tr></thead>
-      <tbody>${allBookings.map(b => `<tr>
+      <tbody>${bookings.map(b => `<tr>
         <td style="${tdStyle}">${b.student_first} ${b.student_last}</td>
         <td style="${tdStyle}">${b.tutor_first} ${b.tutor_last}</td>
         <td style="${tdStyle}">${b.subject_name}</td>
         <td style="${tdStyle}">${new Date(b.scheduled_at).toLocaleDateString()}</td>
-        <td style="${tdStyle}"><span class="tag-${b.status === 'confirmed' ? 'sage' : b.status === 'pending' ? 'blue' : 'rose'}">${b.status}</span></td>
+        <td style="${tdStyle}"><span class="tag-blue" style="font-size:11px;">${b.session_type||'in-person'}</span></td>
+        <td style="${tdStyle}"><span class="tag-${b.status==='confirmed'?'green':b.status==='pending'?'blue':'pink'}">${b.status}</span></td>
       </tr>`).join('')}</tbody>
     </table>`;
 }
 
-function renderStudents() {
+async function renderStudents() {
+  const students = await fetch(`${API}/api/students`).then(r=>r.json()).catch(()=>[]);
   document.getElementById('tab-content').innerHTML = `
     <table style="${tableStyle}">
       <thead><tr>
         <th style="${thStyle}">Name</th>
         <th style="${thStyle}">Email</th>
         <th style="${thStyle}">Grade</th>
+        <th style="${thStyle}">Verified</th>
+        <th style="${thStyle}">Minor</th>
       </tr></thead>
-      <tbody>${allStudents.map(s => `<tr>
-        <td style="${tdStyle}">${s.first_name} ${s.last_name}</td>
-        <td style="${tdStyle}">${s.email}</td>
-        <td style="${tdStyle}">${s.grade_level || '—'}</td>
+      <tbody>${students.map(s => `<tr>
+        <td style="${tdStyle}; font-weight:600; color:var(--navy);">${s.first_name} ${s.last_name}</td>
+        <td style="${tdStyle}; color:var(--text-muted);">${s.email}</td>
+        <td style="${tdStyle}">${s.grade_level||'—'}</td>
+        <td style="${tdStyle}"><span class="${s.email_verified?'status-approved':'status-pending'}">${s.email_verified?'Verified':'Pending'}</span></td>
+        <td style="${tdStyle}">${s.is_minor?'<span class="status-pending">Under 18</span>':'—'}</td>
       </tr>`).join('')}</tbody>
     </table>`;
-
-  <button style="padding:8px 20px; font-size:13px; background:#f59e0b; color:white; border:none; border-radius:50px; font-family:Inter,sans-serif; font-weight:800; cursor:pointer;"
-          onClick="showTab('reviews', this)">Reviews ⭐</button>
 }
 
-loadAll();
+async function renderReviews() {
+  const reviews = await fetch(`${API}/api/reviews/pending`).then(r=>r.json()).catch(()=>[]);
+  if (!reviews.length) {
+    document.getElementById('tab-content').innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-muted);">No reviews pending approval.</div>';
+    return;
+  }
+  document.getElementById('tab-content').innerHTML = reviews.map(r => `
+    <div style="padding:18px; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+            <div style="font-size:14px; font-weight:700; color:var(--navy);">${r.reviewer_name||'Student'} → ${r.reviewee_name||'Tutor'}</div>
+            <div style="color:#f59e0b;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          </div>
+          <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:6px;">"${r.comment||''}"</div>
+          <div style="font-size:12px; color:var(--text-muted);">${new Date(r.created_at).toLocaleString()}</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="approve-btn" onclick="approveReview(${r.id})">Approve</button>
+          <button class="reject-btn" onclick="rejectReview(${r.id})">Reject</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function renderMetrics() {
+  const metrics = await fetch(`${API}/api/metrics`).then(r=>r.json()).catch(()=>[]);
+  document.getElementById('tab-content').innerHTML = `
+    <div style="padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px;">
+      ${metrics.map(m => `
+        <div class="stat-card">
+          <div class="stat-number" style="color:var(--pink);">${m.value}</div>
+          <div class="stat-label">${m.metric.replace(/_/g,' ')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function approveTutor(id) {
+  await fetch(`${API}/api/admin/tutors/${id}/approve`, {method:'PATCH'});
+  await loadStats();
+  showTab(currentTab);
+}
+async function rejectTutor(id) {
+  if (!confirm('Are you sure you want to reject this tutor application?')) return;
+  await fetch(`${API}/api/admin/tutors/${id}/reject`, {method:'PATCH'});
+  await loadStats();
+  showTab(currentTab);
+}
+async function suspendTutor(id) {
+  if (!confirm('Suspend this tutor? They will be hidden from the site.')) return;
+  await fetch(`${API}/api/admin/tutors/${id}/suspend`, {method:'PATCH'});
+  await loadStats();
+  showTab(currentTab);
+}
+async function approveReview(id) {
+  await fetch(`${API}/api/reviews/${id}/approve`, {method:'PATCH'});
+  showTab('reviews');
+}
+async function rejectReview(id) {
+  await fetch(`${API}/api/reviews/${id}/reject`, {method:'PATCH'});
+  showTab('reviews');
+}
+
+loadStats();
+showTab('pending');
+</script>
+</body>
+</html>
+EOFcat > ~/Downloads/tutoring-api/src/main/resources/static/admin.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--pink);">Admin Panel</div>
+</header>
+
+<div class="page-container">
+  <h1 style="font-size:24px; font-weight:800; color:var(--navy); margin-bottom:24px;">Admin Panel</h1>
+
+  <!-- Stats -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:28px;">
+    <div class="stat-card"><div class="stat-number" style="color:var(--pink);" id="stat-tutors">-</div><div class="stat-label">Live tutors</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#f59e0b;" id="stat-pending">-</div><div class="stat-label">Pending approval</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#7ab3d4;" id="stat-students">-</div><div class="stat-label">Students</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#6aaa7e;" id="stat-bookings">-</div><div class="stat-label">Bookings</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:#f59e0b;" id="stat-subjects">-</div><div class="stat-label">Subjects</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:var(--navy);" id="stat-reviews">-</div><div class="stat-label">Reviews</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+    <button class="tab-btn active" onclick="showTab('pending')" id="tab-pending">
+      Pending tutors <span id="pending-count" style="background:#f59e0b; color:white; font-size:11px; padding:1px 6px; border-radius:20px; margin-left:4px;"></span>
+    </button>
+    <button class="tab-btn" onclick="showTab('tutors')" id="tab-tutors">All tutors</button>
+    <button class="tab-btn" onclick="showTab('bookings')" id="tab-bookings">Bookings</button>
+    <button class="tab-btn" onclick="showTab('students')" id="tab-students">Students</button>
+    <button class="tab-btn" onclick="showTab('reviews')" id="tab-reviews">Reviews ⭐</button>
+    <button class="tab-btn" onclick="showTab('metrics')" id="tab-metrics">Metrics</button>
+  </div>
+
+  <div id="tab-content" class="card" style="padding:0; overflow:hidden; min-height:200px;">
+    <div style="padding:20px; color:var(--text-muted);">Loading...</div>
+  </div>
+</div>
+
+<style>
+.tab-btn { padding:8px 18px; font-size:13px; background:white; color:var(--text-muted); border:1px solid var(--border-light); border-radius:8px; cursor:pointer; font-family:Inter,sans-serif; font-weight:600; transition:all 0.15s; }
+.tab-btn.active { background:var(--pink); color:white; border-color:var(--pink); }
+.tab-btn:hover:not(.active) { background:var(--pink-light); color:var(--pink-dark); border-color:var(--pink); }
+.approve-btn { background:#16a34a; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; font-family:Inter,sans-serif; }
+.reject-btn { background:#dc2626; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; font-family:Inter,sans-serif; }
+.suspend-btn { background:#d97706; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; font-family:Inter,sans-serif; }
+.status-approved { background:var(--green-soft); color:var(--green-mid); font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.status-pending { background:var(--amber-soft); color:var(--amber-mid); font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.status-suspended { background:#fef2f2; color:#dc2626; font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+</style>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+let currentTab = 'pending';
+
+const tableStyle = 'width:100%; border-collapse:collapse; font-size:13px;';
+const thStyle = 'background:var(--pink-light); color:var(--pink-dark); padding:11px 16px; text-align:left; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.04em;';
+const tdStyle = 'padding:12px 16px; border-bottom:1px solid var(--border-light); color:var(--text); vertical-align:top;';
+
+async function loadStats() {
+  const [tutors, allTutors, students, bookings, subjects, reviews] = await Promise.all([
+    fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/admin/tutors/all`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/students`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/bookings`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/subjects`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/reviews/pending`).then(r=>r.json()).catch(()=>[])
+  ]);
+  const pending = allTutors.filter(t => t.status === 'pending');
+  document.getElementById('stat-tutors').textContent = tutors.length;
+  document.getElementById('stat-pending').textContent = pending.length;
+  document.getElementById('stat-students').textContent = students.length;
+  document.getElementById('stat-bookings').textContent = bookings.length;
+  document.getElementById('stat-subjects').textContent = subjects.length;
+  document.getElementById('stat-reviews').textContent = reviews.length;
+  if (pending.length > 0) {
+    document.getElementById('pending-count').textContent = pending.length;
+  } else {
+    document.getElementById('pending-count').style.display = 'none';
+  }
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const el = document.getElementById('tab-content');
+  el.innerHTML = '<div style="padding:20px; color:var(--text-muted);">Loading...</div>';
+  if (tab === 'pending') renderPending();
+  if (tab === 'tutors') renderAllTutors();
+  if (tab === 'bookings') renderBookings();
+  if (tab === 'students') renderStudents();
+  if (tab === 'reviews') renderReviews();
+  if (tab === 'metrics') renderMetrics();
+}
+
+async function renderPending() {
+  const tutors = await fetch(`${API}/api/admin/tutors/pending`).then(r=>r.json()).catch(()=>[]);
+  if (!tutors.length) {
+    document.getElementById('tab-content').innerHTML = `
+      <div style="padding:40px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:12px;">✅</div>
+        <div style="font-size:16px; font-weight:700; color:var(--navy); margin-bottom:6px;">All caught up!</div>
+        <div style="font-size:14px; color:var(--text-muted);">No tutors pending approval.</div>
+      </div>`;
+    return;
+  }
+  document.getElementById('tab-content').innerHTML = tutors.map(t => `
+    <div style="padding:20px; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+        <div style="width:52px; height:52px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:var(--pink-dark); flex-shrink:0;">${(t.first_name||'?')[0]}${(t.last_name||'')[0]}</div>
+        <div style="flex:1; min-width:200px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
+            <div style="font-size:16px; font-weight:800; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+            <span class="status-pending">Pending review</span>
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">${t.email} · ${t.phone || 'No phone'}</div>
+          <div style="font-size:13px; color:var(--pink); font-weight:600; margin-bottom:6px;">$${t.hourly_rate}/hr · ${t.session_types || 'both'}</div>
+          ${t.subject_names ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;"><strong>Subjects:</strong> ${t.subject_names}</div>` : ''}
+          ${t.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px; line-height:1.5;">${t.bio}</div>` : ''}
+          ${t.teaching_philosophy ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;"><strong>Philosophy:</strong> ${t.teaching_philosophy}</div>` : ''}
+          ${t.keywords ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px;">${t.keywords.split(',').map(k=>`<span style="background:var(--pink-light); color:var(--pink-dark); font-size:11px; padding:2px 8px; border-radius:20px;">${k.trim()}</span>`).join('')}</div>` : ''}
+          ${t.submitted_at ? `<div style="font-size:12px; color:var(--text-muted);">Submitted: ${new Date(t.submitted_at).toLocaleString()}</div>` : ''}
+        </div>
+        <div style="display:flex; gap:8px; flex-shrink:0; align-items:flex-start;">
+          <button class="approve-btn" onclick="approveTutor(${t.id})">✓ Approve</button>
+          <button class="reject-btn" onclick="rejectTutor(${t.id})">✗ Reject</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function renderAllTutors() {
+  const tutors = await fetch(`${API}/api/admin/tutors/all`).then(r=>r.json()).catch(()=>[]);
+  document.getElementById('tab-content').innerHTML = `
+    <table style="${tableStyle}">
+      <thead><tr>
+        <th style="${thStyle}">Tutor</th>
+        <th style="${thStyle}">Subjects</th>
+        <th style="${thStyle}">Rate</th>
+        <th style="${thStyle}">Status</th>
+        <th style="${thStyle}">Actions</th>
+      </tr></thead>
+      <tbody>${tutors.map(t => `<tr>
+        <td style="${tdStyle}">
+          <div style="font-weight:700; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+          <div style="font-size:12px; color:var(--text-muted);">${t.email}</div>
+        </td>
+        <td style="${tdStyle}; font-size:12px; color:var(--text-muted);">${t.subject_names || '—'}</td>
+        <td style="${tdStyle}; color:var(--pink); font-weight:600;">$${t.hourly_rate}/hr</td>
+        <td style="${tdStyle}"><span class="status-${t.status}">${t.status}</span></td>
+        <td style="${tdStyle}">
+          ${t.status === 'pending' ? `<button class="approve-btn" onclick="approveTutor(${t.id})" style="margin-right:6px;">Approve</button>` : ''}
+          ${t.status === 'approved' ? `<button class="suspend-btn" onclick="suspendTutor(${t.id})">Suspend</button>` : ''}
+          ${t.status === 'suspended' ? `<button class="approve-btn" onclick="approveTutor(${t.id})">Reinstate</button>` : ''}
+        </td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+async function renderBookings() {
+  const bookings = await fetch(`${API}/api/bookings`).then(r=>r.json()).catch(()=>[]);
+  document.getElementById('tab-content').innerHTML = `
+    <table style="${tableStyle}">
+      <thead><tr>
+        <th style="${thStyle}">Student</th>
+        <th style="${thStyle}">Tutor</th>
+        <th style="${thStyle}">Subject</th>
+        <th style="${thStyle}">Date</th>
+        <th style="${thStyle}">Type</th>
+        <th style="${thStyle}">Status</th>
+      </tr></thead>
+      <tbody>${bookings.map(b => `<tr>
+        <td style="${tdStyle}">${b.student_first} ${b.student_last}</td>
+        <td style="${tdStyle}">${b.tutor_first} ${b.tutor_last}</td>
+        <td style="${tdStyle}">${b.subject_name}</td>
+        <td style="${tdStyle}">${new Date(b.scheduled_at).toLocaleDateString()}</td>
+        <td style="${tdStyle}"><span class="tag-blue" style="font-size:11px;">${b.session_type||'in-person'}</span></td>
+        <td style="${tdStyle}"><span class="tag-${b.status==='confirmed'?'green':b.status==='pending'?'blue':'pink'}">${b.status}</span></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+async function renderStudents() {
+  const students = await fetch(`${API}/api/students`).then(r=>r.json()).catch(()=>[]);
+  document.getElementById('tab-content').innerHTML = `
+    <table style="${tableStyle}">
+      <thead><tr>
+        <th style="${thStyle}">Name</th>
+        <th style="${thStyle}">Email</th>
+        <th style="${thStyle}">Grade</th>
+        <th style="${thStyle}">Verified</th>
+        <th style="${thStyle}">Minor</th>
+      </tr></thead>
+      <tbody>${students.map(s => `<tr>
+        <td style="${tdStyle}; font-weight:600; color:var(--navy);">${s.first_name} ${s.last_name}</td>
+        <td style="${tdStyle}; color:var(--text-muted);">${s.email}</td>
+        <td style="${tdStyle}">${s.grade_level||'—'}</td>
+        <td style="${tdStyle}"><span class="${s.email_verified?'status-approved':'status-pending'}">${s.email_verified?'Verified':'Pending'}</span></td>
+        <td style="${tdStyle}">${s.is_minor?'<span class="status-pending">Under 18</span>':'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+async function renderReviews() {
+  const reviews = await fetch(`${API}/api/reviews/pending`).then(r=>r.json()).catch(()=>[]);
+  if (!reviews.length) {
+    document.getElementById('tab-content').innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-muted);">No reviews pending approval.</div>';
+    return;
+  }
+  document.getElementById('tab-content').innerHTML = reviews.map(r => `
+    <div style="padding:18px; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+            <div style="font-size:14px; font-weight:700; color:var(--navy);">${r.reviewer_name||'Student'} → ${r.reviewee_name||'Tutor'}</div>
+            <div style="color:#f59e0b;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          </div>
+          <div style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:6px;">"${r.comment||''}"</div>
+          <div style="font-size:12px; color:var(--text-muted);">${new Date(r.created_at).toLocaleString()}</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="approve-btn" onclick="approveReview(${r.id})">Approve</button>
+          <button class="reject-btn" onclick="rejectReview(${r.id})">Reject</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function renderMetrics() {
+  const metrics = await fetch(`${API}/api/metrics`).then(r=>r.json()).catch(()=>[]);
+  document.getElementById('tab-content').innerHTML = `
+    <div style="padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px;">
+      ${metrics.map(m => `
+        <div class="stat-card">
+          <div class="stat-number" style="color:var(--pink);">${m.value}</div>
+          <div class="stat-label">${m.metric.replace(/_/g,' ')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function approveTutor(id) {
+  await fetch(`${API}/api/admin/tutors/${id}/approve`, {method:'PATCH'});
+  await loadStats();
+  showTab(currentTab);
+}
+async function rejectTutor(id) {
+  if (!confirm('Are you sure you want to reject this tutor application?')) return;
+  await fetch(`${API}/api/admin/tutors/${id}/reject`, {method:'PATCH'});
+  await loadStats();
+  showTab(currentTab);
+}
+async function suspendTutor(id) {
+  if (!confirm('Suspend this tutor? They will be hidden from the site.')) return;
+  await fetch(`${API}/api/admin/tutors/${id}/suspend`, {method:'PATCH'});
+  await loadStats();
+  showTab(currentTab);
+}
+async function approveReview(id) {
+  await fetch(`${API}/api/reviews/${id}/approve`, {method:'PATCH'});
+  showTab('reviews');
+}
+async function rejectReview(id) {
+  await fetch(`${API}/api/reviews/${id}/reject`, {method:'PATCH'});
+  showTab('reviews');
+}
+
+loadStats();
+showTab('pending');
 </script>
 </body>
 </html>

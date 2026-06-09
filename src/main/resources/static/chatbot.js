@@ -267,7 +267,7 @@ function createQuizButton() {
   document.head.appendChild(style);
   const btn = document.createElement('a');
   btn.id = 'quiz-float';
-  btn.href = 'quiz.html';
+  btn.href = 'find-match.html';
   btn.innerHTML = '✨ Find My Tutor Match';
   document.body.appendChild(btn);
 }
