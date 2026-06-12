@@ -7,6 +7,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="admin-gate" style="position:fixed; inset:0; background:var(--bg); z-index:1000; display:flex; align-items:center; justify-content:center;">
+  <div class="card" style="max-width:360px; width:100%; text-align:center;">
+    <div style="font-size:32px; margin-bottom:12px;">🔐</div>
+    <h2 style="font-size:18px; font-weight:800; color:var(--navy); margin-bottom:16px;">Admin Access</h2>
+    <input type="password" id="admin-pass" placeholder="Enter admin password" style="margin-bottom:12px;" onkeypress="if(event.key==='Enter') checkAdminPass()">
+    <button class="btn-primary" style="width:100%; padding:12px;" onclick="checkAdminPass()">Enter</button>
+    <div id="admin-error" style="display:none; color:#dc2626; font-size:13px; margin-top:8px;">Incorrect password</div>
+  </div>
+</div>
 <header>
   <a href="index.html" class="back">←</a>
   <div class="logo">Tutw<span>Me</span></div>
@@ -323,6 +332,7 @@ async function approveTutor(id) {
 async function rejectTutor(id) {
   if (!confirm('Are you sure you want to reject this tutor application?')) return;
   await fetch(`${API}/api/admin/tutors/${id}/reject`, {method:'PATCH'});
+  loadStats();
   await loadStats();
   showTab(currentTab);
 }
@@ -341,8 +351,9 @@ async function rejectReview(id) {
   showTab('reviews');
 }
 
-loadStats();
-showTab('pending');
+  loadStats();
+  showTab('pending');
+  setInterval(loadStats, 30000);
 </script>
 </body>
 </html>
@@ -355,7 +366,24 @@ EOFcat > ~/Downloads/tutoring-api/src/main/resources/static/admin.html << 'EOF'
   <title>Admin — TutwMe</title>
   <link rel="stylesheet" href="style.css">
 </head>
+<script>
+  function checkAdminPass() {
+    const pass = document.getElementById('admin-pass').value;
+    if (pass === 'TutwMe2026!') {
+      document.getElementById('admin-gate').style.display = 'none';
+      sessionStorage.setItem('admin_authed', 'true');
+    } else {
+      document.getElementById('admin-error').style.display = 'block';
+    }
+  }
+  if (sessionStorage.getItem('admin_authed') === 'true') {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('admin-gate').style.display = 'none';
+    });
+  }
+</script>
 <body>
+</div>
 <header>
   <a href="index.html" class="back">←</a>
   <div class="logo">Tutw<span>Me</span></div>

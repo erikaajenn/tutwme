@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Tutor — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+</header>
+
+<div class="page-container" style="max-width:600px;">
+  <div style="text-align:center; margin-bottom:28px;">
+    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">Become a TutwMe tutor</h1>
+    <p style="font-size:15px; color:var(--text-muted);">Fill out your profile — our team will review and approve within 24-48 hours</p>
+  </div>
+
+  <div class="card" id="form-section">
+    <div style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-bottom:14px;" id="error-box"></div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">First name</label>
+        <input type="text" id="first_name" placeholder="Sarah">
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Last name</label>
+        <input type="text" id="last_name" placeholder="Chen">
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Email</label>
+        <input type="email" id="email" placeholder="you@email.com">
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Phone</label>
+        <input type="tel" id="phone" placeholder="(555) 555-5555">
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Subjects you teach</label>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;" id="subject-tags"></div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">Tap all that apply</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Hourly rate ($)</label>
+        <input type="number" id="hourly_rate" placeholder="50" min="10" max="200">
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Session type</label>
+        <select id="session_types">
+          <option value="both">Virtual & In-person</option>
+          <option value="virtual">Virtual only</option>
+          <option value="in-person">In-person only</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Short bio</label>
+      <textarea id="bio" placeholder="Tell students about your background and experience..." style="height:80px; resize:none;"></textarea>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Teaching philosophy</label>
+      <textarea id="teaching_philosophy" placeholder="How do you approach teaching? What makes your style effective?" style="height:80px; resize:none;"></textarea>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Teaching style keywords</label>
+      <input type="text" id="keywords" placeholder="e.g. patient, structured, visual, test prep, homework help">
+      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Comma-separated — helps match you with the right students</div>
+    </div>
+
+    <div style="background:var(--pink-light); border-radius:10px; padding:14px; margin-bottom:20px;">
+      <div style="font-size:13px; font-weight:700; color:var(--pink-dark); margin-bottom:6px;">📋 Approval process</div>
+      <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">Your profile will be reviewed by our team. Once approved, you'll appear publicly on TutwMe and can start receiving bookings. We may follow up by email for ID verification.</div>
+    </div>
+
+    <button class="btn-primary" id="submit-btn" style="width:100%; padding:14px; font-size:16px;" onclick="submitApplication()">Submit Application</button>
+  </div>
+
+  <div id="success-box" style="display:none;" class="card">
+    <div style="text-align:center; padding:20px;">
+      <div style="font-size:40px; margin-bottom:12px;">🎉</div>
+      <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:8px;">Application submitted!</h2>
+      <p style="font-size:14px; color:var(--text-muted); line-height:1.6;">Thanks for applying to TutwMe! Our team will review your profile and reach out within 24-48 hours.</p>
+    </div>
+  </div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const selectedSubjects = new Set();
+
+async function loadSubjects() {
+  const subjects = await fetch(`${API}/api/subjects`).then(r=>r.json()).catch(()=>[]);
+  document.getElementById('subject-tags').innerHTML = subjects.map(s => `
+    <button onclick="toggleSubject('${s.name}', this)" type="button"
+      style="border:2px solid var(--border-light); border-radius:20px; padding:6px 14px; background:white; cursor:pointer; font-size:13px; font-weight:600; color:var(--text-muted); font-family:Inter,sans-serif;">
+      ${s.name}
+    </button>`).join('');
+}
+
+function toggleSubject(name, btn) {
+  if (selectedSubjects.has(name)) {
+    selectedSubjects.delete(name);
+    btn.style.borderColor = 'var(--border-light)';
+    btn.style.background = 'white';
+    btn.style.color = 'var(--text-muted)';
+  } else {
+    selectedSubjects.add(name);
+    btn.style.borderColor = 'var(--pink)';
+    btn.style.background = 'var(--pink-light)';
+    btn.style.color = 'var(--pink-dark)';
+  }
+}
+
+async function submitApplication() {
+  const errEl = document.getElementById('error-box');
+  errEl.style.display = 'none';
+  const first_name = document.getElementById('first_name').value.trim();
+  const last_name = document.getElementById('last_name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const hourly_rate = document.getElementById('hourly_rate').value;
+  const session_types = document.getElementById('session_types').value;
+  const bio = document.getElementById('bio').value.trim();
+  const teaching_philosophy = document.getElementById('teaching_philosophy').value.trim();
+  const keywords = document.getElementById('keywords').value.trim();
+
+  if (!first_name || !last_name || !email || !hourly_rate || !bio) {
+    errEl.textContent = 'Please fill in all required fields (name, email, rate, bio).';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (selectedSubjects.size === 0) {
+    errEl.textContent = 'Please select at least one subject you teach.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    const res = await fetch(`${API}/api/webhook/tutor-signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name, last_name, email, phone,
+        bio, teaching_philosophy,
+        hourly_rate, session_types,
+        subjects: [...selectedSubjects].join(','),
+        keywords
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('success-box').style.display = 'block';
+    } else {
+      errEl.textContent = data.error || 'Something went wrong.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Submit Application';
+    }
+  } catch(e) {
+    errEl.textContent = 'Could not connect. Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Submit Application';
+  }
+}
+
+loadSubjects();
+</script>
+</body>
+</html>
