@@ -442,4 +442,125 @@ public class TutorController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+    // ── Payments ──────────────────────────────────────────────────
+    @PostMapping("/payments")
+    public org.springframework.http.ResponseEntity<?> createPayment(@RequestBody Map<String, Object> body) {
+        try {
+            int bookingId = Integer.parseInt(body.get("booking_id").toString());
+            Map<String, Object> booking = jdbc.queryForMap(
+                    "SELECT b.*, t.hourly_rate FROM bookings b JOIN tutors t ON t.id = b.tutor_id WHERE b.id = ?", bookingId);
+            double hourlyRate = ((Number) booking.get("hourly_rate")).doubleValue();
+            int duration = ((Number) booking.get("duration_minutes")).intValue();
+            double amount = hourlyRate * duration / 60.0;
+            double platformFee = Math.round(amount * 0.10 * 100.0) / 100.0;
+            double tutorAmount = Math.round((amount - platformFee) * 100.0) / 100.0;
+            List<Map<String,Object>> existing = jdbc.queryForList(
+                    "SELECT id FROM payments WHERE booking_id = ?", bookingId);
+            if (!existing.isEmpty()) {
+                return org.springframework.http.ResponseEntity.ok(existing.get(0));
+            }
+            jdbc.update("""
+            INSERT INTO payments (booking_id, student_id, tutor_id, amount, platform_fee, tutor_amount, status)
+            VALUES (?, ?, ?, ?, ?, ?, 'pending')
+            """,
+                    bookingId,
+                    booking.get("student_id"),
+                    booking.get("tutor_id"),
+                    amount, platformFee, tutorAmount
+            );
+            Map<String, Object> payment = jdbc.queryForMap(
+                    "SELECT * FROM payments WHERE booking_id = ? ORDER BY created_at DESC LIMIT 1", bookingId);
+            return org.springframework.http.ResponseEntity.ok(payment);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/payments/booking/{bookingId}")
+    public org.springframework.http.ResponseEntity<?> getPaymentByBooking(@PathVariable int bookingId) {
+        try {
+            Map<String, Object> payment = jdbc.queryForMap(
+                    "SELECT * FROM payments WHERE booking_id = ?", bookingId);
+            return org.springframework.http.ResponseEntity.ok(payment);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(404)
+                    .body(Map.of("error", "No payment found"));
+        }
+    }
+
+    @GetMapping("/payments/student/{studentId}")
+    public List<Map<String, Object>> getStudentPayments(@PathVariable int studentId) {
+        return jdbc.queryForList("""
+        SELECT p.*, b.scheduled_at, s.name as subject_name,
+               t.first_name as tutor_first, t.last_name as tutor_last
+        FROM payments p
+        JOIN bookings b ON b.id = p.booking_id
+        JOIN subjects s ON s.id = b.subject_id
+        JOIN tutors t ON t.id = p.tutor_id
+        WHERE p.student_id = ?
+        ORDER BY p.created_at DESC
+        """, studentId);
+    }
+
+    @GetMapping("/payments/tutor/{tutorId}")
+    public List<Map<String, Object>> getTutorPayments(@PathVariable int tutorId) {
+        return jdbc.queryForList("""
+        SELECT p.*, b.scheduled_at, s.name as subject_name,
+               st.first_name as student_first, st.last_name as student_last
+        FROM payments p
+        JOIN bookings b ON b.id = p.booking_id
+        JOIN subjects s ON s.id = b.subject_id
+        JOIN students st ON st.id = p.student_id
+        WHERE p.tutor_id = ?
+        ORDER BY p.created_at DESC
+        """, tutorId);
+    }
+
+    @GetMapping("/payments/admin/all")
+    public List<Map<String, Object>> getAllPayments() {
+        return jdbc.queryForList("""
+        SELECT p.*,
+               b.scheduled_at,
+               s.name as subject_name,
+               st.first_name as student_first, st.last_name as student_last,
+               t.first_name as tutor_first, t.last_name as tutor_last
+        FROM payments p
+        JOIN bookings b ON b.id = p.booking_id
+        JOIN subjects s ON s.id = b.subject_id
+        JOIN students st ON st.id = p.student_id
+        JOIN tutors t ON t.id = p.tutor_id
+        ORDER BY p.created_at DESC
+        """);
+    }
+
+    @PatchMapping("/payments/{id}/student-paid")
+    public org.springframework.http.ResponseEntity<?> markStudentPaid(
+            @PathVariable int id, @RequestBody Map<String, Object> body) {
+        String method = body.getOrDefault("payment_method", "venmo").toString();
+        jdbc.update("""
+        UPDATE payments SET status = 'student_paid',
+        payment_method = ?, student_paid_at = NOW()
+        WHERE id = ?
+        """, method, id);
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Payment marked as received"));
+    }
+
+    @PatchMapping("/payments/{id}/tutor-paid")
+    public org.springframework.http.ResponseEntity<?> markTutorPaid(@PathVariable int id) {
+        jdbc.update("""
+        UPDATE payments SET status = 'tutor_paid', tutor_paid_at = NOW()
+        WHERE id = ?
+        """, id);
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Tutor payout marked as sent"));
+    }
+
+    @PatchMapping("/payments/{id}/reminder")
+    public org.springframework.http.ResponseEntity<?> logReminder(@PathVariable int id) {
+        jdbc.update("""
+        UPDATE payments SET reminder_count = reminder_count + 1,
+        last_reminder_at = NOW() WHERE id = ?
+        """, id);
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Reminder logged"));
+    }
 }

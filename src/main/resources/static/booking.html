@@ -113,9 +113,14 @@ async function submitBooking() {
     });
     if (res.ok) {
       document.getElementById('success').style.display = 'block';
-      document.getElementById('error').style.display = 'none';
-    } else { throw new Error(); }
-  } catch { document.getElementById('error').style.display = 'block'; }
+      const data = await res.json().catch(() => ({}));
+      if (data.booking_id || res.ok) {
+        setTimeout(() => {
+          const bookings = await fetch(`${API}/api/bookings`).then(r=>r.json());
+          const latest = bookings[bookings.length - 1];
+          if (latest) window.location.href = `payment.html?booking_id=${latest.id}`;
+        }, 1500);
+      }
 }
 
 loadTutors();

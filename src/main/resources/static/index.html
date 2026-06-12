@@ -11,23 +11,9 @@
 <header>
   <div class="logo">Tutw<span>Me</span></div>
   <nav style="display:flex; gap:24px; margin-left:40px;">
-    sed -i '' 's|<!-- Browse Tutors -->|<!-- Quiz Banner -->
     <div style="background:linear-gradient(135deg,#e91e8c,#c41677); padding:32px 20px; text-align:center;">
-      <div style="max-width:700px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
-        <div style="text-align:left;">
-          <div style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.7); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.08em;">New feature ✨</div>
-          <div style="font-size:22px; font-weight:800; color:white; margin-bottom:6px;">Not sure which tutor is right for you?</div>
-          <div style="font-size:15px; color:rgba(255,255,255,0.85);">Take our 2-minute quiz and we will find your perfect match</div>
-        </div>
-        <a href="find-match.html" style="background:white; color:#e91e8c; padding:14px 28px; border-radius:50px; font-size:15px; font-weight:800; text-decoration:none; white-space:nowrap; flex-shrink:0; box-shadow:0 4px 14px rgba(0,0,0,0.15);">Take the quiz →</a>
-      </div>
-    </div>
-
-    <!-- Browse Tutors -->|g' ~/Downloads/tutoring-api/src/main/resources/static/index.html
-    <a href="#tutors" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Browse Tutors</a>
-    <a href="#how-it-works" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">How it works</a>
-    <a href="#testimonials" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Reviews</a>
-  </nav>
+      <nav style="display:flex; gap:24px; margin-left:40px;">
+        
   <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
     <a href="login.html" class="btn-ghost" style="padding:8px 16px;">Sign in</a>
     <a href="register.html" class="btn-primary" style="padding:8px 16px;">Get started</a>
@@ -178,29 +164,6 @@
     </div>
   </div>
 </div>
-
-<!-- CTA -->
-<div style="background:var(--pink); padding:60px 20px; text-align:center;">
-  <h2 style="font-size:32px; font-weight:800; color:white; margin-bottom:12px;">Ready to get started?</h2>
-  <p style="font-size:16px; color:rgba(255,255,255,0.85); margin-bottom:28px;">Join our growing Elk Grove & Sacramento tutoring community</p>
-  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
-    <a href="register.html" style="background:white; color:var(--pink); padding:14px 28px; border-radius:10px; font-size:16px; font-weight:700; text-decoration:none;">Create free account</a>
-    <a href="find-tutor.html" style="background:rgba(255,255,255,0.15); color:white; padding:14px 28px; border-radius:10px; font-size:16px; font-weight:700; text-decoration:none; border:2px solid rgba(255,255,255,0.4);">Browse tutors</a>
-  </div>
-</div>
-
-<!-- Footer -->
-<footer style="background:var(--navy); padding:32px 20px; text-align:center;">
-  <div class="logo" style="color:white; margin-bottom:8px;">Tutw<span style="color:var(--pink);">Me</span></div>
-  <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:16px;">Elk Grove & Sacramento's local tutoring community</div>
-  <div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
-    <a href="index.html" style="font-size:13px; color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
-    <a href="find-tutor.html" style="font-size:13px; color:rgba(255,255,255,0.6); text-decoration:none;">Find a tutor</a>
-    <a href="register.html" style="font-size:13px; color:rgba(255,255,255,0.6); text-decoration:none;">Sign up</a>
-    <a href="login.html" style="font-size:13px; color:rgba(255,255,255,0.6); text-decoration:none;">Sign in</a>
-    <a href="admin.html" style="font-size:13px; color:rgba(255,255,255,0.6); text-decoration:none;">Admin</a>
-  </div>
-</footer>
 
 <script src="chatbot.js"></script>
 <script>

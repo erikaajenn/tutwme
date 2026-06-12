@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">←</a>
+  <div class="logo">Tutw<span>Me</span></div>
+  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--pink);">Payment</div>
+</header>
+
+<div class="page-container" style="max-width:540px;">
+
+  <div id="loading" style="text-align:center; padding:60px; color:var(--text-muted);">Loading payment details...</div>
+
+  <div id="payment-content" style="display:none;">
+
+    <!-- Session summary -->
+    <div class="card" style="margin-bottom:16px; border-left:4px solid var(--pink);">
+      <div style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Session booked</div>
+      <div style="font-size:18px; font-weight:800; color:var(--navy);" id="session-title">Loading...</div>
+      <div style="font-size:14px; color:var(--text-muted); margin-top:4px;" id="session-date"></div>
+    </div>
+
+    <!-- Already paid -->
+    <div id="already-paid" style="display:none;" class="card">
+      <div style="text-align:center; padding:20px;">
+        <div style="font-size:40px; margin-bottom:12px;">✅</div>
+        <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:8px;">Payment received!</h2>
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">Your session is confirmed. See you soon!</p>
+        <a href="login.html" class="btn-primary" style="padding:12px 24px;">View my sessions</a>
+      </div>
+    </div>
+
+    <!-- Payment due -->
+    <div id="payment-due">
+      <!-- Amount breakdown -->
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:16px;">Payment breakdown</div>
+        <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-light);">
+          <span style="font-size:14px; color:var(--text-muted);">Session rate</span>
+          <span style="font-size:14px; font-weight:600; color:var(--navy);" id="session-rate">—</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-light);">
+          <span style="font-size:14px; color:var(--text-muted);">Duration</span>
+          <span style="font-size:14px; font-weight:600; color:var(--navy);" id="session-duration">—</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-light);">
+          <span style="font-size:14px; color:var(--text-muted);">Platform fee (10%)</span>
+          <span style="font-size:14px; font-weight:600; color:var(--text-muted);" id="platform-fee">—</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:14px 0 0;">
+          <span style="font-size:16px; font-weight:800; color:var(--navy);">Total due</span>
+          <span style="font-size:20px; font-weight:800; color:var(--pink);" id="total-amount">—</span>
+        </div>
+      </div>
+
+      <!-- Under 18 notice -->
+      <div id="minor-notice" style="display:none; background:var(--amber-soft); border:1px solid #fed7aa; border-radius:12px; padding:14px; margin-bottom:16px;">
+        <div style="font-size:14px; font-weight:700; color:var(--amber-mid); margin-bottom:4px;">👨‍👩‍👧 Parent payment required</div>
+        <div style="font-size:13px; color:#78350f; line-height:1.6;">This student is under 18. Payment must be made by a parent or guardian before the session can be confirmed.</div>
+      </div>
+
+      <!-- Payment methods -->
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:6px;">Pay TutwMe directly</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Send the full amount to TutwMe. We'll handle the tutor's payout automatically.</div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <a id="venmo-link" href="https://venmo.com/TutwMe" target="_blank"
+            style="display:flex; align-items:center; gap:12px; background:#008CFF; color:white; border-radius:12px; padding:14px 16px; text-decoration:none;">
+            <span style="font-size:22px;">💙</span>
+            <div style="flex:1;">
+              <div style="font-size:14px; font-weight:700;">Pay via Venmo</div>
+              <div style="font-size:12px; opacity:0.85;">@TutwMe</div>
+            </div>
+            <span style="font-size:16px; font-weight:800;" id="venmo-amount"></span>
+          </a>
+
+          <a id="cashapp-link" href="https://cash.app/$TutwMe" target="_blank"
+            style="display:flex; align-items:center; gap:12px; background:#00C244; color:white; border-radius:12px; padding:14px 16px; text-decoration:none;">
+            <span style="font-size:22px;">💚</span>
+            <div style="flex:1;">
+              <div style="font-size:14px; font-weight:700;">Pay via CashApp</div>
+              <div style="font-size:12px; opacity:0.85;">$TutwMe</div>
+            </div>
+            <span style="font-size:16px; font-weight:800;" id="cashapp-amount"></span>
+          </a>
+
+          <div style="background:var(--blue-soft); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+            <span style="font-size:22px;">🏦</span>
+            <div style="flex:1;">
+              <div style="font-size:14px; font-weight:700; color:var(--blue-dark);">Pay via Zelle</div>
+              <div style="font-size:12px; color:var(--blue-dark); opacity:0.85;">Send to: hello@tutwme.com</div>
+            </div>
+            <span style="font-size:16px; font-weight:800; color:var(--blue-dark);" id="zelle-amount"></span>
+          </div>
+        </div>
+
+        <div style="background:var(--pink-light); border-radius:10px; padding:12px; margin-bottom:16px; font-size:13px; color:var(--pink-dark); line-height:1.6;">
+          <strong>Important:</strong> Include your booking reference <strong id="booking-ref"></strong> in the payment note so we can match it quickly.
+        </div>
+
+        <div style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px;">Which method did you use?</div>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <button onclick="selectMethod('venmo', this)" class="method-btn" style="flex:1; padding:10px; border:2px solid var(--border-light); border-radius:10px; background:white; cursor:pointer; font-size:13px; font-weight:600; font-family:Inter,sans-serif; color:var(--text-muted);">Venmo</button>
+          <button onclick="selectMethod('cashapp', this)" class="method-btn" style="flex:1; padding:10px; border:2px solid var(--border-light); border-radius:10px; background:white; cursor:pointer; font-size:13px; font-weight:600; font-family:Inter,sans-serif; color:var(--text-muted);">CashApp</button>
+          <button onclick="selectMethod('zelle', this)" class="method-btn" style="flex:1; padding:10px; border:2px solid var(--border-light); border-radius:10px; background:white; cursor:pointer; font-size:13px; font-weight:600; font-family:Inter,sans-serif; color:var(--text-muted);">Zelle</button>
+        </div>
+
+        <button class="btn-primary" id="paid-btn" style="width:100%; padding:14px; font-size:16px;" onclick="markAsPaid()" disabled>
+          I've sent the payment ✓
+        </button>
+        <div id="paid-error" style="display:none; color:#dc2626; font-size:13px; text-align:center; margin-top:8px;">Please select your payment method first.</div>
+      </div>
+
+      <!-- Reminder notice -->
+      <div style="background:var(--pink-light); border-radius:10px; padding:14px; text-align:center;">
+        <div style="font-size:13px; color:var(--pink-dark); line-height:1.6;">
+          You'll receive a reminder every 24 hours until payment is confirmed. Your session will not be active until payment is received.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const params = new URLSearchParams(window.location.search);
+const bookingId = params.get('booking_id');
+let paymentId = null;
+let selectedPaymentMethod = null;
+
+async function loadPayment() {
+  if (!bookingId) {
+    document.getElementById('loading').textContent = 'No booking ID provided.';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/payments/booking/${bookingId}`);
+    let payment;
+    if (res.ok) {
+      payment = await res.json();
+    } else {
+      const createRes = await fetch(`${API}/api/payments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ booking_id: parseInt(bookingId) })
+      });
+      payment = await createRes.json();
+    }
+    paymentId = payment.id;
+    const booking = await fetch(`${API}/api/bookings`).then(r=>r.json())
+      .then(bookings => bookings.find(b => b.id == bookingId));
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('payment-content').style.display = 'block';
+
+    if (booking) {
+      document.getElementById('session-title').textContent =
+        `${booking.subject_name} with ${booking.tutor_first} ${booking.tutor_last}`;
+      document.getElementById('session-date').textContent =
+        new Date(booking.scheduled_at).toLocaleString();
+      document.getElementById('session-duration').textContent =
+        `${booking.duration_minutes} minutes`;
+      document.getElementById('booking-ref').textContent = `#TW${bookingId}`;
+    }
+
+    const amount = parseFloat(payment.amount);
+    const fee = parseFloat(payment.platform_fee);
+
+    document.getElementById('session-rate').textContent =
+      `$${(amount / (booking?.duration_minutes || 60) * 60).toFixed(2)}/hr`;
+    document.getElementById('platform-fee').textContent = `$${fee.toFixed(2)}`;
+    document.getElementById('total-amount').textContent = `$${amount.toFixed(2)}`;
+    document.getElementById('venmo-amount').textContent = `$${amount.toFixed(2)}`;
+    document.getElementById('cashapp-amount').textContent = `$${amount.toFixed(2)}`;
+    document.getElementById('zelle-amount').textContent = `$${amount.toFixed(2)}`;
+
+    const student = JSON.parse(localStorage.getItem('student') || '{}');
+    if (student.is_minor) {
+      document.getElementById('minor-notice').style.display = 'block';
+    }
+
+    if (payment.status === 'student_paid' || payment.status === 'tutor_paid') {
+      document.getElementById('payment-due').style.display = 'none';
+      document.getElementById('already-paid').style.display = 'block';
+    }
+
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Could not load payment. Please try again.';
+  }
+}
+
+function selectMethod(method, btn) {
+  selectedPaymentMethod = method;
+  document.querySelectorAll('.method-btn').forEach(b => {
+    b.style.borderColor = 'var(--border-light)';
+    b.style.background = 'white';
+    b.style.color = 'var(--text-muted)';
+  });
+  btn.style.borderColor = 'var(--pink)';
+  btn.style.background = 'var(--pink-light)';
+  btn.style.color = 'var(--pink-dark)';
+  document.getElementById('paid-btn').disabled = false;
+  document.getElementById('paid-btn').style.opacity = '1';
+  document.getElementById('paid-error').style.display = 'none';
+}
+
+async function markAsPaid() {
+  if (!selectedPaymentMethod) {
+    document.getElementById('paid-error').style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('paid-btn');
+  btn.disabled = true;
+  btn.textContent = 'Confirming...';
+  try {
+    await fetch(`${API}/api/payments/${paymentId}/student-paid`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment_method: selectedPaymentMethod })
+    });
+    document.getElementById('payment-due').style.display = 'none';
+    document.getElementById('already-paid').style.display = 'block';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = "I've sent the payment ✓";
+    alert('Could not confirm. Please try again.');
+  }
+}
+
+loadPayment();
+</script>
+</body>
+</html>
