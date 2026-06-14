@@ -165,28 +165,33 @@
   </div>
 </div>
 
-<script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
+  const API = window.location.hostname === 'localhost'
+          ? 'http://localhost:8080'
+          : 'https://tutwme-production.up.railway.app';
 
-async function loadTutors() {
-  const grid = document.getElementById('tutors-grid');
-  try {
-    const res = await fetch(`${API}/api/tutors`);
-    const tutors = await res.json();
-    document.getElementById('hero-tutors').textContent = tutors.length + '+';
-    grid.innerHTML = '';
-    for (const tutor of tutors) {
-      const subRes = await fetch(`${API}/api/tutors/${tutor.id}/subjects`);
-      const subjects = await subRes.json();
-      const tags = subjects.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
-      const avatarStyle = tutor.avatar_style || 'adventurer';
-      const avatarSeed = tutor.avatar_seed || tutor.first_name + tutor.last_name;
-      const avatarUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(avatarSeed)}&size=80`;
-      const stars = tutor.rating ? '⭐'.repeat(Math.round(tutor.rating)) : '⭐⭐⭐⭐⭐';
-      grid.innerHTML += `
+  async function loadTutors() {
+    const grid = document.getElementById('tutors-grid');
+    try {
+      const tutors = await fetch(`${API}/api/tutors`).then(r => r.json());
+      document.getElementById('hero-tutors').textContent = tutors.length + '+';
+      if (!tutors.length) {
+        grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;">No tutors yet — check back soon!</p>';
+        return;
+      }
+      let html = '';
+      for (const tutor of tutors) {
+        let subjects = [];
+        try {
+          subjects = await fetch(`${API}/api/tutors/${tutor.id}/subjects`).then(r => r.json());
+        } catch(e) {}
+        const tags = subjects.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
+        const avatarStyle = tutor.avatar_style || 'adventurer';
+        const avatarSeed = tutor.avatar_seed || (tutor.first_name + tutor.last_name);
+        const avatarUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(avatarSeed)}&size=80`;
+        const stars = tutor.rating > 0 ? '⭐'.repeat(Math.round(tutor.rating)) : '⭐⭐⭐⭐⭐';
+        const sessionLabel = tutor.session_types === 'virtual' ? 'Virtual only' : tutor.session_types === 'in-person' ? 'In-person only' : 'Virtual & In-person';
+        html += `
         <div class="card card-hover" style="cursor:pointer;" onclick="window.location.href='tutor-profile.html?id=${tutor.id}'">
           <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
             <img src="${avatarUrl}" style="width:64px; height:64px; border-radius:50%; border:3px solid var(--pink-light); flex-shrink:0;" onerror="this.style.display='none'">
@@ -196,19 +201,21 @@ async function loadTutors() {
               <div style="font-size:12px; color:var(--text-muted);">${stars} ${tutor.total_reviews ? `(${tutor.total_reviews})` : 'New tutor'}</div>
             </div>
           </div>
-          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">${tutor.bio}</div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">${tutor.bio || ''}</div>
           <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">${tags}</div>
           <div style="display:flex; gap:6px; margin-bottom:14px;">
-            <span class="tag-blue">${tutor.session_types === 'virtual' ? 'Virtual only' : tutor.session_types === 'in-person' ? 'In-person only' : 'Virtual & In-person'}</span>
+            <span class="tag-blue">${sessionLabel}</span>
           </div>
           <button class="btn-primary" style="width:100%; padding:10px;" onclick="event.stopPropagation(); window.location.href='booking.html?tutor_id=${tutor.id}'">Book a Session</button>
         </div>`;
+      }
+      grid.innerHTML = html;
+    } catch(e) {
+      grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;">Could not load tutors. Please try again shortly.</p>';
+      console.error(e);
     }
-  } catch(e) {
-    grid.innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;">Could not load tutors.</p>';
   }
-}
-loadTutors();
+  loadTutors();
 </script>
 </body>
 </html>

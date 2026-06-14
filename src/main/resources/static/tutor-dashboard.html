@@ -137,6 +137,7 @@ async function loadDashboard() {
   renderCalendar(myBookings);
   renderProgress(checkpoints);
   renderStudents(students);
+  populateReviewStudents(students);
   renderReviews();
 }
 
@@ -191,12 +192,18 @@ function renderStudents(students) {
 function renderReviews() {
   const el = document.getElementById('reviews-list');
   el.innerHTML = `
-    <div style="background:var(--butter); border-radius:10px; padding:14px; margin-bottom:10px;">
-      <div style="display:flex; gap:4px; margin-bottom:6px;">★★★★★</div>
-      <div style="font-size:13px; color:var(--text); font-weight:600; margin-bottom:4px;">"Sarah explains algebra so clearly!"</div>
-      <div style="font-size:12px; color:var(--text-muted);">— Alex K., 10th grade</div>
-    </div>
-    <div style="font-size:12px; color:var(--text-muted); text-align:center;">Reviews from students appear here</div>`;
+   <div style="background:var(--blue-light); border-radius:10px; padding:14px; margin-bottom:14px;">
+  <div style="font-size:13px; font-weight:700; color:var(--blue-dark); margin-bottom:10px;">Rate a student (private)</div>
+  <select id="review-student-select" style="margin-bottom:8px; font-size:13px;"></select>
+  <div style="display:flex; gap:6px; margin-bottom:8px;">
+    <select id="review-attendance" style="font-size:12px;"><option value="on-time">On-time</option><option value="late">Late</option><option value="no-show">No-show</option></select>
+    <select id="review-engagement" style="font-size:12px;"><option value="5">Engagement: 5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+    <select id="review-preparedness" style="font-size:12px;"><option value="5">Prep: 5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+  </div>
+  <textarea id="review-note" placeholder="Private notes (not visible to student)" style="height:60px; resize:none; margin-bottom:8px; font-size:13px;"></textarea>
+  <button class="btn-primary" style="width:100%; padding:8px; font-size:13px;" onclick="submitStudentReview()">Save private note</button>
+  <div id="student-review-success" style="display:none; font-size:12px; color:#15803d; font-weight:600; margin-top:6px; text-align:center;">✓ Saved</div>
+</div>;
 }
 
 function showAddCheckpoint() {
@@ -224,6 +231,34 @@ async function toggleCheckpoint(id, completed) {
     body: JSON.stringify({ completed })
   });
   loadDashboard();
+}
+
+function populateReviewStudents(students) {
+  const select = document.getElementById('review-student-select');
+  students.forEach(s => {
+    select.innerHTML += \`<option value="${s.id}">${s.first_name} ${s.last_name}</option>\`;
+  });
+}
+
+async function submitStudentReview() {
+  const studentId = document.getElementById('review-student-select').value;
+  if (!studentId) return;
+  await fetch(\`${API}/api/reviews\`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      reviewer_id: TUTOR_ID, reviewer_type: 'tutor',
+      reviewee_id: parseInt(studentId), reviewee_type: 'student',
+      booking_id: null, rating: parseInt(document.getElementById('review-engagement').value),
+      comment: document.getElementById('review-note').value,
+      is_private: true,
+      attendance: document.getElementById('review-attendance').value,
+      engagement: parseInt(document.getElementById('review-engagement').value),
+      preparedness: parseInt(document.getElementById('review-preparedness').value)
+    })
+  });
+  document.getElementById('student-review-success').style.display = 'block';
+  document.getElementById('review-note').value = '';
 }
 
 loadDashboard();

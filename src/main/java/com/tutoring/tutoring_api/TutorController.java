@@ -563,4 +563,35 @@ public class TutorController {
         """, id);
         return org.springframework.http.ResponseEntity.ok(Map.of("message", "Reminder logged"));
     }
+    // ── Check-ins ─────────────────────────────────────────────────
+    @PostMapping("/checkins")
+    public org.springframework.http.ResponseEntity<?> addCheckin(@RequestBody Map<String, Object> body) {
+        jdbc.update("""
+        INSERT INTO checkins (booking_id, student_id, tutor_id, note)
+        VALUES (?, ?, ?, ?)
+        """,
+                body.get("booking_id"), body.get("student_id"), body.get("tutor_id"), body.get("note")
+        );
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Checked in"));
+    }
+
+    @GetMapping("/checkins/tutor/{tutorId}")
+    public List<Map<String, Object>> getTutorCheckins(@PathVariable int tutorId) {
+        return jdbc.queryForList("""
+        SELECT c.*, s.first_name as student_first, s.last_name as student_last
+        FROM checkins c JOIN students s ON s.id = c.student_id
+        WHERE c.tutor_id = ? ORDER BY c.checked_in_at DESC LIMIT 10
+        """, tutorId);
+    }
+
+    // ── Tutor reviews of students (private) ─────────────────────────
+    @GetMapping("/reviews/tutor-notes/{tutorId}/student/{studentId}")
+    public List<Map<String, Object>> getTutorNotesOnStudent(@PathVariable int tutorId, @PathVariable int studentId) {
+        return jdbc.queryForList("""
+        SELECT * FROM reviews
+        WHERE reviewer_id = ? AND reviewer_type = 'tutor'
+          AND reviewee_id = ? AND reviewee_type = 'student'
+        ORDER BY created_at DESC
+        """, tutorId, studentId);
+    }
 }

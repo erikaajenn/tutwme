@@ -210,7 +210,7 @@ function filterTutors(query) {
 function populateCheckinDropdown(bookings) {
   const select = document.getElementById('checkin-booking');
   bookings.forEach(b => {
-    select.innerHTML += `<option value="${b.id}">${b.subject_name} with ${b.tutor_first} — ${new Date(b.scheduled_at).toLocaleDateString()}</option>`;
+    select.innerHTML += `<option value="${b.id}" data-tutor="${b.tutor_id}" data-tutor-email="${b.tutor_email||''}" data-tutor-name="${b.tutor_first} ${b.tutor_last}" data-subject="${b.subject_name}">${b.subject_name} with ${b.tutor_first} — ${new Date(b.scheduled_at).toLocaleDateString()}</option>`;
   });
 }
 
@@ -218,9 +218,36 @@ async function checkIn() {
   const bookingId = document.getElementById('checkin-booking').value;
   const note = document.getElementById('checkin-note').value;
   if (!bookingId) { alert('Please select a session to check in to.'); return; }
-  document.getElementById('checkin-success').style.display = 'block';
-  document.getElementById('checkin-booking').value = '';
-  document.getElementById('checkin-note').value = '';
+
+  const selectedOption = document.getElementById('checkin-booking').selectedOptions[0];
+  const tutorId = selectedOption.dataset.tutor;
+  const tutorEmail = selectedOption.dataset.tutorEmail;
+  const tutorName = selectedOption.dataset.tutorName;
+  const subjectName = selectedOption.dataset.subject;
+
+  try {
+    await fetch(`${API}/api/checkins`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ booking_id: parseInt(bookingId), student_id: STUDENT_ID, tutor_id: parseInt(tutorId), note })
+    });
+
+    if (tutorEmail && window.emailjs) {
+      emailjs.send('YOUR_SERVICE_ID', 'YOUR_CHECKIN_TEMPLATE_ID', {
+        to_email: tutorEmail,
+        tutor_name: tutorName,
+        student_name: JSON.parse(localStorage.getItem('student')||'{}').first_name || 'Your student',
+        subject_name: subjectName,
+        note: note || 'No additional notes'
+      });
+    }
+
+    document.getElementById('checkin-success').style.display = 'block';
+    document.getElementById('checkin-booking').value = '';
+    document.getElementById('checkin-note').value = '';
+  } catch(e) {
+    alert('Could not check in. Please try again.');
+  }
 }
 
 loadDashboard();
