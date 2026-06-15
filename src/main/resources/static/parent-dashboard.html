@@ -192,6 +192,8 @@ function renderProgress(checkpoints) {
 }
 
 function renderNotes(notes) {
+  const checkins = await fetch(`${API}/api/checkins/tutor/${bookings[0]?.tutor_id}`).then(r=>r.json()).catch(()=>[]);
+  renderCheckins(checkins.filter(c => c.student_id == student.id));
   const el = document.getElementById('session-notes');
   if (!notes.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No session notes yet.</p>'; return; }
   el.innerHTML = notes.slice(0,3).map(n => `
@@ -200,6 +202,29 @@ function renderNotes(notes) {
       ${n.notes ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;"><strong>Notes:</strong> ${n.notes}</div>` : ''}
       ${n.homework ? `<div style="font-size:13px; color:var(--text-muted); background:var(--amber-soft); padding:8px 10px; border-radius:8px;"><strong>📝 Homework:</strong> ${n.homework}</div>` : ''}
     </div>`).join('');
+  function renderCheckins(checkins) {
+    let el = document.getElementById('checkins-section');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'checkins-section';
+      el.className = 'card';
+      el.style.marginBottom = '18px';
+      document.getElementById('session-notes').closest('.card').insertAdjacentElement('afterend', el);
+    }
+    if (!checkins.length) {
+      el.innerHTML = '<div class="section-title">Session check-ins</div><p style="color:var(--text-muted); font-size:14px;">No check-ins yet.</p>';
+      return;
+    }
+    el.innerHTML = `<div class="section-title">Session check-ins</div>` +
+            checkins.slice(0,3).map(c => `
+      <div style="display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-light);">
+        <span style="font-size:16px;">✅</span>
+        <div>
+          <div style="font-size:13px; font-weight:600; color:var(--navy);">Checked in — ${new Date(c.checked_in_at).toLocaleString()}</div>
+          ${c.note ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px;">"${c.note}"</div>` : ''}
+        </div>
+      </div>`).join('');
+  }
 }
 
 function renderTutorInfo(bookings) {
