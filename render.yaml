@@ -1,9 +1,7 @@
 services:
   - type: web
     name: tutwme
-    runtime: java
-    buildCommand: "./mvnw clean package -DskipTests"
-    startCommand: "java -jar target/tutoring-api-0.0.1-SNAPSHOT.jar"
+    runtime: docker
     envVars:
       - key: RENDER
         value: "true"
