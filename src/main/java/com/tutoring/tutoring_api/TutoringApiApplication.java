@@ -8,12 +8,11 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 public class TutoringApiApplication {
 
 	public static void main(String[] args) {
-		boolean isRailway = System.getenv("RAILWAY_ENVIRONMENT") != null;
-
+		boolean isRailway = System.getenv("RAILWAY_ENVIRONMENT") != null || System.getenv("RENDER") != null;
 		if (isRailway) {
-			System.setProperty("spring.datasource.url", "jdbc:postgresql://hopper.proxy.rlwy.net:50797/railway");
+			System.setProperty("spring.datasource.url", "jdbc:postgresql://db.xvtzkcopkvhjwfrltwbf.supabase.co:5432/postgres");
 			System.setProperty("spring.datasource.username", "postgres");
-			System.setProperty("spring.datasource.password", "eTeGKacXhppCeFfvOKRJaYnLbfmYWOir");
+			System.setProperty("spring.datasource.password", "2uy6r-q+uA9Y22m");
 		} else {
 			System.setProperty("spring.datasource.url", "jdbc:postgresql://localhost:5433/tutoring_db");
 			System.setProperty("spring.datasource.username", "postgres");
