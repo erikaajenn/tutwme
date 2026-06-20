@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: tutwme
+    env: java
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/tutoring-api-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: RENDER
+        value: "true"
