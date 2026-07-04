@@ -8,8 +8,7 @@
 </head>
 <body>
 <header>
-  <a href="index.html" class="back">←</a>
-  <div class="logo">Tutw<span>Me</span></div>
+  <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
   <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
     <a href="login.html" style="font-size:14px; color:var(--text-muted); text-decoration:none; font-weight:500;">Sign in</a>
   </div>
@@ -36,17 +35,8 @@
     </div>
 
     <div style="margin-bottom:16px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">School or personal email</label>
-      <input type="email" id="email" placeholder="you@egusd.net" oninput="checkEmail(this.value)">
-      <div id="domain-badge" style="display:none; margin-top:6px; font-size:12px; font-weight:600; color:var(--green-mid); background:var(--green-soft); padding:4px 10px; border-radius:20px; display:inline-block;"></div>
-      <div id="domain-error" style="display:none; margin-top:6px; font-size:12px; font-weight:600; color:#dc2626; background:#fef2f2; padding:4px 10px; border-radius:20px; display:inline-block;"></div>
-      <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
-        Accepted school emails:
-        <span class="tag-pink" style="margin:2px;">@egusd.net</span>
-        <span class="tag-pink" style="margin:2px;">@scusd.edu</span>
-        <span class="tag-pink" style="margin:2px;">@sanjuan.edu</span>
-        <span class="tag-pink" style="margin:2px;">@fcusd.org</span>
-      </div>
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Email</label>
+      <input type="email" id="email" placeholder="you@email.com">
     </div>
 
     <div style="margin-bottom:16px;">
@@ -102,27 +92,9 @@ const API = window.location.hostname === 'localhost'
   ? 'http://localhost:8080'
   : 'https://tutwme-production.up.railway.app';
 
-const ALLOWED_DOMAINS = ['egusd.net','scusd.edu','sanjuan.edu','fcusd.org','glendale.k12.ca.us'];
 let isMinor = false;
 
-function checkEmail(email) {
-  const badge = document.getElementById('domain-badge');
-  const error = document.getElementById('domain-error');
-  const domain = email.split('@')[1] || '';
-  const match = ALLOWED_DOMAINS.find(d => domain === d);
-  if (match) {
-    badge.textContent = 'Verified school email';
-    badge.style.display = 'inline-block';
-    error.style.display = 'none';
-  } else if (domain && email.includes('@')) {
-    badge.style.display = 'none';
-    error.textContent = 'Not a recognized school email — you can still register but may need to upload a student ID';
-    error.style.display = 'inline-block';
-  } else {
-    badge.style.display = 'none';
-    error.style.display = 'none';
-  }
-}
+
 
 function checkAge(dob) {
   if (!dob) return;

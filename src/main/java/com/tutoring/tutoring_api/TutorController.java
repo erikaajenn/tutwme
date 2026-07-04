@@ -594,4 +594,181 @@ public class TutorController {
         ORDER BY created_at DESC
         """, tutorId, studentId);
     }
+
+    @PostMapping("/auth/register")
+    public org.springframework.http.ResponseEntity<?> register(@RequestBody Map<String, Object> body) {
+        String email = body.get("email").toString();
+        String password = body.get("password").toString();
+        String firstName = body.get("first_name").toString();
+        String lastName = body.get("last_name").toString();
+        String dob = body.get("dob").toString();
+        String gradeLevel = body.getOrDefault("grade_level", "").toString();
+        String parentEmail = body.getOrDefault("parent_email", "").toString();
+        boolean isMinor = Boolean.parseBoolean(body.getOrDefault("is_minor", "false").toString());
+
+        try {
+            List<Map<String, Object>> existing = jdbc.queryForList(
+                "SELECT id FROM students WHERE email = ?", email);
+            if (!existing.isEmpty()) {
+                return org.springframework.http.ResponseEntity.status(400)
+                    .body(Map.of("error", "An account with this email already exists."));
+            }
+
+            String token = java.util.UUID.randomUUID().toString();
+            String passwordHash = bcrypt.encode(password);
+
+            jdbc.update("""
+                INSERT INTO students 
+                (first_name, last_name, email, password_hash, grade_level, 
+                 date_of_birth, is_minor, parent_email, parent_approved, 
+                 email_verified, verification_token)
+                VALUES (?, ?, ?, ?, ?, ?::date, ?, ?, ?, false, ?)
+                """,
+                firstName, lastName, email, passwordHash, gradeLevel,
+                dob, isMinor, parentEmail, !isMinor, token
+            );
+
+            if (isMinor && !parentEmail.isEmpty()) {
+                List<Map<String, Object>> existingParent = jdbc.queryForList(
+                    "SELECT id FROM parents WHERE email = ?", parentEmail);
+                if (existingParent.isEmpty()) {
+                    jdbc.update("""
+                        INSERT INTO parents (first_name, last_name, email)
+                        VALUES (?, ?, ?)
+                        """,
+                        "Parent of", firstName, parentEmail
+                    );
+                }
+                Map<String, Object> parent = jdbc.queryForMap(
+                    "SELECT id FROM parents WHERE email = ?", parentEmail);
+                jdbc.update("UPDATE students SET parent_id = ? WHERE email = ?",
+                    parent.get("id"), email);
+            }
+
+            return org.springframework.http.ResponseEntity.ok(
+                Map.of("message", "Account created", "token", token, "is_minor", isMinor)
+            );
+
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500)
+                .body(Map.of("error", "Registration failed: " + e.getMessage()));
+        }
+    }
+
+
+    @PostMapping("/auth/reset-password")
+    public org.springframework.http.ResponseEntity<?> resetPassword(@RequestBody Map<String, Object> body) {
+        String email = body.get("email").toString();
+        String newPassword = body.get("new_password").toString();
+        String userType = body.getOrDefault("user_type", "student").toString();
+
+        if (newPassword.length() < 8) {
+            return org.springframework.http.ResponseEntity.status(400)
+                .body(Map.of("error", "Password must be at least 8 characters."));
+        }
+
+        try {
+            String passwordHash = bcrypt.encode(newPassword);
+            int updated;
+            if ("tutor".equals(userType)) {
+                updated = jdbc.update("UPDATE tutors SET password_hash = ? WHERE email = ?", passwordHash, email);
+            } else {
+                updated = jdbc.update("UPDATE students SET password_hash = ? WHERE email = ?", passwordHash, email);
+            }
+            if (updated == 0) {
+                return org.springframework.http.ResponseEntity.status(404)
+                    .body(Map.of("error", "No account found with that email."));
+            }
+            return org.springframework.http.ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500)
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+    @PostMapping("/auth/tutor-login")
+    public org.springframework.http.ResponseEntity<?> tutorLogin(@RequestBody Map<String, Object> body) {
+        String email = body.get("email").toString();
+        String password = body.get("password").toString();
+        try {
+            Map<String, Object> tutor = jdbc.queryForMap("SELECT * FROM tutors WHERE email = ?", email);
+            String storedHash = tutor.get("password_hash") != null ? tutor.get("password_hash").toString() : "";
+            if (storedHash.isEmpty() || !bcrypt.matches(password, storedHash)) {
+                return org.springframework.http.ResponseEntity.status(401)
+                    .body(Map.of("error", "Invalid email or password."));
+            }
+            tutor.remove("password_hash");
+            return org.springframework.http.ResponseEntity.ok(tutor);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(401)
+                .body(Map.of("error", "Invalid email or password."));
+        }
+    }
+
+
+    @PatchMapping("/tutors/{id}/profile")
+    public org.springframework.http.ResponseEntity<?> updateTutorProfile(
+            @PathVariable int id, @RequestBody Map<String, Object> body) {
+        try {
+            StringBuilder sql = new StringBuilder("UPDATE tutors SET ");
+            java.util.List<Object> params = new java.util.ArrayList<>();
+            String[] fields = {"profile_theme","profile_layout","banner_url","banner_gradient",
+                               "video_intro_url","profile_photo_url","bio","teaching_philosophy",
+                               "keywords","session_types","zoom_link","hourly_rate"};
+            boolean first = true;
+            for (String field : fields) {
+                if (body.containsKey(field)) {
+                    if (!first) sql.append(", ");
+                    sql.append(field).append(" = ?");
+                    params.add(body.get(field));
+                    first = false;
+                }
+            }
+            if (body.containsKey("teaching_style_prompts")) {
+                if (!first) sql.append(", ");
+                sql.append("teaching_style_prompts = ?::jsonb");
+                params.add(body.get("teaching_style_prompts").toString());
+                first = false;
+            }
+            if (first) {
+                return org.springframework.http.ResponseEntity.ok(Map.of("message","Nothing to update"));
+            }
+            sql.append(" WHERE id = ?");
+            params.add(id);
+            jdbc.update(sql.toString(), params.toArray());
+            return org.springframework.http.ResponseEntity.ok(Map.of("message","Profile updated"));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500)
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/tutors/{id}/subject-description")
+    public org.springframework.http.ResponseEntity<?> updateSubjectDescription(
+            @PathVariable int id, @RequestBody Map<String, Object> body) {
+        try {
+            jdbc.update("""
+                INSERT INTO tutor_subject_descriptions (tutor_id, subject_id, description)
+                VALUES (?, ?, ?)
+                ON CONFLICT (tutor_id, subject_id) DO UPDATE SET description = EXCLUDED.description
+                """,
+                id, body.get("subject_id"), body.get("description"));
+            return org.springframework.http.ResponseEntity.ok(Map.of("message","Updated"));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500)
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/tutors/{id}/subject-descriptions")
+    public List<Map<String, Object>> getSubjectDescriptions(@PathVariable int id) {
+        return jdbc.queryForList("""
+            SELECT tsd.*, s.name as subject_name
+            FROM tutor_subject_descriptions tsd
+            JOIN subjects s ON s.id = tsd.subject_id
+            WHERE tsd.tutor_id = ?
+            """, id);
+    }
+
 }

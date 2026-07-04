@@ -8,8 +8,7 @@
 </head>
 <body>
 <header>
-  <a href="index.html" class="back">←</a>
-  <div class="logo">Tutw<span>Me</span></div>
+  <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
   <div style="margin-left:auto; display:flex; gap:10px;">
     <a href="login.html" class="btn-ghost" style="padding:8px 16px;">Sign in</a>
     <a href="register.html" class="btn-primary" style="padding:8px 16px;">Get started</a>
@@ -45,52 +44,75 @@ async function loadProfile() {
             ? tutor.keywords.split(',').map(k => `<span class="tag-green" style="font-size:11px;">${k.trim()}</span>`).join('')
             : '';
     const stars = tutor.rating ? Math.round(tutor.rating) : 5;
-    document.getElementById('profile-content').innerHTML = `
+    // Theme colors
+    const THEMES = {
+      pink:   { accent:'#e91e8c', light:'#fce4f0', dark:'#c41677' },
+      blue:   { accent:'#1565c0', light:'#e8f4fd', dark:'#0d47a1' },
+      green:  { accent:'#2e7d32', light:'#e8f5e9', dark:'#1b5e20' },
+      purple: { accent:'#6a1b9a', light:'#f3e5f5', dark:'#4a148c' },
+      orange: { accent:'#e65100', light:'#fbe9e7', dark:'#bf360c' },
+      dark:   { accent:'#1a1a2e', light:'#e8e8f0', dark:'#0d0d1a' }
+    };
+    const theme = THEMES[tutor.profile_theme] || THEMES.pink;
+    const layout = tutor.profile_layout || 'scroll';
+    const banner = tutor.banner_url
+      ? `url('${tutor.banner_url}') center/cover no-repeat`
+      : (tutor.banner_gradient || `linear-gradient(135deg,${theme.accent},${theme.dark})`);
+
+    // Fetch extra data
+    let subjectDescs = [];
+    let prompts = {};
+    try {
+      subjectDescs = await fetch(`${API}/api/tutors/${tutor.id}/subject-descriptions`).then(r=>r.json()).catch(()=>[]);
+    } catch(e) {}
+    try {
+      if (tutor.teaching_style_prompts) {
+        prompts = typeof tutor.teaching_style_prompts === 'string'
+          ? JSON.parse(tutor.teaching_style_prompts) : tutor.teaching_style_prompts;
+      }
+    } catch(e) {}
+
+    // Build video embed
+    let videoEmbed = '';
+    if (tutor.video_intro_url) {
+      let embedUrl = null;
+      const vUrl = tutor.video_intro_url;
+      if (vUrl.includes('youtube.com/watch')) {
+        try { const id = new URL(vUrl).searchParams.get('v'); if(id) embedUrl=`https://www.youtube.com/embed/${id}`; } catch(e){}
+      } else if (vUrl.includes('youtu.be/')) {
+        const id = vUrl.split('youtu.be/')[1]?.split('?')[0];
+        if(id) embedUrl=`https://www.youtube.com/embed/${id}`;
+      } else if (vUrl.includes('loom.com/share/')) {
+        const id = vUrl.split('loom.com/share/')[1]?.split('?')[0];
+        if(id) embedUrl=`https://www.loom.com/embed/${id}`;
+      }
+      if (embedUrl) videoEmbed = `<div style="border-radius:12px; overflow:hidden; margin-bottom:20px;"><iframe src="${embedUrl}" width="100%" height="240" frameborder="0" allowfullscreen></iframe></div>`;
+    }
+
+    // Build prompts section
+    const promptsHtml = (prompts.p1||prompts.p2||prompts.p3||prompts.p4) ? `
+      <div class="card" style="margin-bottom:20px; border-left:4px solid ${theme.accent};">
+        <div class="section-title" style="color:${theme.accent};">✨ Teaching style</div>
+        ${prompts.p1 ? `<div style="margin-bottom:10px;"><div style="font-size:12px; font-weight:600; color:${theme.accent}; margin-bottom:3px;">I know a student gets it when...</div><div style="font-size:14px; color:var(--text-muted); font-style:italic;">"${prompts.p1}"</div></div>` : ''}
+        ${prompts.p2 ? `<div style="margin-bottom:10px;"><div style="font-size:12px; font-weight:600; color:${theme.accent}; margin-bottom:3px;">My sessions feel like...</div><div style="font-size:14px; color:var(--text-muted); font-style:italic;">"${prompts.p2}"</div></div>` : ''}
+        ${prompts.p3 ? `<div style="margin-bottom:10px;"><div style="font-size:12px; font-weight:600; color:${theme.accent}; margin-bottom:3px;">My secret to making hard topics click...</div><div style="font-size:14px; color:var(--text-muted); font-style:italic;">"${prompts.p3}"</div></div>` : ''}
+        ${prompts.p4 ? `<div><div style="font-size:12px; font-weight:600; color:${theme.accent}; margin-bottom:3px;">I'm the best fit for students who...</div><div style="font-size:14px; color:var(--text-muted); font-style:italic;">"${prompts.p4}"</div></div>` : ''}
+      </div>` : '';
+
+    // Build subject descriptions
+    const subjectDescHtml = subjectDescs.length ? `
       <div class="card" style="margin-bottom:20px;">
-        <div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;">
-          <img src="${avatarUrl}" style="width:100px; height:100px; border-radius:50%; border:4px solid var(--pink-light); flex-shrink:0;" onerror="this.style.background='var(--pink-light)'; this.style.display='flex'">
-          <div style="flex:1;">
-            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
-              <h1 style="font-size:24px; font-weight:800; color:var(--navy);">${tutor.first_name} ${tutor.last_name}</h1>
-              <span class="tag-pink">Verified tutor</span>
-            </div>
-            <div style="font-size:22px; font-weight:700; color:var(--pink); margin-bottom:8px;">$${tutor.hourly_rate}/hr</div>
-            <div style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">${tags}</div>
-            <div style="display:flex; gap:6px; margin-bottom:16px;">
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">${tags}</div>
-            ${keywordTags ? `<div style="margin-bottom:12px;"><div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">TEACHING STYLE</div><div style="display:flex; flex-wrap:wrap; gap:6px;">${keywordTags}</div></div>` : ''}
-              <span class="tag-blue">${tutor.session_types === 'virtual' ? 'Virtual only' : tutor.session_types === 'in-person' ? 'In-person only' : '💻 Virtual & 📍 In-person'}</span>
-            </div>
-            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <a href="booking.html?tutor_id=${tutor.id}" class="btn-primary" style="padding:12px 24px;">Book a Session</a>
-              <a href="booking.html?tutor_id=${tutor.id}" class="btn-outline" style="padding:12px 24px;">View availability</a>
-            </div>
-          </div>
-        </div>
-      </div>
+        <div class="section-title">📚 My subjects</div>
+        ${subjectDescs.map(sd => `
+          <div style="padding:12px 0; border-bottom:1px solid var(--border-light);">
+            <div style="font-size:14px; font-weight:700; color:${theme.accent}; margin-bottom:4px;">${sd.subject_name}</div>
+            <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">${sd.description}</div>
+          </div>`).join('')}
+      </div>` : '';
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-        <div class="card">
-          <div class="section-title">About</div>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">${tutor.bio || 'No bio yet.'}</p>
-        </div>
-        <div class="card">
-          <div class="section-title">Teaching philosophy</div>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">${tutor.teaching_philosophy || 'Every student learns differently. I tailor my approach to what works best for you.'}</p>
-        </div>
-      </div>
-
+    // Build reviews
+    const reviewsHtml = `
       <div class="card" style="margin-bottom:20px;">
-        <div class="section-title">Stats</div>
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; text-align:center;">
-          <div><div style="font-size:24px; font-weight:700; color:var(--pink);">${'⭐'.repeat(stars)}</div><div style="font-size:12px; color:var(--text-muted);">Rating</div></div>
-          <div><div style="font-size:24px; font-weight:700; color:var(--navy);">${tutor.total_reviews || 0}</div><div style="font-size:12px; color:var(--text-muted);">Reviews</div></div>
-          <div><div style="font-size:24px; font-weight:700; color:var(--navy);">${tutor.total_sessions || 0}</div><div style="font-size:12px; color:var(--text-muted);">Sessions</div></div>
-          <div><div style="font-size:24px; font-weight:700; color:var(--navy);">${subjects.length}</div><div style="font-size:12px; color:var(--text-muted);">Subjects</div></div>
-        </div>
-      </div>
-
-      <div class="card">
         <div class="section-title">Reviews (${reviews.length})</div>
         ${reviews.length === 0 ? '<p style="color:var(--text-muted); font-size:14px;">No reviews yet — be the first!</p>' :
           reviews.map(r => `
@@ -103,6 +125,125 @@ async function loadProfile() {
               <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">${new Date(r.created_at).toLocaleDateString()}</div>
             </div>`).join('')}
       </div>`;
+
+    // Build stats card
+    const statsHtml = `
+      <div class="card" style="margin-bottom:20px;">
+        <div class="section-title">Stats</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; text-align:center;">
+          <div><div style="font-size:24px; font-weight:700; color:${theme.accent};">${'⭐'.repeat(stars)}</div><div style="font-size:12px; color:var(--text-muted);">Rating</div></div>
+          <div><div style="font-size:24px; font-weight:700; color:var(--navy);">${tutor.total_reviews || 0}</div><div style="font-size:12px; color:var(--text-muted);">Reviews</div></div>
+          <div><div style="font-size:24px; font-weight:700; color:var(--navy);">${tutor.total_sessions || 0}</div><div style="font-size:12px; color:var(--text-muted);">Sessions</div></div>
+          <div><div style="font-size:24px; font-weight:700; color:var(--navy);">${subjects.length}</div><div style="font-size:12px; color:var(--text-muted);">Subjects</div></div>
+        </div>
+      </div>`;
+
+    // Header card (shared across layouts)
+    const headerCard = `
+      <div style="background:${banner}; border-radius:16px 16px 0 0; height:120px; margin:-20px -20px 20px;"></div>
+      <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; margin-bottom:16px;">
+        <img src="${avatarUrl}" style="width:90px; height:90px; border-radius:50%; border:4px solid white; flex-shrink:0; margin-top:-50px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" onerror="this.style.background='${theme.light}'">
+        <div style="flex:1; padding-top:4px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;">
+            <h1 style="font-size:22px; font-weight:800; color:var(--navy);">${tutor.first_name} ${tutor.last_name}</h1>
+            <span style="background:${theme.light}; color:${theme.dark}; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;">Verified tutor</span>
+          </div>
+          <div style="font-size:20px; font-weight:700; color:${theme.accent}; margin-bottom:8px;">$${tutor.hourly_rate}/hr</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">${tags}</div>
+          <div style="display:flex; gap:6px; margin-bottom:14px;">
+            <span style="background:${theme.light}; color:${theme.dark}; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px;">${tutor.session_types === 'virtual' ? '💻 Virtual only' : tutor.session_types === 'in-person' ? '📍 In-person only' : '💻 Virtual & 📍 In-person'}</span>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="booking.html?tutor_id=${tutor.id}" style="background:${theme.accent}; color:white; padding:11px 22px; border-radius:10px; font-size:14px; font-weight:700; text-decoration:none;">Book a Session</a>
+            ${tutor.zoom_link ? `<a href="${tutor.zoom_link}" target="_blank" style="background:${theme.light}; color:${theme.dark}; padding:11px 22px; border-radius:10px; font-size:14px; font-weight:700; text-decoration:none;">💻 Join virtual</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+
+    // Render based on layout
+    let layoutHtml = '';
+    if (layout === 'tabbed') {
+      layoutHtml = `
+        <div style="display:flex; gap:6px; margin-bottom:20px; border-bottom:2px solid var(--border-light); padding-bottom:0;">
+          <button onclick="showTab('about')" id="tab-about" style="padding:10px 18px; border:none; background:none; font-size:14px; font-weight:700; color:${theme.accent}; cursor:pointer; border-bottom:2px solid ${theme.accent}; margin-bottom:-2px; font-family:inherit;">About</button>
+          <button onclick="showTab('subjects')" id="tab-subjects" style="padding:10px 18px; border:none; background:none; font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-family:inherit;">Subjects</button>
+          <button onclick="showTab('reviews')" id="tab-reviews" style="padding:10px 18px; border:none; background:none; font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; font-family:inherit;">Reviews</button>
+        </div>
+        <div id="tab-about-content">
+          ${videoEmbed}
+          <div class="card" style="margin-bottom:16px;">
+            <div class="section-title">About</div>
+            <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">${tutor.bio || 'No bio yet.'}</p>
+          </div>
+          ${promptsHtml}
+          ${statsHtml}
+        </div>
+        <div id="tab-subjects-content" style="display:none;">
+          ${subjectDescHtml || '<div class="card"><p style="color:var(--text-muted); font-size:14px;">No subject details yet.</p></div>'}
+        </div>
+        <div id="tab-reviews-content" style="display:none;">${reviewsHtml}</div>`;
+    } else if (layout === 'card') {
+      layoutHtml = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+          <div class="card">
+            <div class="section-title" style="color:${theme.accent};">About</div>
+            <p style="font-size:13px; color:var(--text-muted); line-height:1.7;">${tutor.bio || 'No bio yet.'}</p>
+          </div>
+          <div class="card">
+            <div class="section-title" style="color:${theme.accent};">Philosophy</div>
+            <p style="font-size:13px; color:var(--text-muted); line-height:1.7;">${tutor.teaching_philosophy || 'Every student learns differently.'}</p>
+          </div>
+        </div>
+        ${videoEmbed ? `<div style="margin-bottom:20px;">${videoEmbed}</div>` : ''}
+        ${promptsHtml}
+        ${statsHtml}
+        ${subjectDescHtml}
+        ${reviewsHtml}`;
+    } else {
+      // scroll (default)
+      layoutHtml = `
+        ${videoEmbed}
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+          <div class="card">
+            <div class="section-title">About</div>
+            <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">${tutor.bio || 'No bio yet.'}</p>
+          </div>
+          <div class="card">
+            <div class="section-title">Teaching philosophy</div>
+            <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">${tutor.teaching_philosophy || 'Every student learns differently. I tailor my approach to what works best for you.'}</p>
+          </div>
+        </div>
+        ${promptsHtml}
+        ${statsHtml}
+        ${subjectDescHtml}
+        ${reviewsHtml}`;
+    }
+
+    document.getElementById('profile-content').innerHTML = `
+      <div class="card" style="margin-bottom:20px; overflow:hidden; padding:20px;">
+        ${headerCard}
+      </div>
+      ${layoutHtml}`;
+
+    // Tab switching for tabbed layout
+    window.showTab = function(tab) {
+      ['about','subjects','reviews'].forEach(t => {
+        const btn = document.getElementById('tab-'+t);
+        const content = document.getElementById('tab-'+t+'-content');
+        if (!btn || !content) return;
+        if (t === tab) {
+          btn.style.color = theme.accent;
+          btn.style.borderBottomColor = theme.accent;
+          btn.style.fontWeight = '700';
+          content.style.display = 'block';
+        } else {
+          btn.style.color = 'var(--text-muted)';
+          btn.style.borderBottomColor = 'transparent';
+          btn.style.fontWeight = '600';
+          content.style.display = 'none';
+        }
+      });
+    };;
   } catch(e) {
     document.getElementById('profile-content').innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:40px;">Could not load profile.</p>';
   }

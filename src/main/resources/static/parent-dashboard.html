@@ -8,8 +8,7 @@
 </head>
 <body>
 <header>
-  <a href="index.html" class="back">←</a>
-  <div class="logo">Tutw<span>Me</span></div>
+  <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
   <div style="margin-left:auto; font-size:13px; font-weight:600; color:#7ab3d4;">Parent Dashboard</div>
 </header>
 
@@ -25,8 +24,10 @@
       <input type="email" id="parent-email" placeholder="you@email.com">
     </div>
     <button class="btn-primary" style="width:100%; padding:13px;" onclick="requestLink()">Send me a magic link</button>
-    <div id="link-sent" style="display:none; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:14px; text-align:center; margin-top:14px; font-size:14px; font-weight:600; color:#15803d;">
-      Magic link sent! Check your email and click the link to sign in.
+    <div id="link-sent" style="display:none; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:16px; text-align:center; margin-top:14px;">
+      <div style="font-size:24px; margin-bottom:6px;">📧</div>
+      <div style="font-size:14px; font-weight:700; color:#15803d; margin-bottom:4px;">Magic link sent!</div>
+      <div style="font-size:13px; color:#166534;">Check your inbox and click the link to sign in. The link expires in 1 hour.</div>
     </div>
   </div>
 
@@ -71,6 +72,14 @@
 </div>
 
 <script src="chatbot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function() {
+    if (window.emailjs) {
+      emailjs.init({ publicKey: "EwR3DOxN_uCCgdwPC" });
+    }
+  })();
+</script>
 <script>
 const API = window.location.hostname === 'localhost'
   ? 'http://localhost:8080'
@@ -90,8 +99,14 @@ async function requestLink() {
     const data = await res.json();
     if (res.ok) {
       document.getElementById('link-sent').style.display = 'block';
-      if (data.token) {
-        setTimeout(() => autoLogin(data.token), 1000);
+      if (data.token && window.emailjs) {
+        const magicLink = `${window.location.origin}/parent-dashboard.html?token=${data.token}`;
+        try {
+          await emailjs.send('service_3epxmbr', 'template_1qsgrgd', {
+            to_email: email,
+            magic_link: magicLink
+          });
+        } catch(emailErr) { console.error('EmailJS error:', emailErr); }
       }
     } else {
       errEl.textContent = data.error || 'Something went wrong.';
@@ -141,10 +156,14 @@ async function loadDashboardData(parentId) {
     renderProgress(checkpoints);
     renderNotes(notes);
     renderTutorInfo(bookings);
+    try {
+      const checkins = await fetch(`${API}/api/checkins/tutor/${bookings[0]?.tutor_id}`).then(r=>r.json()).catch(()=>[]);
+      renderCheckins(checkins.filter(c => c.student_id == student.id));
+    } catch(e) {}
   } catch(e) {}
 }
 
-}async function renderTutorInfo(bookings) {
+async function renderTutorInfo(bookings) {
   const el = document.getElementById('tutor-info');
   if (!bookings.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No tutor assigned yet.</p>'; return; }
   const b = bookings[0];
@@ -192,8 +211,6 @@ function renderProgress(checkpoints) {
 }
 
 function renderNotes(notes) {
-  const checkins = await fetch(`${API}/api/checkins/tutor/${bookings[0]?.tutor_id}`).then(r=>r.json()).catch(()=>[]);
-  renderCheckins(checkins.filter(c => c.student_id == student.id));
   const el = document.getElementById('session-notes');
   if (!notes.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No session notes yet.</p>'; return; }
   el.innerHTML = notes.slice(0,3).map(n => `

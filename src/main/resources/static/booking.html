@@ -8,8 +8,7 @@
 </head>
 <body>
 <header>
-  <a href="index.html" class="back">←</a>
-  <div class="logo">Tutw<span>Me</span></div>
+  <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
   <div style="margin-left:auto; display:flex; gap:20px;">
     <a href="login.html" style="color:var(--text-muted); text-decoration:none; font-weight:700; font-size:14px;">Sign in</a>
   </div>
@@ -113,14 +112,17 @@ async function submitBooking() {
     });
     if (res.ok) {
       document.getElementById('success').style.display = 'block';
-      const data = await res.json().catch(() => ({}));
-      if (data.booking_id || res.ok) {
-        setTimeout(() => {
-          const bookings = await fetch(`${API}/api/bookings`).then(r=>r.json());
-          const latest = bookings[bookings.length - 1];
-          if (latest) window.location.href = `payment.html?booking_id=${latest.id}`;
-        }, 1500);
-      }
+      setTimeout(async () => {
+        const bookings = await fetch(`${API}/api/bookings`).then(r=>r.json());
+        const latest = bookings[bookings.length - 1];
+        if (latest) window.location.href = `payment.html?booking_id=${latest.id}`;
+      }, 1500);
+    } else {
+      document.getElementById('error').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('error').style.display = 'block';
+  }
 }
 
 loadTutors();

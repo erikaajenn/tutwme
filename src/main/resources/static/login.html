@@ -8,15 +8,19 @@
 </head>
 <body>
 <header>
-  <a href="index.html" class="back">←</a>
-  <div class="logo">Tutw<span>Me</span></div>
+  <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
 </header>
 
 <div style="max-width:420px; margin:48px auto; padding:0 20px;">
   <div class="card">
     <div id="login-form">
       <h1 style="font-size:24px; font-weight:900; color:var(--text); margin-bottom:6px;">Welcome back!</h1>
-      <p style="font-size:14px; color:var(--text-muted); font-weight:600; margin-bottom:24px;">Sign in to your TutwMe account</p>
+      <p style="font-size:14px; color:var(--text-muted); font-weight:600; margin-bottom:20px;">Sign in to your TutwMe account</p>
+
+      <div style="display:flex; gap:8px; margin-bottom:20px; background:var(--bg); border-radius:10px; padding:4px;" id="role-toggle">
+        <button type="button" id="role-student-btn" onclick="setRole('student')" style="flex:1; padding:9px; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; background:var(--pink); color:white;">Student</button>
+        <button type="button" id="role-tutor-btn" onclick="setRole('tutor')" style="flex:1; padding:9px; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; background:transparent; color:var(--text-muted);">Tutor</button>
+      </div>
 
       <div style="display:none; background:#fef2f2; border:2px solid #fca5a5; border-radius:10px; padding:12px; font-size:13px; color:#dc2626; font-weight:700; margin-bottom:16px;" id="error">Invalid email or password.</div>
 
@@ -27,12 +31,15 @@
       <div style="margin-bottom:20px;">
         <label style="display:block; font-size:13px; font-weight:700; color:var(--text-muted); margin-bottom:6px;">Password</label>
         <input type="password" id="password" placeholder="••••••••">
+        <div style="text-align:right; margin-top:6px;">
+          <a href="forgot-password.html" style="font-size:12px; color:var(--pink); text-decoration:none; font-weight:600;">Forgot password?</a>
+        </div>
       </div>
 
       <button class="btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="login()">Sign In</button>
 
       <div style="text-align:center; color:var(--text-muted); font-size:13px; font-weight:700; margin:20px 0 14px;">Don't have an account?</div>
-      <a href="register.html" class="btn-secondary" style="width:100%; padding:14px; font-size:15px; text-align:center; display:block;">Create Account</a>
+      <a id="create-account-btn" href="register.html" class="btn-secondary" style="width:100%; padding:14px; font-size:15px; text-align:center; display:block;">Create Account</a>
     </div>
 
     <div style="display:none;" id="dashboard">
@@ -50,20 +57,44 @@ const API = window.location.hostname === 'localhost'
   ? 'http://localhost:8080'
   : 'https://tutwme-production.up.railway.app';
 
+let currentRole = 'student';
+
+function setRole(role) {
+  currentRole = role;
+  const studentBtn = document.getElementById('role-student-btn');
+  const tutorBtn = document.getElementById('role-tutor-btn');
+  const createBtn = document.getElementById('create-account-btn');
+  if (role === 'student') {
+    studentBtn.style.background = 'var(--pink)'; studentBtn.style.color = 'white';
+    tutorBtn.style.background = 'transparent'; tutorBtn.style.color = 'var(--text-muted)';
+    if (createBtn) { createBtn.href = 'register.html'; createBtn.textContent = 'Create Student Account'; }
+  } else {
+    tutorBtn.style.background = 'var(--pink)'; tutorBtn.style.color = 'white';
+    studentBtn.style.background = 'transparent'; studentBtn.style.color = 'var(--text-muted)';
+    if (createBtn) { createBtn.href = 'tutor-register.html'; createBtn.textContent = 'Apply as a Tutor'; }
+  }
+}
+
 async function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   if (!email || !password) { showError('Please enter your email and password.'); return; }
+  const endpoint = currentRole === 'tutor' ? '/api/auth/tutor-login' : '/api/auth/login';
   try {
-    const res = await fetch(`${API}/api/auth/login`, {
+    const res = await fetch(`${API}${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
     if (res.ok) {
-      const student = await res.json();
-      localStorage.setItem('student', JSON.stringify(student));
-      showDashboard(student);
+      const user = await res.json();
+      if (currentRole === 'tutor') {
+        localStorage.setItem('tutor', JSON.stringify(user));
+        window.location.href = 'tutor-dashboard.html';
+      } else {
+        localStorage.setItem('student', JSON.stringify(user));
+        showDashboard(user);
+      }
     } else { showError('Invalid email or password.'); }
   } catch { showError('Could not connect to server.'); }
 }

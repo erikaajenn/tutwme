@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Profile — TutwMe</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .builder-section { background:white; border-radius:14px; padding:22px; margin-bottom:16px; border:1px solid var(--border-light); }
+    .builder-section h3 { font-size:16px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+    .builder-section p { font-size:13px; color:var(--text-muted); margin-bottom:16px; }
+    .theme-btn { width:44px; height:44px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:all 0.15s; }
+    .theme-btn.active { border-color: var(--navy); transform:scale(1.15); }
+    .layout-btn { border:2px solid var(--border-light); border-radius:10px; padding:14px; cursor:pointer; text-align:center; transition:all 0.15s; background:white; font-family:inherit; }
+    .layout-btn.active { border-color:var(--pink); background:var(--pink-light); }
+    .layout-btn .icon { font-size:24px; margin-bottom:6px; }
+    .layout-btn .label { font-size:13px; font-weight:700; color:var(--navy); }
+    .layout-btn .desc { font-size:11px; color:var(--text-muted); margin-top:3px; }
+    .gradient-btn { height:48px; border-radius:10px; border:3px solid transparent; cursor:pointer; transition:all 0.15s; }
+    .gradient-btn.active { border-color:var(--navy); }
+    .prompt-input { margin-bottom:12px; }
+    .prompt-input label { display:block; font-size:12px; font-weight:600; color:var(--pink-dark); margin-bottom:4px; }
+    .preview-btn { position:fixed; bottom:24px; right:24px; z-index:100; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--pink);">Profile Builder</div>
+</header>
+
+<div class="page-container" style="max-width:680px;">
+  <div style="text-align:center; margin-bottom:28px;">
+    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">Build your tutor profile</h1>
+    <p style="font-size:15px; color:var(--text-muted);">Make it yours — customize how students see you</p>
+  </div>
+
+  <!-- Theme picker -->
+  <div class="builder-section">
+    <h3>🎨 Profile theme</h3>
+    <p>Choose an accent color that represents your style</p>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <button class="theme-btn active" data-theme="pink" onclick="setTheme('pink', this)" style="background:#e91e8c;"></button>
+      <button class="theme-btn" data-theme="blue" onclick="setTheme('blue', this)" style="background:#1565c0;"></button>
+      <button class="theme-btn" data-theme="green" onclick="setTheme('green', this)" style="background:#2e7d32;"></button>
+      <button class="theme-btn" data-theme="purple" onclick="setTheme('purple', this)" style="background:#6a1b9a;"></button>
+      <button class="theme-btn" data-theme="orange" onclick="setTheme('orange', this)" style="background:#e65100;"></button>
+      <button class="theme-btn" data-theme="dark" onclick="setTheme('dark', this)" style="background:#1a1a2e;"></button>
+      <div style="font-size:13px; color:var(--text-muted); margin-left:8px;">Selected: <strong id="theme-label">Pink</strong></div>
+    </div>
+  </div>
+
+  <!-- Layout picker -->
+  <div class="builder-section">
+    <h3>📐 Profile layout</h3>
+    <p>Choose how your profile is structured</p>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+      <button class="layout-btn active" data-layout="scroll" onclick="setLayout('scroll', this)">
+        <div class="icon">📜</div>
+        <div class="label">Portfolio</div>
+        <div class="desc">One long scrollable page</div>
+      </button>
+      <button class="layout-btn" data-layout="tabbed" onclick="setLayout('tabbed', this)">
+        <div class="icon">📑</div>
+        <div class="label">Tabbed</div>
+        <div class="desc">About / Subjects / Reviews</div>
+      </button>
+      <button class="layout-btn" data-layout="card" onclick="setLayout('card', this)">
+        <div class="icon">🃏</div>
+        <div class="label">Card grid</div>
+        <div class="desc">Modular card sections</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Banner -->
+  <div class="builder-section">
+    <h3>🖼 Profile banner</h3>
+    <p>Choose a gradient banner for the top of your profile</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:10px; margin-bottom:14px;">
+      <button class="gradient-btn active" data-gradient="linear-gradient(135deg,#e91e8c,#c41677)" onclick="setBanner('linear-gradient(135deg,#e91e8c,#c41677)', this)" style="background:linear-gradient(135deg,#e91e8c,#c41677);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#1565c0,#0d47a1)" onclick="setBanner('linear-gradient(135deg,#1565c0,#0d47a1)', this)" style="background:linear-gradient(135deg,#1565c0,#0d47a1);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#2e7d32,#1b5e20)" onclick="setBanner('linear-gradient(135deg,#2e7d32,#1b5e20)', this)" style="background:linear-gradient(135deg,#2e7d32,#1b5e20);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#6a1b9a,#4a148c)" onclick="setBanner('linear-gradient(135deg,#6a1b9a,#4a148c)', this)" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#e65100,#bf360c)" onclick="setBanner('linear-gradient(135deg,#e65100,#bf360c)', this)" style="background:linear-gradient(135deg,#e65100,#bf360c);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#1a1a2e,#16213e)" onclick="setBanner('linear-gradient(135deg,#1a1a2e,#16213e)', this)" style="background:linear-gradient(135deg,#1a1a2e,#16213e);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#f57f17,#e65100)" onclick="setBanner('linear-gradient(135deg,#f57f17,#e65100)', this)" style="background:linear-gradient(135deg,#f57f17,#e65100);"></button>
+      <button class="gradient-btn" data-gradient="linear-gradient(135deg,#00838f,#006064)" onclick="setBanner('linear-gradient(135deg,#00838f,#006064)', this)" style="background:linear-gradient(135deg,#00838f,#006064);"></button>
+    </div>
+    <div style="font-size:12px; color:var(--text-muted);">Or enter a custom banner image URL:</div>
+    <input type="url" id="banner-url-input" placeholder="https://..." style="margin-top:8px;" oninput="setBannerUrl(this.value)">
+  </div>
+
+  <!-- Basic info -->
+  <div class="builder-section">
+    <h3>📝 Basic info</h3>
+    <p>The essentials students look for first</p>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Hourly rate ($)</label>
+      <input type="number" id="hourly-rate" placeholder="50" min="10" max="200">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Session type</label>
+      <select id="session-types">
+        <option value="both">Virtual & In-person</option>
+        <option value="virtual">Virtual only</option>
+        <option value="in-person">In-person only</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Zoom / Google Meet link (for virtual sessions)</label>
+      <input type="url" id="zoom-link" placeholder="https://zoom.us/j/... or meet.google.com/...">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Short bio</label>
+      <textarea id="bio" placeholder="Tell students about yourself — your background, experience, and what makes you a great tutor." style="height:90px; resize:none;"></textarea>
+    </div>
+  </div>
+
+  <!-- Teaching style -->
+  <div class="builder-section">
+    <h3>✨ Teaching style</h3>
+    <p>Answer these prompts — students love knowing your vibe</p>
+    <div class="prompt-input">
+      <label>I know a student gets it when...</label>
+      <input type="text" id="prompt-1" placeholder="they can explain it back to me in their own words">
+    </div>
+    <div class="prompt-input">
+      <label>My sessions feel like...</label>
+      <input type="text" id="prompt-2" placeholder="a focused study session with a knowledgeable friend">
+    </div>
+    <div class="prompt-input">
+      <label>My secret to making hard topics click is...</label>
+      <input type="text" id="prompt-3" placeholder="breaking it into the smallest possible steps">
+    </div>
+    <div class="prompt-input">
+      <label>I'm the best fit for students who...</label>
+      <input type="text" id="prompt-4" placeholder="want to understand the why, not just memorize formulas">
+    </div>
+    <div style="margin-top:4px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Keywords (comma separated)</label>
+      <input type="text" id="keywords" placeholder="patient, structured, visual, test prep, homework help">
+    </div>
+  </div>
+
+  <!-- Video intro -->
+  <div class="builder-section">
+    <h3>🎥 Video intro</h3>
+    <p>Add a YouTube or Loom link — a short 30-60 second intro goes a long way with students and parents</p>
+    <input type="url" id="video-intro" placeholder="https://youtube.com/... or loom.com/share/...">
+    <div id="video-preview" style="display:none; margin-top:12px; border-radius:10px; overflow:hidden;"></div>
+  </div>
+
+  <!-- Subject descriptions -->
+  <div class="builder-section">
+    <h3>📚 Per-subject descriptions</h3>
+    <p>Personalize how you describe each subject you teach — what's your approach, your results, your style?</p>
+    <div id="subject-desc-list"><div style="color:var(--text-muted); font-size:13px;">Loading your subjects...</div></div>
+  </div>
+
+  <!-- Save button -->
+  <button class="btn-primary" id="save-btn" style="width:100%; padding:14px; font-size:16px;" onclick="saveProfile()">Save & preview profile</button>
+  <div id="save-error" style="display:none; background:#fef2f2; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-top:10px;"></div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const tutor = JSON.parse(localStorage.getItem('tutor') || '{}');
+const TUTOR_ID = tutor.id || 1;
+
+const THEME_LABELS = { pink:'Pink', blue:'Blue', green:'Green', purple:'Purple', orange:'Orange', dark:'Dark' };
+let selectedTheme = tutor.profile_theme || 'pink';
+let selectedLayout = tutor.profile_layout || 'scroll';
+let selectedBanner = tutor.banner_gradient || 'linear-gradient(135deg,#e91e8c,#c41677)';
+let subjectDescriptions = {};
+
+function setTheme(theme, btn) {
+  selectedTheme = theme;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('theme-label').textContent = THEME_LABELS[theme];
+}
+
+function setLayout(layout, btn) {
+  selectedLayout = layout;
+  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setBanner(gradient, btn) {
+  selectedBanner = gradient;
+  document.getElementById('banner-url-input').value = '';
+  document.querySelectorAll('.gradient-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setBannerUrl(url) {
+  if (url) {
+    selectedBanner = null;
+    document.querySelectorAll('.gradient-btn').forEach(b => b.classList.remove('active'));
+  }
+}
+
+document.getElementById('video-intro').addEventListener('input', function() {
+  const url = this.value.trim();
+  const preview = document.getElementById('video-preview');
+  let embedUrl = null;
+  if (url.includes('youtube.com/watch')) {
+    const id = new URL(url).searchParams.get('v');
+    if (id) embedUrl = `https://www.youtube.com/embed/${id}`;
+  } else if (url.includes('youtu.be/')) {
+    const id = url.split('youtu.be/')[1].split('?')[0];
+    embedUrl = `https://www.youtube.com/embed/${id}`;
+  } else if (url.includes('loom.com/share/')) {
+    const id = url.split('loom.com/share/')[1].split('?')[0];
+    embedUrl = `https://www.loom.com/embed/${id}`;
+  }
+  if (embedUrl) {
+    preview.style.display = 'block';
+    preview.innerHTML = `<iframe src="${embedUrl}" width="100%" height="220" frameborder="0" allowfullscreen></iframe>`;
+  } else {
+    preview.style.display = 'none';
+  }
+});
+
+async function loadSubjects() {
+  try {
+    const [subjects, descriptions] = await Promise.all([
+      fetch(`${API}/api/tutors/${TUTOR_ID}/subjects`).then(r=>r.json()),
+      fetch(`${API}/api/tutors/${TUTOR_ID}/subject-descriptions`).then(r=>r.json()).catch(()=>[])
+    ]);
+    descriptions.forEach(d => { subjectDescriptions[d.subject_id] = d.description; });
+    const el = document.getElementById('subject-desc-list');
+    if (!subjects.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No subjects yet — add them during registration.</div>'; return; }
+    el.innerHTML = subjects.map(s => `
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:13px; font-weight:700; color:var(--navy); margin-bottom:6px;">${s.name}</label>
+        <textarea id="subject-desc-${s.id}" placeholder="How do you approach ${s.name}? What results do your students see?" style="height:70px; resize:none; font-size:13px;">${subjectDescriptions[s.id] || ''}</textarea>
+      </div>`).join('');
+    window._subjects = subjects;
+  } catch(e) {}
+}
+
+async function prefillForm() {
+  try {
+    const tutor = await fetch(`${API}/api/tutors/${TUTOR_ID}`).then(r=>r.json());
+    if (tutor.hourly_rate) document.getElementById('hourly-rate').value = tutor.hourly_rate;
+    if (tutor.session_types) document.getElementById('session-types').value = tutor.session_types;
+    if (tutor.zoom_link) document.getElementById('zoom-link').value = tutor.zoom_link;
+    if (tutor.bio) document.getElementById('bio').value = tutor.bio;
+    if (tutor.keywords) document.getElementById('keywords').value = tutor.keywords;
+    if (tutor.video_intro_url) document.getElementById('video-intro').value = tutor.video_intro_url;
+    if (tutor.profile_theme) { selectedTheme = tutor.profile_theme; document.querySelector(`[data-theme="${tutor.profile_theme}"]`)?.classList.add('active'); }
+    if (tutor.profile_layout) { selectedLayout = tutor.profile_layout; document.querySelector(`[data-layout="${tutor.profile_layout}"]`)?.classList.add('active'); }
+    if (tutor.banner_gradient) { selectedBanner = tutor.banner_gradient; }
+    if (tutor.teaching_style_prompts) {
+      try {
+        const prompts = typeof tutor.teaching_style_prompts === 'string'
+          ? JSON.parse(tutor.teaching_style_prompts) : tutor.teaching_style_prompts;
+        if (prompts.p1) document.getElementById('prompt-1').value = prompts.p1;
+        if (prompts.p2) document.getElementById('prompt-2').value = prompts.p2;
+        if (prompts.p3) document.getElementById('prompt-3').value = prompts.p3;
+        if (prompts.p4) document.getElementById('prompt-4').value = prompts.p4;
+      } catch(e) {}
+    }
+  } catch(e) {}
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('save-btn');
+  const errEl = document.getElementById('save-error');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const prompts = JSON.stringify({
+    p1: document.getElementById('prompt-1').value.trim(),
+    p2: document.getElementById('prompt-2').value.trim(),
+    p3: document.getElementById('prompt-3').value.trim(),
+    p4: document.getElementById('prompt-4').value.trim()
+  });
+
+  const bannerUrl = document.getElementById('banner-url-input').value.trim();
+
+  try {
+    await fetch(`${API}/api/tutors/${TUTOR_ID}/profile`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profile_theme: selectedTheme,
+        profile_layout: selectedLayout,
+        banner_gradient: bannerUrl ? null : selectedBanner,
+        banner_url: bannerUrl || null,
+        bio: document.getElementById('bio').value.trim(),
+        zoom_link: document.getElementById('zoom-link').value.trim(),
+        session_types: document.getElementById('session-types').value,
+        hourly_rate: document.getElementById('hourly-rate').value,
+        keywords: document.getElementById('keywords').value.trim(),
+        video_intro_url: document.getElementById('video-intro').value.trim(),
+        teaching_style_prompts: prompts
+      })
+    });
+
+    if (window._subjects) {
+      for (const s of window._subjects) {
+        const desc = document.getElementById(`subject-desc-${s.id}`)?.value.trim();
+        if (desc) {
+          await fetch(`${API}/api/tutors/${TUTOR_ID}/subject-description`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject_id: s.id, description: desc })
+          });
+        }
+      }
+    }
+
+    window.location.href = `tutor-profile.html?id=${TUTOR_ID}`;
+  } catch(e) {
+    errEl.textContent = 'Could not save. Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Save & preview profile';
+  }
+}
+
+prefillForm();
+loadSubjects();
+</script>
+</body>
+</html>
