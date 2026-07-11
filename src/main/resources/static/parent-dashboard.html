@@ -5,95 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parent Dashboard — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .portal-card { background: white; border-radius: 16px; padding: 22px; border: 1px solid var(--border-light); margin-bottom: 16px; }
+    .portal-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .session-row { padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+    .session-row:last-child { border-bottom: none; }
+    .checkpoint-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+    .checkpoint-row:last-child { border-bottom: none; }
+    .check-circle { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
-  <div style="margin-left:auto; font-size:13px; font-weight:600; color:#7ab3d4;">Parent Dashboard</div>
+  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--blue-mid);">👨‍👩‍👧 Parent Portal</div>
 </header>
 
-<div class="page-container" style="max-width:800px;">
+<!-- Magic link login -->
+<div id="login-section">
+  <div style="min-height:calc(100vh - 65px); display:flex; align-items:center; justify-content:center; padding:32px 20px; background:linear-gradient(135deg,#e8f4fd,#fafafa);">
+    <div style="width:100%; max-width:420px;">
 
-  <!-- Magic link login -->
-  <div id="login-section" class="card" style="max-width:420px; margin:40px auto;">
-    <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:6px;">Parent sign in</h2>
-    <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px;">No password needed — we'll email you a magic login link.</p>
-    <div id="login-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-bottom:14px;"></div>
-    <div style="margin-bottom:14px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your email address</label>
-      <input type="email" id="parent-email" placeholder="you@email.com">
-    </div>
-    <button class="btn-primary" style="width:100%; padding:13px;" onclick="requestLink()">Send me a magic link</button>
-    <div id="link-sent" style="display:none; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:16px; text-align:center; margin-top:14px;">
-      <div style="font-size:24px; margin-bottom:6px;">📧</div>
-      <div style="font-size:14px; font-weight:700; color:#15803d; margin-bottom:4px;">Magic link sent!</div>
-      <div style="font-size:13px; color:#166534;">Check your inbox and click the link to sign in. The link expires in 1 hour.</div>
-    </div>
-  </div>
-
-  <!-- Dashboard (shown after login) -->
-  <div id="dashboard-section" style="display:none;">
-    <div style="display:flex; align-items:center; gap:14px; margin-bottom:28px;">
-      <div style="width:52px; height:52px; border-radius:50%; background:#daeeff; display:flex; align-items:center; justify-content:center; font-size:22px;">👨‍👩‍👧</div>
-      <div>
-        <div style="font-size:20px; font-weight:800; color:var(--navy);" id="parent-name">Welcome!</div>
-        <div style="font-size:13px; color:var(--text-muted);">Here's what's happening with your child's tutoring</div>
+      <div style="text-align:center; margin-bottom:28px;">
+        <div style="font-size:40px; margin-bottom:12px;">👨‍👩‍👧</div>
+        <div style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:6px;">Parent Portal</div>
+        <div style="font-size:14px; color:var(--text-muted);">No password needed — we'll email you a secure link</div>
       </div>
-      <button onclick="logout()" style="margin-left:auto; background:none; border:1px solid var(--border-light); padding:8px 14px; border-radius:8px; font-size:13px; color:var(--text-muted); cursor:pointer;">Sign out</button>
-    </div>
 
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:24px;">
-      <div class="stat-card"><div class="stat-number" style="color:var(--pink);" id="stat-sessions">-</div><div class="stat-label">Total sessions</div></div>
-      <div class="stat-card"><div class="stat-number" style="color:#7ab3d4;" id="stat-upcoming">-</div><div class="stat-label">Upcoming</div></div>
-      <div class="stat-card"><div class="stat-number" style="color:#6aaa7e;" id="stat-progress">0%</div><div class="stat-label">Progress</div></div>
-    </div>
+      <div class="card" style="padding:32px;">
+        <div style="font-size:16px; font-weight:700; color:var(--navy); margin-bottom:6px;">Sign in with magic link</div>
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">Enter the email address your child used when registering their account.</p>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
-      <div class="card">
-        <div class="section-title">Upcoming sessions</div>
-        <div id="upcoming-sessions"><div style="color:var(--text-muted); font-size:14px;">Loading...</div></div>
+        <div id="login-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; font-weight:600; margin-bottom:14px;"></div>
+
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your email address</label>
+          <input type="email" id="parent-email" placeholder="you@email.com" onkeypress="if(event.key==='Enter') requestLink()">
+        </div>
+        <button class="btn-primary" id="send-btn" style="width:100%; padding:13px; font-size:15px;" onclick="requestLink()">Send magic link</button>
+
+        <div id="link-sent" style="display:none; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:16px; text-align:center; margin-top:14px;">
+          <div style="font-size:24px; margin-bottom:8px;">📧</div>
+          <div style="font-size:14px; font-weight:700; color:#15803d; margin-bottom:4px;">Magic link sent!</div>
+          <div style="font-size:13px; color:#166534;">Check your inbox and click the link to sign in. Link expires in 1 hour.</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="section-title">Student progress</div>
-        <div id="student-progress"><div style="color:var(--text-muted); font-size:14px;">Loading...</div></div>
+
+      <div style="text-align:center; margin-top:16px; font-size:13px; color:var(--text-muted);">
+        Not a parent? <a href="login.html" style="color:var(--pink); font-weight:600; text-decoration:none;">Student / Tutor sign in</a>
       </div>
-    </div>
 
-    <div class="card" style="margin-bottom:18px;">
-      <div class="section-title">Recent session notes</div>
-      <div id="session-notes"><div style="color:var(--text-muted); font-size:14px;">Loading...</div></div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Tutor information</div>
-      <div id="tutor-info"><div style="color:var(--text-muted); font-size:14px;">Loading...</div></div>
+      <!-- What parents see -->
+      <div class="card" style="margin-top:20px; padding:20px;">
+        <div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:12px;">What you'll see in the Parent Portal</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; align-items:center; font-size:13px; color:var(--text-muted);"><span>📅</span> Upcoming and past sessions</div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:13px; color:var(--text-muted);"><span>📊</span> Progress checkpoints set by the tutor</div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:13px; color:var(--text-muted);"><span>📝</span> Session notes and homework assigned</div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:13px; color:var(--text-muted);"><span>✅</span> Session check-ins from your child</div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:13px; color:var(--text-muted);"><span>⭐</span> Tutor reviews from other families</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<script src="chatbot.js"></script>
+<!-- Dashboard (shown after login) -->
+<div id="dashboard-section" style="display:none;">
+  <div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:28px 20px;">
+    <div class="page-container" style="padding-top:0; padding-bottom:0; max-width:900px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">👨‍👩‍👧</div>
+          <div>
+            <div style="font-size:20px; font-weight:800; color:white;" id="parent-name">Welcome!</div>
+            <div style="font-size:13px; color:rgba(255,255,255,0.65);">Parent Progress Portal</div>
+          </div>
+        </div>
+        <button onclick="logout()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; padding:8px 16px; border-radius:8px; font-size:13px; cursor:pointer; font-family:inherit;">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-container" style="max-width:900px;">
+
+    <!-- Stats -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:24px;">
+      <div class="stat-card"><div class="stat-number" style="color:var(--pink);" id="stat-sessions">—</div><div class="stat-label">Total sessions</div></div>
+      <div class="stat-card"><div class="stat-number" style="color:var(--blue-mid);" id="stat-upcoming">—</div><div class="stat-label">Upcoming</div></div>
+      <div class="stat-card"><div class="stat-number" style="color:var(--green-mid);" id="stat-progress">0%</div><div class="stat-label">Goals completed</div></div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+
+      <!-- Upcoming sessions -->
+      <div class="portal-card">
+        <div class="portal-label">📅 Upcoming sessions</div>
+        <div id="upcoming-sessions"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+      <!-- Progress -->
+      <div class="portal-card">
+        <div class="portal-label">📊 Learning progress</div>
+        <div id="student-progress"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+
+      <!-- Session notes -->
+      <div class="portal-card">
+        <div class="portal-label">📝 Session notes & homework</div>
+        <div id="session-notes"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+      <!-- Check-ins -->
+      <div class="portal-card">
+        <div class="portal-label">✅ Session check-ins</div>
+        <div id="checkins-section"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+    </div>
+
+    <!-- Tutor info + reviews -->
+    <div class="portal-card">
+      <div class="portal-label">👨‍🏫 Your tutor</div>
+      <div id="tutor-info"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  (function() {
-    if (window.emailjs) {
-      emailjs.init({ publicKey: "EwR3DOxN_uCCgdwPC" });
-    }
-  })();
+  if (window.emailjs) emailjs.init({ publicKey: "EwR3DOxN_uCCgdwPC" });
 </script>
+<script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
 
 async function requestLink() {
   const email = document.getElementById('parent-email').value.trim();
   const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('send-btn');
   errEl.style.display = 'none';
   if (!email) { errEl.textContent = 'Please enter your email.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Sending...';
   try {
     const res = await fetch(`${API}/api/parents/magic-link`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     });
     const data = await res.json();
@@ -102,19 +164,18 @@ async function requestLink() {
       if (data.token && window.emailjs) {
         const magicLink = `${window.location.origin}/parent-dashboard.html?token=${data.token}`;
         try {
-          await emailjs.send('service_3epxmbr', 'template_1qsgrgd', {
-            to_email: email,
-            magic_link: magicLink
-          });
-        } catch(emailErr) { console.error('EmailJS error:', emailErr); }
+          await emailjs.send('service_3epxmbr', 'template_1qsgrgd', { to_email: email, magic_link: magicLink });
+        } catch(e) { console.error('EmailJS:', e); }
       }
     } else {
       errEl.textContent = data.error || 'Something went wrong.';
       errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Send magic link';
     }
   } catch(e) {
     errEl.textContent = 'Could not connect. Please try again.';
     errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Send magic link';
   }
 }
 
@@ -138,13 +199,13 @@ function showDashboard(parent) {
 
 async function loadDashboardData(parentId) {
   try {
-    const students = await fetch(`${API}/api/parents/${parentId}/students`).then(r => r.json());
-    if (!students.length) { return; }
+    const students = await fetch(`${API}/api/parents/${parentId}/students`).then(r=>r.json());
+    if (!students.length) return;
     const student = students[0];
     const [bookings, checkpoints, notes] = await Promise.all([
-      fetch(`${API}/api/students/${student.id}/bookings`).then(r => r.json()),
-      fetch(`${API}/api/checkpoints/student/${student.id}`).then(r => r.json()).catch(() => []),
-      fetch(`${API}/api/session-notes/student/${student.id}`).then(r => r.json()).catch(() => [])
+      fetch(`${API}/api/students/${student.id}/bookings`).then(r=>r.json()),
+      fetch(`${API}/api/checkpoints/student/${student.id}`).then(r=>r.json()).catch(()=>[]),
+      fetch(`${API}/api/session-notes/student/${student.id}`).then(r=>r.json()).catch(()=>[])
     ]);
     document.getElementById('stat-sessions').textContent = bookings.length;
     const upcoming = bookings.filter(b => new Date(b.scheduled_at) > new Date());
@@ -163,99 +224,91 @@ async function loadDashboardData(parentId) {
   } catch(e) {}
 }
 
-async function renderTutorInfo(bookings) {
-  const el = document.getElementById('tutor-info');
-  if (!bookings.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No tutor assigned yet.</p>'; return; }
-  const b = bookings[0];
-  let reviewsHtml = '';
-  try {
-    const reviews = await fetch(`${API}/api/reviews/tutor/${b.tutor_id}`).then(r=>r.json());
-    if (reviews.length) {
-      reviewsHtml = `<div style="margin-top:14px;"><div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:8px;">What others say</div>` +
-              reviews.slice(0,3).map(r => `
-          <div style="background:var(--pink-light); border-radius:10px; padding:10px; margin-bottom:8px;">
-            <div style="color:#f59e0b; font-size:13px; margin-bottom:4px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-            <div style="font-size:13px; color:var(--text-muted); line-height:1.5;">"${r.comment||''}"</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">— ${r.reviewer_name||'Student'}</div>
-          </div>`).join('') + `</div>`;
-    }
-  } catch(e) {}
-  el.innerHTML = `
-    <div style="display:flex; align-items:center; gap:14px;">
-      <div style="width:48px; height:48px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:var(--pink-dark);">${(b.tutor_first||'T')[0]}${(b.tutor_last||'')[0]}</div>
-      <div>
-        <div style="font-size:15px; font-weight:700; color:var(--navy);">${b.tutor_first} ${b.tutor_last}</div>
-        <a href="tutor-profile.html?id=${b.tutor_id}" style="font-size:13px; color:var(--pink); text-decoration:none;">View full profile →</a>
-      </div>
-    </div>
-    ${reviewsHtml}`;
+function renderUpcoming(bookings) {
+  const el = document.getElementById('upcoming-sessions');
+  if (!bookings.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No upcoming sessions scheduled.</p>'; return; }
+  el.innerHTML = bookings.slice(0,3).map(b => `
+    <div class="session-row">
+      <div style="font-size:14px; font-weight:700; color:var(--navy);">${b.subject_name} with ${b.tutor_first} ${b.tutor_last}</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">${new Date(b.scheduled_at).toLocaleString()}</div>
+      <div style="font-size:12px; color:var(--text-muted);">${b.duration_minutes} min · ${b.session_type || 'in-person'}</div>
+      <span style="display:inline-block; margin-top:5px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--blue-soft); color:var(--blue-mid);">${b.status}</span>
+    </div>`).join('');
 }
 
 function renderProgress(checkpoints) {
   const el = document.getElementById('student-progress');
-  if (!checkpoints.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No checkpoints set yet.</p>'; return; }
+  if (!checkpoints.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No checkpoints set yet by the tutor.</p>'; return; }
   const done = checkpoints.filter(c => c.completed).length;
   const pct = Math.round((done/checkpoints.length)*100);
   el.innerHTML = `
     <div style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Progress</span><span>${done}/${checkpoints.length}</span></div>
-      <div style="background:#e2e8f0; border-radius:20px; height:8px;"><div style="background:var(--pink); border-radius:20px; height:8px; width:${pct}%;"></div></div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Progress</span><span>${done}/${checkpoints.length} goals</span></div>
+      <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:var(--pink); border-radius:20px; height:8px; width:${pct}%; transition:width 0.5s;"></div></div>
     </div>
-    ${checkpoints.map(c => `
-      <div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border-light);">
-        <div style="width:16px; height:16px; border-radius:50%; background:${c.completed ? 'var(--pink)' : 'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
-          ${c.completed ? '<span style="color:white;font-size:10px;">✓</span>' : ''}
+    ${checkpoints.slice(0,5).map(c => `
+      <div class="checkpoint-row">
+        <div class="check-circle" style="background:${c.completed ? 'var(--green-mid)' : 'var(--border-light)'};">
+          ${c.completed ? '<span style="color:white;font-size:10px;font-weight:800;">✓</span>' : ''}
         </div>
-        <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--text)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
+        <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--navy)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
       </div>`).join('')}`;
 }
 
 function renderNotes(notes) {
   const el = document.getElementById('session-notes');
-  if (!notes.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No session notes yet.</p>'; return; }
+  if (!notes.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No session notes yet.</p>'; return; }
   el.innerHTML = notes.slice(0,3).map(n => `
-    <div style="padding:14px 0; border-bottom:1px solid var(--border-light);">
-      <div style="font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px;">Session with ${n.tutor_first} ${n.tutor_last} — ${new Date(n.session_date).toLocaleDateString()}</div>
-      ${n.notes ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;"><strong>Notes:</strong> ${n.notes}</div>` : ''}
-      ${n.homework ? `<div style="font-size:13px; color:var(--text-muted); background:var(--amber-soft); padding:8px 10px; border-radius:8px;"><strong>📝 Homework:</strong> ${n.homework}</div>` : ''}
+    <div class="session-row">
+      <div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:5px;">Session with ${n.tutor_first} ${n.tutor_last} — ${new Date(n.session_date).toLocaleDateString()}</div>
+      ${n.notes ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:5px; line-height:1.5;">${n.notes}</div>` : ''}
+      ${n.homework ? `<div style="font-size:13px; color:var(--amber-mid); background:var(--amber-soft); padding:8px 10px; border-radius:8px;"><strong>📝 Homework:</strong> ${n.homework}</div>` : ''}
     </div>`).join('');
-  function renderCheckins(checkins) {
-    let el = document.getElementById('checkins-section');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'checkins-section';
-      el.className = 'card';
-      el.style.marginBottom = '18px';
-      document.getElementById('session-notes').closest('.card').insertAdjacentElement('afterend', el);
-    }
-    if (!checkins.length) {
-      el.innerHTML = '<div class="section-title">Session check-ins</div><p style="color:var(--text-muted); font-size:14px;">No check-ins yet.</p>';
-      return;
-    }
-    el.innerHTML = `<div class="section-title">Session check-ins</div>` +
-            checkins.slice(0,3).map(c => `
-      <div style="display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-light);">
-        <span style="font-size:16px;">✅</span>
-        <div>
-          <div style="font-size:13px; font-weight:600; color:var(--navy);">Checked in — ${new Date(c.checked_in_at).toLocaleString()}</div>
-          ${c.note ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px;">"${c.note}"</div>` : ''}
-        </div>
-      </div>`).join('');
-  }
 }
 
-function renderTutorInfo(bookings) {
+function renderCheckins(checkins) {
+  const el = document.getElementById('checkins-section');
+  if (!checkins.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No check-ins yet.</p>'; return; }
+  el.innerHTML = checkins.slice(0,4).map(c => `
+    <div class="session-row">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-size:16px;">✅</span>
+        <div>
+          <div style="font-size:13px; font-weight:600; color:var(--navy);">${new Date(c.checked_in_at).toLocaleString()}</div>
+          ${c.note ? `<div style="font-size:12px; color:var(--text-muted);">"${c.note}"</div>` : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function renderTutorInfo(bookings) {
   const el = document.getElementById('tutor-info');
-  if (!bookings.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:14px;">No tutor assigned yet.</p>'; return; }
+  if (!bookings.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No tutor assigned yet.</p>'; return; }
   const b = bookings[0];
+  let reviewsHtml = '';
+  try {
+    const reviews = await fetch(`${API}/api/reviews/tutor/${b.tutor_id}`).then(r=>r.json());
+    if (reviews.length) {
+      reviewsHtml = `<div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-light);">
+        <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">What other families say</div>
+        ${reviews.slice(0,2).map(r => `
+          <div style="background:var(--pink-light); border-radius:10px; padding:12px; margin-bottom:8px;">
+            <div style="color:#f59e0b; font-size:13px; margin-bottom:4px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            <div style="font-size:13px; color:var(--text-muted); line-height:1.5; font-style:italic;">"${r.comment||''}"</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">— ${r.reviewer_name||'Student'}</div>
+          </div>`).join('')}
+      </div>`;
+    }
+  } catch(e) {}
   el.innerHTML = `
-    <div style="display:flex; align-items:center; gap:14px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
       <div style="width:48px; height:48px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:var(--pink-dark);">${(b.tutor_first||'T')[0]}${(b.tutor_last||'')[0]}</div>
       <div>
-        <div style="font-size:15px; font-weight:700; color:var(--navy);">${b.tutor_first} ${b.tutor_last}</div>
-        <a href="tutor-profile.html?id=${b.tutor_id}" style="font-size:13px; color:var(--pink); text-decoration:none;">View full profile →</a>
+        <div style="font-size:16px; font-weight:800; color:var(--navy);">${b.tutor_first} ${b.tutor_last}</div>
+        <a href="tutor-profile.html?id=${b.tutor_id}" style="font-size:13px; color:var(--pink); text-decoration:none; font-weight:600;">View full profile →</a>
       </div>
-    </div>`;
+    </div>
+    ${reviewsHtml}`;
 }
 
 function logout() {
@@ -264,10 +317,12 @@ function logout() {
   document.getElementById('dashboard-section').style.display = 'none';
 }
 
+// Handle magic link token in URL
 const params = new URLSearchParams(window.location.search);
 const token = params.get('token');
 if (token) autoLogin(token);
 
+// Auto-login if already saved
 const saved = localStorage.getItem('parent');
 if (saved) showDashboard(JSON.parse(saved));
 </script>
