@@ -5,20 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Become a Tutor — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--pink); color: white; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+    .subject-tag { border: 1.5px solid var(--border-light); border-radius: 20px; padding: 7px 16px; background: white; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); font-family: inherit; transition: all 0.15s; }
+    .subject-tag.selected { border-color: var(--pink); background: var(--pink-light); color: var(--pink-dark); }
+    .perk { display: flex; gap: 12px; align-items: flex-start; }
+    .perk-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <div style="margin-left:auto; display:flex; gap:10px;">
+    <a href="login.html" class="btn-ghost" style="padding:8px 18px;">Sign in</a>
+  </div>
 </header>
 
-<div class="page-container" style="max-width:600px;">
-  <div style="text-align:center; margin-bottom:28px;">
-    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">Become a TutwMe tutor</h1>
-    <p style="font-size:15px; color:var(--text-muted);">Fill out your profile — our team will review and approve within 24-48 hours</p>
+<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:56px 20px; text-align:center;">
+  <div style="display:inline-block; background:rgba(233,30,140,0.2); color:var(--pink-light); font-size:12px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:14px;">Join our tutor community</div>
+  <h1 style="font-size:40px; font-weight:800; color:white; margin-bottom:12px; line-height:1.2;">Run your tutoring business,<br><span style="color:var(--pink);">not just sessions.</span></h1>
+  <p style="font-size:16px; color:rgba(255,255,255,0.75); max-width:520px; margin:0 auto 32px; line-height:1.7;">TutwMe gives you everything you need to grow a real tutoring practice in Elk Grove & Sacramento.</p>
+
+  <!-- Perks -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; max-width:760px; margin:0 auto;">
+    <div style="background:rgba(255,255,255,0.08); border-radius:12px; padding:16px; text-align:left;">
+      <div style="font-size:20px; margin-bottom:8px;">💰</div>
+      <div style="font-size:14px; font-weight:700; color:white; margin-bottom:4px;">Keep 90%</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">You set your rate. We take a small 10% platform fee.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08); border-radius:12px; padding:16px; text-align:left;">
+      <div style="font-size:20px; margin-bottom:8px;">📊</div>
+      <div style="font-size:14px; font-weight:700; color:white; margin-bottom:4px;">Full business tools</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">Scheduling, invoicing, student CRM, analytics.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08); border-radius:12px; padding:16px; text-align:left;">
+      <div style="font-size:20px; margin-bottom:8px;">🎨</div>
+      <div style="font-size:14px; font-weight:700; color:white; margin-bottom:4px;">Portfolio profile</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">Custom theme, video intro, teaching style prompts.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08); border-radius:12px; padding:16px; text-align:left;">
+      <div style="font-size:20px; margin-bottom:8px;">🏆</div>
+      <div style="font-size:14px; font-weight:700; color:white; margin-bottom:4px;">Levels & badges</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">Earn recognition as you grow — Rookie to Master Mentor.</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:620px; margin:0 auto; padding:40px 20px 60px;">
+
+  <!-- Steps indicator -->
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom:32px; justify-content:center;">
+    <div style="display:flex; align-items:center; gap:6px;">
+      <div class="step-badge">1</div>
+      <span style="font-size:12px; font-weight:600; color:var(--navy);">Your info</span>
+    </div>
+    <div style="flex:1; height:1px; background:var(--border-light); max-width:40px;"></div>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <div class="step-badge" style="background:var(--border);">2</div>
+      <span style="font-size:12px; font-weight:600; color:var(--text-muted);">Review (24-48hrs)</span>
+    </div>
+    <div style="flex:1; height:1px; background:var(--border-light); max-width:40px;"></div>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <div class="step-badge" style="background:var(--border);">3</div>
+      <span style="font-size:12px; font-weight:600; color:var(--text-muted);">Go live!</span>
+    </div>
   </div>
 
-  <div class="card" id="form-section">
-    <div style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-bottom:14px;" id="error-box"></div>
+  <div class="card" style="padding:32px;" id="form-section">
+    <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:4px;">Tutor application</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:24px;">Takes about 5 minutes. Our team reviews every application within 24-48 hours.</p>
+
+    <div id="error-box" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:12px; font-size:13px; color:#dc2626; font-weight:600; margin-bottom:16px;"></div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
       <div>
@@ -37,15 +95,9 @@
         <input type="email" id="email" placeholder="you@email.com">
       </div>
       <div>
-        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Phone</label>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Phone (optional)</label>
         <input type="tel" id="phone" placeholder="(555) 555-5555">
       </div>
-    </div>
-
-    <div style="margin-bottom:16px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Subjects you teach</label>
-      <div style="display:flex; flex-wrap:wrap; gap:8px;" id="subject-tags"></div>
-      <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">Tap all that apply</div>
     </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
@@ -64,36 +116,56 @@
     </div>
 
     <div style="margin-bottom:16px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Short bio</label>
-      <textarea id="bio" placeholder="Tell students about your background and experience..." style="height:80px; resize:none;"></textarea>
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Subjects you teach <span style="color:#dc2626;">*</span></label>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;" id="subject-tags"></div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Short bio <span style="color:#dc2626;">*</span></label>
+      <textarea id="bio" placeholder="Tell students about your background, experience, and what makes you a great tutor..." style="height:90px; resize:none;"></textarea>
     </div>
 
     <div style="margin-bottom:16px;">
       <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Teaching philosophy</label>
-      <textarea id="teaching_philosophy" placeholder="How do you approach teaching? What makes your style effective?" style="height:80px; resize:none;"></textarea>
+      <textarea id="teaching_philosophy" placeholder="How do you approach teaching? What makes your sessions effective?" style="height:80px; resize:none;"></textarea>
     </div>
 
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:16px;">
       <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Teaching style keywords</label>
-      <input type="text" id="keywords" placeholder="e.g. patient, structured, visual, test prep, homework help">
+      <input type="text" id="keywords" placeholder="patient, structured, visual, test prep, homework help">
       <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Comma-separated — helps match you with the right students</div>
     </div>
 
-    <div style="background:var(--pink-light); border-radius:10px; padding:14px; margin-bottom:20px;">
-      <div style="font-size:13px; font-weight:700; color:var(--pink-dark); margin-bottom:6px;">📋 Approval process</div>
-      <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">Your profile will be reviewed by our team. Once approved, you'll appear publicly on TutwMe and can start receiving bookings. We may follow up by email for ID verification.</div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Zoom / Google Meet link (for virtual sessions)</label>
+      <input type="url" id="zoom_link" placeholder="https://zoom.us/j/... or meet.google.com/...">
     </div>
 
-    <button class="btn-primary" id="submit-btn" style="width:100%; padding:14px; font-size:16px;" onclick="submitApplication()">Submit Application</button>
+    <div style="background:var(--pink-light); border-radius:12px; padding:16px; margin-bottom:20px;">
+      <div style="font-size:13px; font-weight:700; color:var(--pink-dark); margin-bottom:6px;">📋 What happens next</div>
+      <div style="font-size:13px; color:var(--text-muted); line-height:1.7;">Our team reviews every application manually. If approved, you'll receive an email within 24-48 hours — then you can build your profile, set your availability, and start accepting bookings.</div>
+    </div>
+
+    <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px;">
+      <input type="checkbox" id="terms-agree" style="margin-top:2px; flex-shrink:0;">
+      <label for="terms-agree" style="font-size:13px; color:var(--text-muted); line-height:1.5; cursor:pointer;">
+        I agree to TutwMe's <a href="terms.html" target="_blank" style="color:var(--pink); font-weight:600; text-decoration:none;">Terms of Service</a> and <a href="privacy.html" target="_blank" style="color:var(--pink); font-weight:600; text-decoration:none;">Privacy Policy</a>
+      </label>
+    </div>
+
+    <button class="btn-primary" id="submit-btn" style="width:100%; padding:14px; font-size:15px;" onclick="submitApplication()">Submit application</button>
   </div>
 
+  <!-- Success -->
   <div id="success-box" style="display:none;" class="card">
-    <div style="text-align:center; padding:20px;">
-      <div style="font-size:40px; margin-bottom:12px;">🎉</div>
-      <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:8px;">Application submitted!</h2>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.6;">Thanks for applying to TutwMe! Our team will review your profile and reach out within 24-48 hours.</p>
+    <div style="text-align:center; padding:24px;">
+      <div style="font-size:48px; margin-bottom:16px;">🎉</div>
+      <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:10px;">Application submitted!</h2>
+      <p style="font-size:14px; color:var(--text-muted); line-height:1.7; margin-bottom:20px;">Thanks for applying to TutwMe! Our team will review your profile and reach out within 24-48 hours. In the meantime, browse the platform to get familiar.</p>
+      <a href="find-tutor.html" class="btn-outline" style="padding:12px 24px;">Browse other tutors</a>
     </div>
   </div>
+
 </div>
 
 <script src="chatbot.js"></script>
@@ -102,31 +174,28 @@ const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' :
 const selectedSubjects = new Set();
 
 async function loadSubjects() {
-  const subjects = await fetch(`${API}/api/subjects`).then(r=>r.json()).catch(()=>[]);
-  document.getElementById('subject-tags').innerHTML = subjects.map(s => `
-    <button onclick="toggleSubject('${s.name}', this)" type="button"
-      style="border:2px solid var(--border-light); border-radius:20px; padding:6px 14px; background:white; cursor:pointer; font-size:13px; font-weight:600; color:var(--text-muted); font-family:Inter,sans-serif;">
-      ${s.name}
-    </button>`).join('');
+  try {
+    const subjects = await fetch(`${API}/api/subjects`).then(r=>r.json());
+    document.getElementById('subject-tags').innerHTML = subjects.map(s => `
+      <button type="button" onclick="toggleSubject('${s.name}', this)" class="subject-tag">${s.name}</button>`
+    ).join('');
+  } catch(e) {}
 }
 
 function toggleSubject(name, btn) {
   if (selectedSubjects.has(name)) {
     selectedSubjects.delete(name);
-    btn.style.borderColor = 'var(--border-light)';
-    btn.style.background = 'white';
-    btn.style.color = 'var(--text-muted)';
+    btn.classList.remove('selected');
   } else {
     selectedSubjects.add(name);
-    btn.style.borderColor = 'var(--pink)';
-    btn.style.background = 'var(--pink-light)';
-    btn.style.color = 'var(--pink-dark)';
+    btn.classList.add('selected');
   }
 }
 
 async function submitApplication() {
   const errEl = document.getElementById('error-box');
   errEl.style.display = 'none';
+
   const first_name = document.getElementById('first_name').value.trim();
   const last_name = document.getElementById('last_name').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -136,21 +205,24 @@ async function submitApplication() {
   const bio = document.getElementById('bio').value.trim();
   const teaching_philosophy = document.getElementById('teaching_philosophy').value.trim();
   const keywords = document.getElementById('keywords').value.trim();
+  const zoom_link = document.getElementById('zoom_link').value.trim();
+  const termsAgreed = document.getElementById('terms-agree').checked;
 
   if (!first_name || !last_name || !email || !hourly_rate || !bio) {
     errEl.textContent = 'Please fill in all required fields (name, email, rate, bio).';
-    errEl.style.display = 'block';
-    return;
+    errEl.style.display = 'block'; return;
   }
   if (selectedSubjects.size === 0) {
     errEl.textContent = 'Please select at least one subject you teach.';
-    errEl.style.display = 'block';
-    return;
+    errEl.style.display = 'block'; return;
+  }
+  if (!termsAgreed) {
+    errEl.textContent = 'Please agree to the Terms of Service and Privacy Policy.';
+    errEl.style.display = 'block'; return;
   }
 
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.disabled = true; btn.textContent = 'Submitting...';
 
   try {
     const res = await fetch(`${API}/api/webhook/tutor-signup`, {
@@ -158,10 +230,9 @@ async function submitApplication() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         first_name, last_name, email, phone,
-        bio, teaching_philosophy,
-        hourly_rate, session_types,
-        subjects: [...selectedSubjects].join(','),
-        keywords
+        bio, teaching_philosophy, hourly_rate,
+        session_types, zoom_link, keywords,
+        subjects: [...selectedSubjects].join(',')
       })
     });
     const data = await res.json();
@@ -169,16 +240,14 @@ async function submitApplication() {
       document.getElementById('form-section').style.display = 'none';
       document.getElementById('success-box').style.display = 'block';
     } else {
-      errEl.textContent = data.error || 'Something went wrong.';
+      errEl.textContent = data.error || 'Something went wrong. Please try again.';
       errEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Submit Application';
+      btn.disabled = false; btn.textContent = 'Submit application';
     }
   } catch(e) {
     errEl.textContent = 'Could not connect. Please try again.';
     errEl.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Submit Application';
+    btn.disabled = false; btn.textContent = 'Submit application';
   }
 }
 

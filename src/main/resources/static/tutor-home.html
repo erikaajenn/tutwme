@@ -5,36 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutors — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .action-card { background: white; border-radius: 16px; padding: 22px 20px; display: flex; align-items: center; gap: 16px; text-decoration: none; border: 1px solid var(--border-light); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+    .action-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(233,30,140,0.1); border-color: var(--pink-light); }
+    .action-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .action-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .action-desc { font-size: 13px; color: var(--text-muted); }
+    .arrow { margin-left: auto; font-size: 18px; color: var(--text-light); }
+    .perk { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <div style="margin-left:auto; display:flex; gap:10px;">
+    <a href="login.html" class="btn-ghost" style="padding:8px 18px;">Sign in</a>
+    <a href="tutor-register.html" class="btn-primary" style="padding:8px 18px;">Apply to tutor</a>
+  </div>
 </header>
-<div style="text-align:center; padding:40px 20px 28px;">
-  <h1 style="font-size:28px; font-weight:900; color:var(--text); margin-bottom:8px;">Welcome, Tutor! 📚</h1>
-  <p style="font-size:16px; color:var(--text-muted); font-weight:600;">What would you like to do today?</p>
+
+<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:48px 20px 32px; text-align:center;">
+  <div style="font-size:40px; margin-bottom:12px;">📚</div>
+  <h1 style="font-size:30px; font-weight:800; color:white; margin-bottom:8px;">Welcome, Tutor!</h1>
+  <p style="font-size:15px; color:rgba(255,255,255,0.7); margin-bottom:20px;">Your complete tutoring business platform</p>
+  <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+    <div style="text-align:center; color:white;">
+      <div style="font-size:22px; font-weight:800; color:var(--pink);">90%</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">You keep</div>
+    </div>
+    <div style="width:1px; background:rgba(255,255,255,0.15);"></div>
+    <div style="text-align:center; color:white;">
+      <div style="font-size:22px; font-weight:800; color:var(--pink);">24-48hr</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">Review time</div>
+    </div>
+    <div style="width:1px; background:rgba(255,255,255,0.15);"></div>
+    <div style="text-align:center; color:white;">
+      <div style="font-size:22px; font-weight:800; color:var(--pink);">Free</div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.6);">To join</div>
+    </div>
+  </div>
 </div>
-<div style="display:flex; flex-direction:column; gap:14px; padding:0 20px; max-width:480px; margin:0 auto;">
-  <a href="admin.html" class="card" style="display:flex; align-items:center; gap:16px; text-decoration:none; border-color:var(--sage-light);">
-    <div style="width:56px; height:56px; border-radius:14px; background:var(--sage-light); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0;">📊</div>
-    <div><div style="font-size:17px; font-weight:800; color:var(--sage-dark);">My Dashboard</div><div style="font-size:13px; color:var(--text-muted); font-weight:600;">View bookings and students</div></div>
-    <div style="margin-left:auto; font-size:20px; color:var(--sage);">→</div>
-  </a>
-  <a href="admin.html" class="card" style="display:flex; align-items:center; gap:16px; text-decoration:none; border-color:var(--blue-light);">
-    <div style="width:56px; height:56px; border-radius:14px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0;">📅</div>
-    <div><div style="font-size:17px; font-weight:800; color:var(--blue-dark);">My Schedule</div><div style="font-size:13px; color:var(--text-muted); font-weight:600;">See upcoming sessions</div></div>
-    <div style="margin-left:auto; font-size:20px; color:var(--blue);">→</div>
-  </a>
-  <a href="login.html" class="card" style="display:flex; align-items:center; gap:16px; text-decoration:none; border-color:var(--rose-light);">
-    <div style="width:56px; height:56px; border-radius:14px; background:var(--rose-light); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0;">🔐</div>
-    <div><div style="font-size:17px; font-weight:800; color:var(--rose-dark);">Sign In</div><div style="font-size:13px; color:var(--text-muted); font-weight:600;">Log in to your tutor account</div></div>
-    <div style="margin-left:auto; font-size:20px; color:var(--rose);">→</div>
-  </a>
+
+<div class="page-container" style="max-width:520px;">
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:28px;">
+
+    <a href="tutor-register.html" class="action-card" style="border-color:var(--pink-light); background:linear-gradient(135deg,#fff5f9,white);">
+      <div class="action-icon" style="background:var(--pink-light);">🌟</div>
+      <div>
+        <div class="action-title" style="color:var(--pink-dark);">Apply to become a tutor</div>
+        <div class="action-desc">Join our community — reviewed within 24-48 hours</div>
+      </div>
+      <div class="arrow" style="color:var(--pink);">→</div>
+    </a>
+
+    <a href="login.html?role=tutor" class="action-card">
+      <div class="action-icon" style="background:var(--blue-soft);">🔐</div>
+      <div>
+        <div class="action-title">Sign in to my dashboard</div>
+        <div class="action-desc">View bookings, students, and earnings</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a href="tutor-dashboard.html" class="action-card">
+      <div class="action-icon" style="background:var(--green-soft);">📊</div>
+      <div>
+        <div class="action-title">Tutor dashboard</div>
+        <div class="action-desc">Sessions, progress tracking, student management</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a href="tutor-business.html" class="action-card">
+      <div class="action-icon" style="background:var(--amber-soft);">💼</div>
+      <div>
+        <div class="action-title">Business tools</div>
+        <div class="action-desc">Invoicing, earnings tracker, payment reminders</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a href="tutor-profile-builder.html" class="action-card">
+      <div class="action-icon" style="background:#f3e5f5;">🎨</div>
+      <div>
+        <div class="action-title">Build my profile</div>
+        <div class="action-desc">Custom theme, video intro, teaching style</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a href="avatar-builder.html" class="action-card">
+      <div class="action-icon" style="background:var(--pink-light);">✨</div>
+      <div>
+        <div class="action-title">Customize my avatar</div>
+        <div class="action-desc">Choose from 19 AI-generated avatar styles</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+
+  <!-- What you get -->
+  <div class="card" style="padding:24px;">
+    <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:16px;">What TutwMe gives tutors</div>
+    <div class="perk">
+      <span style="font-size:18px;">💰</span>
+      <div><strong style="font-size:13px; color:var(--navy);">Keep 90% of earnings</strong><br><span style="font-size:13px; color:var(--text-muted);">Set your own rate. We take a small 10% platform fee.</span></div>
+    </div>
+    <div class="perk">
+      <span style="font-size:18px;">📊</span>
+      <div><strong style="font-size:13px; color:var(--navy);">Full business dashboard</strong><br><span style="font-size:13px; color:var(--text-muted);">Scheduling, invoicing, student CRM, analytics — all in one place.</span></div>
+    </div>
+    <div class="perk">
+      <span style="font-size:18px;">🎨</span>
+      <div><strong style="font-size:13px; color:var(--navy);">Portfolio profile builder</strong><br><span style="font-size:13px; color:var(--text-muted);">Custom themes, video intros, teaching style prompts — stand out.</span></div>
+    </div>
+    <div class="perk">
+      <span style="font-size:18px;">🏆</span>
+      <div><strong style="font-size:13px; color:var(--navy);">Levels & leaderboard</strong><br><span style="font-size:13px; color:var(--text-muted);">Earn badges and climb from Rookie to Master Mentor.</span></div>
+    </div>
+    <div class="perk" style="border-bottom:none;">
+      <span style="font-size:18px;">👨‍👩‍👧</span>
+      <div><strong style="font-size:13px; color:var(--navy);">Parent progress portal</strong><br><span style="font-size:13px; color:var(--text-muted);">Parents see session notes automatically — builds trust and repeat bookings.</span></div>
+    </div>
+    <a href="tutor-register.html" class="btn-primary" style="width:100%; padding:13px; text-align:center; display:block; margin-top:20px;">Apply to join TutwMe →</a>
+  </div>
 </div>
-<div style="text-align:center; padding:32px 20px;">
-  <p style="font-size:14px; color:var(--text-muted); font-weight:600; margin-bottom:10px;">Want to join TutwMe as a tutor?</p>
-  <a href="tutor-register.html" class="btn-primary">Apply to become a tutor</a>
-</div>
+
 <script src="chatbot.js"></script>
 </body>
 </html>

@@ -5,73 +5,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find a Tutor — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .filter-sidebar { width: 240px; flex-shrink: 0; }
+    .filter-section { margin-bottom: 20px; }
+    .filter-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .tutor-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+    .tutor-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(233,30,140,0.12); }
+    .card-banner { height: 64px; }
+    .card-body { padding: 16px; }
+    .search-wrap { position: relative; }
+    .search-wrap input { padding-left: 42px; }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text-muted); }
+    @media (max-width: 768px) {
+      .find-layout { flex-direction: column !important; }
+      .filter-sidebar { width: 100% !important; }
+    }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <nav style="display:flex; gap:24px; margin-left:40px;">
+    <a href="find-tutor.html" style="font-size:14px; font-weight:600; color:var(--pink); text-decoration:none;">Browse Tutors</a>
+    <a href="find-match.html" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Find My Match</a>
+    <a href="about.html" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">About</a>
+    <a href="tutor-register.html" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Become a Tutor</a>
+  </nav>
   <div style="margin-left:auto; display:flex; gap:10px;">
-    <a href="login.html" class="btn-ghost" style="padding:8px 16px;">Sign in</a>
-    <a href="register.html" class="btn-primary" style="padding:8px 16px;">Get started</a>
+    <a href="login.html" class="btn-ghost" style="padding:8px 18px;">Sign in</a>
+    <a href="register.html" class="btn-primary" style="padding:8px 18px;">Get started</a>
   </div>
 </header>
 
-<div style="background:linear-gradient(135deg,#fff0f6,#fafafa); padding:40px 20px 32px; text-align:center;">
-  <h1 style="font-size:32px; font-weight:800; color:var(--navy); margin-bottom:8px;">Find your perfect tutor</h1>
-  <p style="font-size:15px; color:var(--text-muted); margin-bottom:24px;">Filter by subject, grade, session type and price</p>
-  <div style="max-width:500px; margin:0 auto; position:relative;">
-    <input type="text" id="search-input" placeholder="Search by subject, name or keyword..." oninput="filterTutors()" style="padding-left:44px; font-size:15px;">
-    <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:18px;">🔍</span>
+<!-- Hero -->
+<div style="background:linear-gradient(135deg,#fff0f6,#fafafa); padding:48px 20px 36px; text-align:center;">
+  <div style="display:inline-block; background:var(--pink-light); color:var(--pink-dark); font-size:12px; font-weight:700; padding:4px 14px; border-radius:20px; margin-bottom:14px;">All tutors manually verified</div>
+  <h1 style="font-size:38px; font-weight:800; color:var(--navy); margin-bottom:10px; line-height:1.2;">Find your perfect tutor</h1>
+  <p style="font-size:16px; color:var(--text-muted); margin-bottom:24px;">Filter by subject, session type, and price — or <a href="find-match.html" style="color:var(--pink); font-weight:600; text-decoration:none;">let AI match you ✨</a></p>
+  <div class="search-wrap" style="max-width:540px; margin:0 auto;">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Search by name, subject, or keyword..." oninput="filterTutors()" style="font-size:15px; border-radius:50px; padding:13px 20px 13px 44px; border:1.5px solid var(--border); box-shadow:0 2px 12px rgba(0,0,0,0.06);">
   </div>
 </div>
 
 <div class="page-container">
-  <div style="display:flex; gap:20px; align-items:flex-start;">
+  <div class="find-layout" style="display:flex; gap:24px; align-items:flex-start;">
 
-    <!-- Filters sidebar -->
-    <div style="width:220px; flex-shrink:0;">
+    <!-- Filters -->
+    <div class="filter-sidebar">
       <div class="card" style="position:sticky; top:80px;">
-        <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:16px;">Filters</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div style="font-size:15px; font-weight:700; color:var(--navy);">Filters</div>
+          <button onclick="clearFilters()" style="font-size:12px; color:var(--pink); background:none; border:none; cursor:pointer; font-family:inherit; font-weight:600;">Clear all</button>
+        </div>
 
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Subject</div>
-          <select id="filter-subject" onchange="filterTutors()" style="font-size:13px; padding:8px 10px;">
+        <div class="filter-section">
+          <div class="filter-label">Subject</div>
+          <select id="filter-subject" onchange="filterTutors()" style="font-size:13px;">
             <option value="">All subjects</option>
           </select>
         </div>
 
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Session type</div>
+        <div class="filter-section">
+          <div class="filter-label">Session type</div>
           <div style="display:flex; flex-direction:column; gap:8px;">
-            <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; font-weight:500;">
               <input type="radio" name="session-type" value="" onchange="filterTutors()" checked> All
             </label>
-            <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
-              <input type="radio" name="session-type" value="virtual" onchange="filterTutors()"> Virtual
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; font-weight:500;">
+              <input type="radio" name="session-type" value="virtual" onchange="filterTutors()"> 💻 Virtual
             </label>
-            <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
-              <input type="radio" name="session-type" value="in-person" onchange="filterTutors()"> In-person
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; font-weight:500;">
+              <input type="radio" name="session-type" value="in-person" onchange="filterTutors()"> 📍 In-person
             </label>
           </div>
         </div>
 
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Max price/hr</div>
-          <input type="range" id="filter-price" min="20" max="150" value="150" oninput="updatePrice(this.value)" style="width:100%;">
-          <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">Up to $<span id="price-label">150</span>/hr</div>
+        <div class="filter-section">
+          <div class="filter-label">Max price/hr</div>
+          <input type="range" id="filter-price" min="20" max="200" value="200" oninput="updatePrice(this.value)" style="width:100%; accent-color:var(--pink);">
+          <div style="font-size:13px; color:var(--text-muted); margin-top:6px;">Up to <strong style="color:var(--navy);">$<span id="price-label">200</span>/hr</strong></div>
         </div>
 
-        <button onclick="clearFilters()" class="btn-ghost" style="width:100%; padding:8px; font-size:13px;">Clear filters</button>
+        <div style="background:var(--pink-light); border-radius:10px; padding:12px; text-align:center; margin-top:4px;">
+          <div style="font-size:12px; font-weight:700; color:var(--pink-dark); margin-bottom:6px;">✨ Not sure who to pick?</div>
+          <a href="find-match.html" class="btn-primary" style="padding:8px 16px; font-size:12px; display:block; text-align:center;">Try AI matching</a>
+        </div>
       </div>
     </div>
 
-    <!-- Tutor grid -->
-    <div style="flex:1;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <div style="font-size:14px; color:var(--text-muted);" id="results-count">Loading...</div>
-        <select id="sort-by" onchange="sortTutors()" style="font-size:13px; padding:8px 12px; width:auto;">
-          <option value="name">Sort by name</option>
-          <option value="price-low">Price: low to high</option>
-          <option value="price-high">Price: high to low</option>
+    <!-- Results -->
+    <div style="flex:1; min-width:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+        <div style="font-size:14px; color:var(--text-muted); font-weight:500;" id="results-count">Loading tutors...</div>
+        <select id="sort-by" onchange="sortTutors()" style="font-size:13px; padding:8px 12px; width:auto; border-radius:8px;">
+          <option value="name">Sort: Name A–Z</option>
+          <option value="price-low">Price: Low to high</option>
+          <option value="price-high">Price: High to low</option>
           <option value="rating">Top rated</option>
         </select>
       </div>
@@ -82,28 +113,26 @@
 
 <script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
-
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
 let allTutors = [];
 let tutorSubjects = {};
 
 async function loadData() {
-  const [tutors, subjects] = await Promise.all([
-    fetch(`${API}/api/tutors`).then(r => r.json()),
-    fetch(`${API}/api/subjects`).then(r => r.json())
-  ]);
-  allTutors = tutors;
-  const subjectSelect = document.getElementById('filter-subject');
-  subjects.forEach(s => {
-    subjectSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-  });
-  for (const tutor of tutors) {
-    const subs = await fetch(`${API}/api/tutors/${tutor.id}/subjects`).then(r => r.json());
-    tutorSubjects[tutor.id] = subs;
+  try {
+    const [tutors, subjects] = await Promise.all([
+      fetch(`${API}/api/tutors`).then(r=>r.json()),
+      fetch(`${API}/api/subjects`).then(r=>r.json())
+    ]);
+    allTutors = tutors;
+    const subjectSelect = document.getElementById('filter-subject');
+    subjects.forEach(s => { subjectSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`; });
+    for (const t of tutors) {
+      tutorSubjects[t.id] = await fetch(`${API}/api/tutors/${t.id}/subjects`).then(r=>r.json()).catch(()=>[]);
+    }
+    renderTutors(tutors);
+  } catch(e) {
+    document.getElementById('tutors-grid').innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:40px;">Could not load tutors. Please try again.</p>';
   }
-  renderTutors(tutors);
 }
 
 function filterTutors() {
@@ -113,7 +142,7 @@ function filterTutors() {
   const maxPrice = parseInt(document.getElementById('filter-price').value);
   let filtered = allTutors.filter(t => {
     const subs = tutorSubjects[t.id] || [];
-    const matchSearch = !search || `${t.first_name} ${t.last_name} ${t.bio}`.toLowerCase().includes(search);
+    const matchSearch = !search || `${t.first_name} ${t.last_name} ${t.bio || ''} ${t.keywords || ''}`.toLowerCase().includes(search);
     const matchSubject = !subject || subs.some(s => s.name === subject);
     const matchType = !sessionType || t.session_types === sessionType || t.session_types === 'both';
     const matchPrice = t.hourly_rate <= maxPrice;
@@ -127,9 +156,9 @@ function sortTutors() { filterTutors(); }
 function sortAndRender(tutors) {
   const sort = document.getElementById('sort-by').value;
   if (sort === 'price-low') tutors.sort((a,b) => a.hourly_rate - b.hourly_rate);
-  if (sort === 'price-high') tutors.sort((a,b) => b.hourly_rate - a.hourly_rate);
-  if (sort === 'rating') tutors.sort((a,b) => (b.rating||0) - (a.rating||0));
-  if (sort === 'name') tutors.sort((a,b) => a.first_name.localeCompare(b.first_name));
+  else if (sort === 'price-high') tutors.sort((a,b) => b.hourly_rate - a.hourly_rate);
+  else if (sort === 'rating') tutors.sort((a,b) => (b.rating||0) - (a.rating||0));
+  else tutors.sort((a,b) => a.first_name.localeCompare(b.first_name));
   renderTutors(tutors);
 }
 
@@ -137,28 +166,40 @@ function renderTutors(tutors) {
   const grid = document.getElementById('tutors-grid');
   document.getElementById('results-count').textContent = `${tutors.length} tutor${tutors.length !== 1 ? 's' : ''} found`;
   if (!tutors.length) {
-    grid.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:40px; grid-column:1/-1;">No tutors match your filters. Try adjusting them!</div>';
+    grid.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding:60px 20px;grid-column:1/-1;">
+      <div style="font-size:32px; margin-bottom:12px;">🔍</div>
+      <div style="font-size:16px; font-weight:700; color:var(--navy); margin-bottom:8px;">No tutors match your filters</div>
+      <div style="font-size:14px; margin-bottom:16px;">Try adjusting or clearing your filters</div>
+      <button onclick="clearFilters()" class="btn-outline" style="padding:10px 20px;">Clear filters</button>
+    </div>`;
     return;
   }
   grid.innerHTML = tutors.map(t => {
     const subs = tutorSubjects[t.id] || [];
     const tags = subs.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
     const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=64`;
+    const banner = t.banner_gradient || 'linear-gradient(135deg,#fce4f0,#f3e5f5)';
+    const stars = t.rating > 0 ? '⭐'.repeat(Math.min(Math.round(t.rating),5)) : '';
+    const sessionLabel = t.session_types === 'virtual' ? '💻 Virtual' : t.session_types === 'in-person' ? '📍 In-person' : '💻 & 📍 Both';
     return `
-      <div class="card card-hover" style="cursor:pointer;" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
-        <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
-          <img src="${avatarUrl}" style="width:52px; height:52px; border-radius:50%; border:2px solid var(--pink-light); flex-shrink:0;" onerror="this.style.display='none'">
-          <div>
-            <div style="font-size:15px; font-weight:700; color:var(--navy);">${t.first_name} ${t.last_name}</div>
-            <div style="font-size:13px; color:var(--pink); font-weight:600;">$${t.hourly_rate}/hr</div>
+      <div class="tutor-card" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
+        <div class="card-banner" style="background:${banner};"></div>
+        <div class="card-body">
+          <div style="display:flex; align-items:flex-start; gap:10px; margin-top:-24px; margin-bottom:10px;">
+            <img src="${avatarUrl}" style="width:48px; height:48px; border-radius:50%; border:3px solid white; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.1);" onerror="this.style.display='none'">
+            <div style="padding-top:26px;">
+              <div style="font-size:14px; font-weight:700; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+              <div style="font-size:13px; color:var(--pink); font-weight:600;">$${t.hourly_rate}/hr</div>
+            </div>
+          </div>
+          ${stars ? `<div style="font-size:12px; margin-bottom:6px;">${stars} <span style="color:var(--text-muted);">(${t.total_reviews || 0})</span></div>` : '<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">New tutor</div>'}
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${t.bio || ''}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px;">${tags}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; color:var(--text-muted); font-weight:500;">${sessionLabel}</span>
+            <button class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="event.stopPropagation(); window.location.href='booking.html?tutor_id=${t.id}'">Book</button>
           </div>
         </div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${t.bio}</div>
-        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">${tags}</div>
-        <div style="display:flex; gap:6px; margin-bottom:12px;">
-          <span class="tag-blue" style="font-size:11px;">${t.session_types === 'virtual' ? '💻 Virtual' : t.session_types === 'in-person' ? '📍 In-person' : '💻 Virtual & 📍 In-person'}</span>
-        </div>
-        <button class="btn-primary" style="width:100%; padding:9px; font-size:13px;" onclick="event.stopPropagation(); window.location.href='booking.html?tutor_id=${t.id}'">Book session</button>
       </div>`;
   }).join('');
 }
@@ -172,8 +213,8 @@ function clearFilters() {
   document.getElementById('search-input').value = '';
   document.getElementById('filter-subject').value = '';
   document.querySelector('input[name="session-type"][value=""]').checked = true;
-  document.getElementById('filter-price').value = 150;
-  document.getElementById('price-label').textContent = 150;
+  document.getElementById('filter-price').value = 200;
+  document.getElementById('price-label').textContent = 200;
   renderTutors(allTutors);
 }
 
