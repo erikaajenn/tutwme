@@ -5,140 +5,192 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Dashboard — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .dash-card { background: white; border-radius: 16px; padding: 22px; border: 1px solid var(--border-light); margin-bottom: 16px; }
+    .dash-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+    .session-row { padding: 11px 0; border-bottom: 1px solid var(--border-light); }
+    .session-row:last-child { border-bottom: none; }
+    .checkpoint-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+    .checkpoint-row:last-child { border-bottom: none; }
+    .tutor-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+    .tutor-row:last-child { border-bottom: none; }
+    .nav-tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+    .nav-tab { flex: 1; padding: 9px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; background: transparent; color: var(--text-muted); transition: all 0.15s; }
+    .nav-tab.active { background: white; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
-  <div style="margin-left:auto; font-size:13px; font-weight:700; color:var(--blue);">Student Dashboard</div>
+  <div style="margin-left:auto; display:flex; gap:10px;">
+    <a href="booking.html" class="btn-primary" style="padding:8px 18px;">Book session</a>
+  </div>
 </header>
 
-<div style="max-width:960px; margin:0 auto; padding:24px 20px 60px;">
-
-  <div style="display:flex; align-items:center; gap:14px; margin-bottom:28px;">
-    <div style="width:52px; height:52px; border-radius:50%; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:22px;">🎒</div>
-    <div>
-      <div style="font-size:20px; font-weight:900; color:var(--text);" id="student-name">Welcome back!</div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Keep up the great work</div>
-    </div>
-  </div>
-
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:28px;">
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:var(--blue);" id="stat-bookings">-</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">Sessions</div>
-    </div>
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:var(--sage);" id="stat-progress">0%</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">Progress</div>
-    </div>
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:var(--rose);" id="stat-tutors">-</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">My Tutors</div>
-    </div>
-  </div>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:16px;">📊 My Progress</div>
-      <div id="progress-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
+<!-- Hero banner -->
+<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:28px 20px;">
+  <div class="page-container" style="padding-top:0; padding-bottom:0; max-width:960px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">🎒</div>
+        <div>
+          <div style="font-size:20px; font-weight:800; color:white;" id="student-name">Welcome back!</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.65);">Keep up the great work</div>
+        </div>
       </div>
-    </div>
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:16px;">📅 My Calendar</div>
-      <div id="calendar-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
-      </div>
-      <a href="booking.html" class="btn-primary" style="display:block; text-align:center; padding:10px; margin-top:14px; font-size:13px;">+ Book a Session</a>
-    </div>
-
-  </div>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:14px;">💳 Send Payment</div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.6;">Pay your tutor before your session. Under-18 students need a parent to pay.</p>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <a href="https://venmo.com/TutwMe" target="_blank" style="display:flex; align-items:center; gap:10px; background:#008CFF; color:white; border-radius:10px; padding:12px 14px; text-decoration:none;">
-          <span style="font-size:18px;">💙</span>
-          <div><div style="font-size:13px; font-weight:800;">Pay via Venmo</div><div style="font-size:11px; opacity:0.85;">@TutwMe</div></div>
-        </a>
-        <a href="https://cash.app/$TutwMe" target="_blank" style="display:flex; align-items:center; gap:10px; background:#00D64F; color:white; border-radius:10px; padding:12px 14px; text-decoration:none;">
-          <span style="font-size:18px;">💚</span>
-          <div><div style="font-size:13px; font-weight:800;">Pay via CashApp</div><div style="font-size:11px; opacity:0.85;">$TutwMe</div></div>
-        </a>
-        <div style="background:var(--blue-light); border-radius:10px; padding:12px 14px;">
-          <div style="font-size:13px; font-weight:800; color:var(--blue-dark);">Pay via Zelle</div>
-          <div style="font-size:11px; color:var(--text-muted);">Send to: @TutwMe</div>
+      <div style="display:flex; gap:24px;">
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-bookings">—</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Sessions</div>
+        </div>
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-progress">0%</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Progress</div>
+        </div>
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-tutors">—</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Tutors</div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:14px;">✅ Session Check-in</div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.6;">Check in when your session starts. Your tutor will be notified automatically.</p>
-      <select id="checkin-booking" style="margin-bottom:10px;">
-        <option value="">Select your session</option>
-      </select>
-      <textarea id="checkin-note" placeholder="Any notes for your tutor? (optional)" style="height:80px; resize:none; margin-bottom:10px;"></textarea>
-      <button class="btn-primary" style="width:100%; padding:10px; font-size:14px;" onclick="checkIn()">Check In Now</button>
-      <div id="checkin-success" style="display:none; background:#f0fdf4; border:2px solid #86efac; border-radius:10px; padding:12px; text-align:center; margin-top:10px; font-size:13px; font-weight:700; color:#15803d;">Checked in! Your tutor has been notified.</div>
-    </div>
+<div class="page-container" style="max-width:960px;">
 
+  <!-- Nav tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('overview', this)">Overview</button>
+    <button class="nav-tab" onclick="showSection('progress', this)">Progress</button>
+    <button class="nav-tab" onclick="showSection('sessions', this)">Sessions</button>
+    <button class="nav-tab" onclick="showSection('payment', this)">Payment</button>
+    <button class="nav-tab" onclick="showSection('community', this)">Community</button>
   </div>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+  <!-- Overview -->
+  <div id="section-overview">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
 
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:14px;">🔍 Find a Tutor</div>
-      <input type="text" id="tutor-search" placeholder="Search by subject or name..." oninput="filterTutors(this.value)" style="margin-bottom:12px;">
-      <div id="tutor-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
+      <div class="dash-card">
+        <div class="dash-label">📅 Upcoming sessions</div>
+        <div id="calendar-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+        <a href="booking.html" class="btn-primary" style="display:block; text-align:center; padding:10px; margin-top:14px; font-size:13px;">+ Book a session</a>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-label">📊 My progress</div>
+        <div id="progress-preview"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-label">✅ Session check-in</div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.6;">Check in when your session starts — your tutor will be notified automatically.</p>
+        <select id="checkin-booking" style="margin-bottom:10px; font-size:13px;"><option value="">Select your session...</option></select>
+        <textarea id="checkin-note" placeholder="Any notes for your tutor? (optional)" style="height:70px; resize:none; margin-bottom:10px; font-size:13px;"></textarea>
+        <button class="btn-primary" style="width:100%; padding:10px; font-size:14px;" onclick="checkIn()">Check in now ✓</button>
+        <div id="checkin-success" style="display:none; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:10px; text-align:center; margin-top:10px; font-size:13px; font-weight:700; color:#15803d;">✓ Checked in! Your tutor has been notified.</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-label">🔍 Find a tutor</div>
+        <input type="text" id="tutor-search" placeholder="Search by name or subject..." oninput="filterTutors(this.value)" style="margin-bottom:12px; font-size:13px;">
+        <div id="tutor-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+        <a href="find-tutor.html" style="display:block; text-align:center; font-size:13px; color:var(--pink); text-decoration:none; font-weight:600; margin-top:12px;">Browse all tutors →</a>
       </div>
     </div>
+  </div>
 
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:14px;">💬 Questions & Community</div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Have questions? Join our community or reach out directly!</p>
+  <!-- Progress -->
+  <div id="section-progress" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">📊 Learning checkpoints</div>
+      <div id="progress-full"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Sessions -->
+  <div id="section-sessions" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">📅 All sessions</div>
+      <div id="all-sessions"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-label">⭐ Leave a review</div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.6;">Help other families find great tutors by sharing your experience.</p>
+      <a href="review.html" class="btn-outline" style="display:block; text-align:center; padding:11px;">Write a review ⭐</a>
+    </div>
+  </div>
+
+  <!-- Payment -->
+  <div id="section-payment" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">💳 Send payment</div>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Pay your session fee to TutwMe before your session. Students under 18 need a parent to pay.</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <a href="https://venmo.com/TutwMe" target="_blank" style="display:flex; align-items:center; gap:12px; background:#008CFF; color:white; border-radius:12px; padding:14px 16px; text-decoration:none;">
+          <span style="font-size:20px;">💙</span>
+          <div><div style="font-size:14px; font-weight:700;">Pay via Venmo</div><div style="font-size:12px; opacity:0.85;">@TutwMe</div></div>
+        </a>
+        <a href="https://cash.app/$TutwMe" target="_blank" style="display:flex; align-items:center; gap:12px; background:#00C244; color:white; border-radius:12px; padding:14px 16px; text-decoration:none;">
+          <span style="font-size:20px;">💚</span>
+          <div><div style="font-size:14px; font-weight:700;">Pay via CashApp</div><div style="font-size:12px; opacity:0.85;">$TutwMe</div></div>
+        </a>
+        <div style="background:var(--blue-soft); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+          <span style="font-size:20px;">🏦</span>
+          <div><div style="font-size:14px; font-weight:700; color:var(--blue-mid);">Pay via Zelle</div><div style="font-size:12px; color:var(--blue-mid);">hello@tutwme.com</div></div>
+        </div>
+      </div>
+      <div style="background:var(--pink-light); border-radius:10px; padding:12px; margin-top:14px; font-size:13px; color:var(--pink-dark); line-height:1.6;">
+        Include your booking reference number (e.g. #TW12) in the payment note so we can match it quickly.
+      </div>
+    </div>
+  </div>
+
+  <!-- Community -->
+  <div id="section-community" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">💬 Questions & community</div>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Have a question? Join our community or reach out directly.</p>
       <a href="https://discord.gg/placeholder" target="_blank" style="display:flex; align-items:center; gap:12px; background:#5865F2; color:white; border-radius:12px; padding:14px 16px; text-decoration:none; margin-bottom:10px;">
         <span style="font-size:22px;">💬</span>
-        <div>
-          <div style="font-size:14px; font-weight:800;">Join TutwMe Discord</div>
-          <div style="font-size:12px; opacity:0.85;">Ask questions, get help, meet tutors</div>
-        </div>
+        <div><div style="font-size:14px; font-weight:700;">Join TutwMe Discord</div><div style="font-size:12px; opacity:0.85;">Ask questions, get help, meet tutors</div></div>
       </a>
-      <div style="background:var(--rose-light); border-radius:10px; padding:14px;">
-        <div style="font-size:13px; font-weight:800; color:var(--rose-dark); margin-bottom:6px;">Contact TutwMe directly</div>
-        <div style="font-size:13px; color:var(--text-muted);">Discord: <strong style="color:var(--text);">@TutwMe</strong></div>
-        <div style="font-size:13px; color:var(--text-muted);">Email: <strong style="color:var(--text);">hello@tutwme.com</strong></div>
+      <div style="background:var(--pink-light); border-radius:12px; padding:16px;">
+        <div style="font-size:14px; font-weight:700; color:var(--pink-dark); margin-bottom:8px;">Contact TutwMe directly</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Email: <strong style="color:var(--navy);">support@tutwme.com</strong></div>
+        <div style="font-size:13px; color:var(--text-muted);">Help: <a href="help.html" style="color:var(--pink); font-weight:600; text-decoration:none;">Submit a ticket</a></div>
       </div>
-      <div style="font-size:12px; color:var(--text-muted); text-align:center; margin-top:10px;">Skool community coming soon!</div>
+      <div style="text-align:center; margin-top:14px;">
+        <span style="font-size:12px; color:var(--text-muted); background:var(--amber-soft); color:var(--amber-mid); padding:4px 12px; border-radius:20px; font-weight:600;">🕐 Skool community — Coming soon</span>
+      </div>
     </div>
-
   </div>
 
 </div>
 
 <script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
-
-const STUDENT_ID = 1;
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const STUDENT_ID = JSON.parse(localStorage.getItem('student') || '{}').id || 1;
 let allTutors = [];
 
+function showSection(section, btn) {
+  ['overview','progress','sessions','payment','community'].forEach(s => {
+    document.getElementById('section-' + s).style.display = s === section ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 async function loadDashboard() {
-  const student = JSON.parse(localStorage.getItem('student') || '{"first_name":"Student"}');
-  document.getElementById('student-name').textContent = `Welcome back, ${student.first_name}!`;
+  const student = JSON.parse(localStorage.getItem('student') || '{}');
+  if (student.first_name) document.getElementById('student-name').textContent = `Welcome back, ${student.first_name}!`;
 
   const [bookings, checkpoints, tutors] = await Promise.all([
-    fetch(`${API}/api/students/${STUDENT_ID}/bookings`).then(r => r.json()),
-    fetch(`${API}/api/checkpoints/student/${STUDENT_ID}`).then(r => r.json()).catch(() => []),
-    fetch(`${API}/api/tutors`).then(r => r.json())
+    fetch(`${API}/api/students/${STUDENT_ID}/bookings`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/checkpoints/student/${STUDENT_ID}`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[])
   ]);
 
   allTutors = tutors;
@@ -147,52 +199,83 @@ async function loadDashboard() {
 
   renderCalendar(bookings);
   renderProgress(checkpoints);
+  renderAllSessions(bookings);
   renderTutors(tutors);
   populateCheckinDropdown(bookings);
 }
 
 function renderCalendar(bookings) {
   const el = document.getElementById('calendar-list');
-  if (!bookings.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No sessions yet. Book your first one!</div>'; return; }
-  el.innerHTML = bookings.slice(0,3).map(b => `
-    <div style="background:var(--blue-light); border-radius:10px; padding:12px; margin-bottom:8px;">
-      <div style="font-size:14px; font-weight:800; color:var(--blue-dark);">${b.subject_name} with ${b.tutor_first} ${b.tutor_last}</div>
+  const upcoming = bookings.filter(b => new Date(b.scheduled_at) > new Date());
+  if (!upcoming.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No upcoming sessions. Book your first one!</div>'; return; }
+  el.innerHTML = upcoming.slice(0,3).map(b => `
+    <div class="session-row">
+      <div style="font-size:14px; font-weight:700; color:var(--navy);">${b.subject_name} with ${b.tutor_first}</div>
       <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">${new Date(b.scheduled_at).toLocaleString()}</div>
-      <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--sage-light); color:var(--sage-dark); margin-top:4px; display:inline-block;">${b.status}</span>
+      <span style="display:inline-block; margin-top:4px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--blue-soft); color:var(--blue-mid);">${b.status}</span>
     </div>`).join('');
 }
 
 function renderProgress(checkpoints) {
-  const el = document.getElementById('progress-list');
-  if (!checkpoints.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No checkpoints yet. Your tutor will add them soon!</div>'; return; }
   const done = checkpoints.filter(c => c.completed).length;
-  const pct = Math.round((done / checkpoints.length) * 100);
+  const pct = checkpoints.length ? Math.round((done/checkpoints.length)*100) : 0;
   document.getElementById('stat-progress').textContent = pct + '%';
-  el.innerHTML = `
-    <div style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:6px;">
-        <span>Overall progress</span><span>${done}/${checkpoints.length}</span>
+
+  const previewEl = document.getElementById('progress-preview');
+  const fullEl = document.getElementById('progress-full');
+
+  if (!checkpoints.length) {
+    const msg = '<div style="color:var(--text-muted); font-size:13px;">No checkpoints yet — your tutor will add them soon!</div>';
+    previewEl.innerHTML = msg; fullEl.innerHTML = msg; return;
+  }
+
+  const bar = `<div style="margin-bottom:12px;">
+    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Overall progress</span><span>${done}/${checkpoints.length}</span></div>
+    <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:var(--pink); border-radius:20px; height:8px; width:${pct}%;"></div></div>
+  </div>`;
+
+  const items = checkpoints.map(c => `
+    <div class="checkpoint-row">
+      <div style="width:18px; height:18px; border-radius:50%; background:${c.completed ? 'var(--green-mid)' : 'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+        ${c.completed ? '<span style="color:white;font-size:10px;font-weight:800;">✓</span>' : ''}
       </div>
-      <div style="background:#e2e8f0; border-radius:20px; height:10px;">
-        <div style="background:var(--sage); border-radius:20px; height:10px; width:${pct}%;"></div>
+      <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--navy)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
+    </div>`).join('');
+
+  previewEl.innerHTML = bar + checkpoints.slice(0,4).map(c => `
+    <div class="checkpoint-row">
+      <div style="width:18px; height:18px; border-radius:50%; background:${c.completed ? 'var(--green-mid)' : 'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+        ${c.completed ? '<span style="color:white;font-size:10px;font-weight:800;">✓</span>' : ''}
       </div>
-    </div>
-    ${checkpoints.map(c => `
-      <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border);">
-        <div style="width:18px; height:18px; border-radius:50%; background:${c.completed ? 'var(--sage)' : 'var(--border)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
-          ${c.completed ? '<span style="color:white; font-size:10px;">✓</span>' : ''}
+      <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--navy)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
+    </div>`).join('');
+
+  fullEl.innerHTML = bar + items;
+}
+
+function renderAllSessions(bookings) {
+  const el = document.getElementById('all-sessions');
+  if (!bookings.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No sessions yet.</div>'; return; }
+  el.innerHTML = bookings.map(b => `
+    <div class="session-row">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-size:14px; font-weight:700; color:var(--navy);">${b.subject_name} with ${b.tutor_first} ${b.tutor_last}</div>
+          <div style="font-size:12px; color:var(--text-muted);">${new Date(b.scheduled_at).toLocaleString()} · ${b.duration_minutes} min</div>
         </div>
-        <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--text)'}; text-decoration:${c.completed ? 'line-through' : 'none'}; font-weight:600;">${c.title}</span>
-      </div>`).join('')}`;
+        <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:${b.status==='completed'?'var(--green-soft)':b.status==='confirmed'?'var(--blue-soft)':'var(--amber-soft)'}; color:${b.status==='completed'?'var(--green-mid)':b.status==='confirmed'?'var(--blue-mid)':'var(--amber-mid)'};">${b.status}</span>
+      </div>
+      ${b.status === 'completed' ? `<a href="review.html" style="font-size:12px; color:var(--pink); font-weight:600; text-decoration:none; display:inline-block; margin-top:5px;">Leave a review ⭐</a>` : ''}
+    </div>`).join('');
 }
 
 function renderTutors(tutors) {
   const el = document.getElementById('tutor-list');
-  el.innerHTML = tutors.map(t => `
-    <div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border);">
-      <div style="width:36px; height:36px; border-radius:50%; background:var(--sage-light); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--sage-dark); flex-shrink:0;">${t.first_name[0]}${t.last_name[0]}</div>
+  el.innerHTML = tutors.slice(0,4).map(t => `
+    <div class="tutor-row">
+      <div style="width:36px; height:36px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--pink-dark); flex-shrink:0;">${t.first_name[0]}${t.last_name[0]}</div>
       <div style="flex:1;">
-        <div style="font-size:13px; font-weight:700; color:var(--text);">${t.first_name} ${t.last_name}</div>
+        <div style="font-size:13px; font-weight:700; color:var(--navy);">${t.first_name} ${t.last_name}</div>
         <div style="font-size:12px; color:var(--text-muted);">$${t.hourly_rate}/hr</div>
       </div>
       <a href="booking.html?tutor_id=${t.id}" class="btn-primary" style="padding:6px 14px; font-size:12px;">Book</a>
@@ -200,16 +283,15 @@ function renderTutors(tutors) {
 }
 
 function filterTutors(query) {
-  const filtered = allTutors.filter(t =>
-    `${t.first_name} ${t.last_name} ${t.bio}`.toLowerCase().includes(query.toLowerCase())
-  );
+  const filtered = allTutors.filter(t => `${t.first_name} ${t.last_name} ${t.bio||''}`.toLowerCase().includes(query.toLowerCase()));
   renderTutors(filtered);
 }
 
 function populateCheckinDropdown(bookings) {
   const select = document.getElementById('checkin-booking');
-  bookings.forEach(b => {
-    select.innerHTML += `<option value="${b.id}" data-tutor="${b.tutor_id}" data-tutor-email="${b.tutor_email||''}" data-tutor-name="${b.tutor_first} ${b.tutor_last}" data-subject="${b.subject_name}">${b.subject_name} with ${b.tutor_first} — ${new Date(b.scheduled_at).toLocaleDateString()}</option>`;
+  const upcoming = bookings.filter(b => new Date(b.scheduled_at) > new Date());
+  upcoming.forEach(b => {
+    select.innerHTML += `<option value="${b.id}" data-tutor="${b.tutor_id}" data-tutor-name="${b.tutor_first} ${b.tutor_last}" data-subject="${b.subject_name}">${b.subject_name} with ${b.tutor_first} — ${new Date(b.scheduled_at).toLocaleDateString()}</option>`;
   });
 }
 
@@ -217,36 +299,17 @@ async function checkIn() {
   const bookingId = document.getElementById('checkin-booking').value;
   const note = document.getElementById('checkin-note').value;
   if (!bookingId) { alert('Please select a session to check in to.'); return; }
-
-  const selectedOption = document.getElementById('checkin-booking').selectedOptions[0];
-  const tutorId = selectedOption.dataset.tutor;
-  const tutorEmail = selectedOption.dataset.tutorEmail;
-  const tutorName = selectedOption.dataset.tutorName;
-  const subjectName = selectedOption.dataset.subject;
-
+  const option = document.getElementById('checkin-booking').selectedOptions[0];
+  const tutorId = option.dataset.tutor;
   try {
     await fetch(`${API}/api/checkins`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ booking_id: parseInt(bookingId), student_id: STUDENT_ID, tutor_id: parseInt(tutorId), note })
     });
-
-    if (tutorEmail && window.emailjs) {
-      emailjs.send('YOUR_SERVICE_ID', 'YOUR_CHECKIN_TEMPLATE_ID', {
-        to_email: tutorEmail,
-        tutor_name: tutorName,
-        student_name: JSON.parse(localStorage.getItem('student')||'{}').first_name || 'Your student',
-        subject_name: subjectName,
-        note: note || 'No additional notes'
-      });
-    }
-
-    document.getElementById('checkin-success').style.display = 'block';
-    document.getElementById('checkin-booking').value = '';
-    document.getElementById('checkin-note').value = '';
-  } catch(e) {
-    alert('Could not check in. Please try again.');
-  }
+  } catch(e) {}
+  document.getElementById('checkin-success').style.display = 'block';
+  document.getElementById('checkin-booking').value = '';
+  document.getElementById('checkin-note').value = '';
 }
 
 loadDashboard();
