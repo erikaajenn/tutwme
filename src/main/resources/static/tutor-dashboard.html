@@ -5,204 +5,353 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutor Dashboard — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .dash-card { background: white; border-radius: 16px; padding: 22px; border: 1px solid var(--border-light); margin-bottom: 16px; }
+    .dash-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+    .session-row { padding: 11px 0; border-bottom: 1px solid var(--border-light); }
+    .session-row:last-child { border-bottom: none; }
+    .student-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+    .student-row:last-child { border-bottom: none; }
+    .checkpoint-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; }
+    .checkpoint-row:last-child { border-bottom: none; }
+    .nav-tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; overflow-x: auto; }
+    .nav-tab { padding: 9px 14px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; background: transparent; color: var(--text-muted); transition: all 0.15s; white-space: nowrap; }
+    .nav-tab.active { background: white; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .level-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
-  <div style="margin-left:auto; font-size:13px; font-weight:700; color:var(--sage);">Tutor Dashboard</div>
+  <nav style="display:flex; gap:16px; margin-left:24px;">
+    <a href="tutor-profile-builder.html" style="font-size:13px; font-weight:500; color:var(--text-muted); text-decoration:none;">✏️ Edit profile</a>
+    <a href="tutor-business.html" style="font-size:13px; font-weight:500; color:var(--text-muted); text-decoration:none;">💼 Business tools</a>
+    <a href="avatar-builder.html" style="font-size:13px; font-weight:500; color:var(--text-muted); text-decoration:none;">✨ Avatar</a>
+  </nav>
+  <div style="margin-left:auto;">
+    <a href="login.html" class="btn-ghost" style="padding:8px 16px; font-size:13px;">Sign out</a>
+  </div>
 </header>
 
-<div style="max-width:960px; margin:0 auto; padding:24px 20px 60px;">
-
-  <div style="display:flex; align-items:center; gap:14px; margin-bottom:28px;">
-    <div style="width:52px; height:52px; border-radius:50%; background:var(--sage-light); display:flex; align-items:center; justify-content:center; font-size:22px;">📚</div>
-    <div>
-      <div style="font-size:20px; font-weight:900; color:var(--text);">Welcome back!</div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:600;">Here's what's happening today</div>
-    </div>
-  </div>
-
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:28px;">
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:var(--sage);" id="stat-students">-</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">My Students</div>
-    </div>
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:var(--blue);" id="stat-sessions">-</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">Sessions</div>
-    </div>
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:var(--rose);" id="stat-earnings">$0</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">Earned</div>
-    </div>
-    <div class="card" style="text-align:center; padding:16px;">
-      <div style="font-size:28px; font-weight:900; color:#b89300;" id="stat-rating">—</div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:700;">Avg Rating</div>
-    </div>
-  </div>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:16px;">📊 Student Progress</div>
-      <div id="progress-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
-      </div>
-      <button class="btn-primary" style="width:100%; padding:10px; margin-top:14px; font-size:13px;" onclick="showAddCheckpoint()">+ Add Checkpoint</button>
-      <div id="add-checkpoint-form" style="display:none; margin-top:14px; background:var(--sage-light); border-radius:10px; padding:14px;">
-        <input type="text" id="cp-title" placeholder="Checkpoint title e.g. Solve quadratic equations" style="margin-bottom:8px;">
-        <button class="btn-secondary" style="width:100%; padding:8px; font-size:13px;" onclick="addCheckpoint()">Save Checkpoint</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:16px;">📅 Upcoming Sessions</div>
-      <div id="calendar-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
-      </div>
-    </div>
-
-  </div>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:16px;">💰 Received Payments</div>
-      <div style="background:var(--sage-light); border-radius:10px; padding:14px; margin-bottom:12px;">
-        <div style="font-size:13px; font-weight:700; color:var(--sage-dark); margin-bottom:8px;">Your payment handles</div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Venmo: <strong style="color:var(--text);">@TutwMe</strong></div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">CashApp: <strong style="color:var(--text);">$TutwMe</strong></div>
-        <div style="font-size:13px; color:var(--text-muted);">Zelle: <strong style="color:var(--text);">@TutwMe</strong></div>
-      </div>
-      <div style="font-size:13px; color:var(--text-muted); font-weight:600; margin-bottom:8px;">Payment policy</div>
-      <div style="font-size:13px; color:var(--text); line-height:1.6;">Students pay before each session. Under-18 students require parent payment. A small platform fee goes to TutwMe.</div>
-    </div>
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:16px;">⭐ Reviews</div>
-      <div id="reviews-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
-      </div>
-    </div>
-
-  </div>
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:14px;">🔍 Find Students</div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.6;">Browse students looking for tutors in your subjects.</p>
-      <div id="student-list">
-        <div style="color:var(--text-muted); font-size:13px;">Loading...</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="font-size:16px; font-weight:900; color:var(--text); margin-bottom:14px;">💬 Community & Resources</div>
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Connect with other TutwMe tutors, share resources, and get support.</p>
-      <a href="https://discord.gg/placeholder" target="_blank" style="display:flex; align-items:center; gap:12px; background:#5865F2; color:white; border-radius:12px; padding:14px 16px; text-decoration:none; margin-bottom:10px;">
-        <span style="font-size:22px;">💬</span>
+<!-- Hero banner -->
+<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:28px 20px;">
+  <div class="page-container" style="padding-top:0; padding-bottom:0; max-width:960px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div id="tutor-avatar-header" style="width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:22px; overflow:hidden;"></div>
         <div>
-          <div style="font-size:14px; font-weight:800;">Join TutwMe Discord</div>
-          <div style="font-size:12px; opacity:0.85;">Resources, announcements, community</div>
+          <div style="font-size:20px; font-weight:800; color:white;" id="tutor-name-header">Welcome back!</div>
+          <div id="level-display" style="margin-top:4px;"></div>
         </div>
-      </a>
-      <div style="font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px;">Skool community coming soon!</div>
+      </div>
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-students">—</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Students</div>
+        </div>
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-sessions">—</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Sessions</div>
+        </div>
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-earnings">$0</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Earned</div>
+        </div>
+        <div style="text-align:center; color:white;">
+          <div style="font-size:22px; font-weight:800; color:var(--pink);" id="stat-rating">—</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6);">Rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-container" style="max-width:960px;">
+
+  <!-- Nav tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('overview', this)">Overview</button>
+    <button class="nav-tab" onclick="showSection('students', this)">Students</button>
+    <button class="nav-tab" onclick="showSection('progress', this)">Progress</button>
+    <button class="nav-tab" onclick="showSection('reviews', this)">Reviews</button>
+    <button class="nav-tab" onclick="showSection('leaderboard', this)">Leaderboard 🏆</button>
+    <button class="nav-tab" onclick="showSection('community', this)">Community</button>
+  </div>
+
+  <!-- Overview -->
+  <div id="section-overview">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+      <div class="dash-card">
+        <div class="dash-label">📅 Upcoming sessions</div>
+        <div id="calendar-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-label">📊 Student progress</div>
+        <div id="progress-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+        <button class="btn-outline" style="width:100%; padding:9px; margin-top:12px; font-size:13px;" onclick="showAddCheckpoint()">+ Add checkpoint</button>
+        <div id="add-checkpoint-form" style="display:none; margin-top:12px; background:var(--green-soft); border-radius:10px; padding:14px;">
+          <input type="text" id="cp-title" placeholder="e.g. Solve quadratic equations" style="margin-bottom:8px; font-size:13px;">
+          <button class="btn-primary" style="width:100%; padding:9px; font-size:13px;" onclick="addCheckpoint()">Save checkpoint</button>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-label">👩‍🎓 My students</div>
+        <div id="student-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-label">⭐ Recent reviews</div>
+        <div id="reviews-preview"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+        <!-- Private student review -->
+        <div style="background:var(--blue-soft); border-radius:10px; padding:14px; margin-top:14px;">
+          <div style="font-size:13px; font-weight:700; color:var(--blue-mid); margin-bottom:10px;">Rate a student (private)</div>
+          <select id="review-student-select" style="margin-bottom:8px; font-size:13px;"><option value="">Select student...</option></select>
+          <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
+            <select id="review-attendance" style="font-size:12px; flex:1;"><option value="on-time">On-time</option><option value="late">Late</option><option value="no-show">No-show</option></select>
+            <select id="review-engagement" style="font-size:12px; flex:1;"><option value="5">Engagement: 5⭐</option><option value="4">4⭐</option><option value="3">3⭐</option><option value="2">2⭐</option><option value="1">1⭐</option></select>
+          </div>
+          <textarea id="review-note" placeholder="Private notes (not shown to student)..." style="height:60px; resize:none; margin-bottom:8px; font-size:13px;"></textarea>
+          <button class="btn-primary" style="width:100%; padding:9px; font-size:13px;" onclick="submitStudentReview()">Save private note</button>
+          <div id="student-review-success" style="display:none; font-size:12px; color:var(--green-mid); font-weight:700; margin-top:6px; text-align:center;">✓ Saved!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students -->
+  <div id="section-students" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">👩‍🎓 All students</div>
+      <div id="all-students"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="section-progress" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">📊 All progress checkpoints</div>
+      <div id="all-checkpoints"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div id="section-reviews" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">⭐ All reviews</div>
+      <div id="all-reviews"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div id="section-leaderboard" style="display:none;">
+    <div class="dash-card" style="margin-bottom:16px;">
+      <div class="dash-label">🏆 Your level & badges</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <div id="level-badge-display" style="font-size:20px; font-weight:800; color:var(--navy);"></div>
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-muted); cursor:pointer;">
+          <input type="checkbox" id="leaderboard-opt" onchange="toggleLeaderboard(this.checked)"> Show me on leaderboard
+        </label>
+      </div>
+      <div style="background:var(--border-light); border-radius:20px; height:10px; margin-bottom:8px;">
+        <div id="level-bar" style="background:var(--pink); border-radius:20px; height:10px; width:0%; transition:width 0.5s;"></div>
+      </div>
+      <div id="level-text" style="font-size:12px; color:var(--text-muted); margin-bottom:20px;"></div>
+
+      <!-- Stats grid -->
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px;">
+        <div style="text-align:center; padding:12px; background:var(--pink-light); border-radius:10px;">
+          <div style="font-size:20px; font-weight:800; color:var(--pink-dark);" id="gam-sessions">—</div>
+          <div style="font-size:11px; color:var(--text-muted);">Sessions</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--blue-soft); border-radius:10px;">
+          <div style="font-size:20px; font-weight:800; color:var(--blue-mid);" id="gam-hours">—</div>
+          <div style="font-size:11px; color:var(--text-muted);">Hours</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--green-soft); border-radius:10px;">
+          <div style="font-size:20px; font-weight:800; color:var(--green-mid);" id="gam-students">—</div>
+          <div style="font-size:11px; color:var(--text-muted);">Students</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:var(--amber-soft); border-radius:10px;">
+          <div style="font-size:20px; font-weight:800; color:var(--amber-mid);" id="gam-rating">—</div>
+          <div style="font-size:11px; color:var(--text-muted);">Rating</div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="dash-label">Badges</div>
+      <div id="badges-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:10px; margin-bottom:20px;"></div>
     </div>
 
+    <!-- Leaderboard -->
+    <div class="dash-card">
+      <div class="dash-label">🏆 Community leaderboard</div>
+      <div id="leaderboard-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Community -->
+  <div id="section-community" style="display:none;">
+    <div class="dash-card">
+      <div class="dash-label">💬 Community & resources</div>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Connect with other TutwMe tutors, share resources, and get support.</p>
+      <a href="https://discord.gg/placeholder" target="_blank" style="display:flex; align-items:center; gap:12px; background:#5865F2; color:white; border-radius:12px; padding:16px; text-decoration:none; margin-bottom:10px;">
+        <span style="font-size:24px;">💬</span>
+        <div><div style="font-size:14px; font-weight:700;">Join TutwMe Discord</div><div style="font-size:12px; opacity:0.85;">Resources, announcements, tutor community</div></div>
+      </a>
+      <div style="background:var(--pink-light); border-radius:12px; padding:16px;">
+        <div style="font-size:13px; font-weight:700; color:var(--pink-dark); margin-bottom:8px;">Contact TutwMe</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Email: <strong style="color:var(--navy);">support@tutwme.com</strong></div>
+        <div style="font-size:13px; color:var(--text-muted);">Help: <a href="help.html" style="color:var(--pink); font-weight:600; text-decoration:none;">Submit a ticket</a></div>
+      </div>
+      <div style="text-align:center; margin-top:14px;">
+        <span style="font-size:12px; background:var(--amber-soft); color:var(--amber-mid); padding:4px 12px; border-radius:20px; font-weight:600;">🕐 Skool community — Coming soon</span>
+      </div>
+    </div>
   </div>
 
 </div>
 
 <script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const tutor = JSON.parse(localStorage.getItem('tutor') || '{}');
+const TUTOR_ID = tutor.id || 1;
+const LEVELS = { 'Rookie':'🌱', 'Mentor':'📘', 'Scholar':'🎓', 'Leader':'🏅', 'Master Mentor':'👑' };
+const LEVEL_MIN = { 'Rookie':0, 'Mentor':5, 'Scholar':20, 'Leader':50, 'Master Mentor':100 };
+let allStudents = [];
+let allCheckpoints = [];
 
-const TUTOR_ID = 1;
+function showSection(section, btn) {
+  ['overview','students','progress','reviews','leaderboard','community'].forEach(s => {
+    document.getElementById('section-' + s).style.display = s === section ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (section === 'leaderboard') loadGamification();
+}
 
 async function loadDashboard() {
+  if (tutor.first_name) document.getElementById('tutor-name-header').textContent = `Welcome, ${tutor.first_name}!`;
+
+  const avatarUrl = `https://api.dicebear.com/7.x/${tutor.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(tutor.avatar_seed||tutor.first_name||'tutor')}&size=56`;
+  document.getElementById('tutor-avatar-header').innerHTML = `<img src="${avatarUrl}" style="width:56px;height:56px;border-radius:50%;" onerror="this.parentElement.textContent='📚'">`;
+
   const [bookings, checkpoints, students] = await Promise.all([
-    fetch(`${API}/api/bookings`).then(r => r.json()),
-    fetch(`${API}/api/checkpoints/${TUTOR_ID}`).then(r => r.json()).catch(() => []),
-    fetch(`${API}/api/students`).then(r => r.json())
+    fetch(`${API}/api/bookings`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/checkpoints/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]),
+    fetch(`${API}/api/students`).then(r=>r.json()).catch(()=>[])
   ]);
+
+  allStudents = students;
+  allCheckpoints = checkpoints;
 
   const myBookings = bookings.filter(b => b.tutor_id == TUTOR_ID || b.tutor_first);
   document.getElementById('stat-sessions').textContent = myBookings.length;
   document.getElementById('stat-students').textContent = [...new Set(myBookings.map(b => b.student_id))].length;
+  document.getElementById('stat-rating').textContent = tutor.rating ? '⭐' + parseFloat(tutor.rating).toFixed(1) : '—';
 
   renderCalendar(myBookings);
   renderProgress(checkpoints);
   renderStudents(students);
-  populateReviewStudents(students);
-  renderReviews();
+  renderReviewsPreview();
+  populateStudentDropdown(students);
 }
 
 function renderCalendar(bookings) {
   const el = document.getElementById('calendar-list');
-  if (!bookings.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No upcoming sessions</div>'; return; }
-  el.innerHTML = bookings.slice(0,4).map(b => `
-    <div style="background:var(--blue-light); border-radius:10px; padding:12px; margin-bottom:8px;">
-      <div style="font-size:14px; font-weight:800; color:var(--blue-dark);">${b.subject_name || 'Session'} with ${b.student_first || 'Student'} ${b.student_last || ''}</div>
-      <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">${new Date(b.scheduled_at).toLocaleString()}</div>
-      <div style="font-size:12px; color:var(--text-muted);">${b.duration_minutes} minutes</div>
-      <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--sage-light); color:var(--sage-dark); margin-top:4px; display:inline-block;">${b.status}</span>
+  const upcoming = bookings.filter(b => new Date(b.scheduled_at) > new Date());
+  if (!upcoming.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No upcoming sessions.</div>'; return; }
+  el.innerHTML = upcoming.slice(0,4).map(b => `
+    <div class="session-row">
+      <div style="font-size:14px; font-weight:700; color:var(--navy);">${b.subject_name||'Session'} with ${b.student_first||'Student'} ${b.student_last||''}</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">${new Date(b.scheduled_at).toLocaleString()} · ${b.duration_minutes} min</div>
+      <span style="display:inline-block; margin-top:4px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--blue-soft); color:var(--blue-mid);">${b.status}</span>
     </div>`).join('');
 }
 
 function renderProgress(checkpoints) {
   const el = document.getElementById('progress-list');
-  if (!checkpoints.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No checkpoints yet. Add one below!</div>'; return; }
+  const allEl = document.getElementById('all-checkpoints');
+  if (!checkpoints.length) {
+    const msg = '<div style="color:var(--text-muted); font-size:13px;">No checkpoints yet. Add one below!</div>';
+    el.innerHTML = msg; if(allEl) allEl.innerHTML = msg; return;
+  }
   const done = checkpoints.filter(c => c.completed).length;
-  const pct = Math.round((done / checkpoints.length) * 100);
-  el.innerHTML = `
-    <div style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:6px;">
-        <span>Progress</span><span>${done}/${checkpoints.length} complete</span>
+  const pct = Math.round((done/checkpoints.length)*100);
+  const bar = `<div style="margin-bottom:12px;">
+    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Progress</span><span>${done}/${checkpoints.length}</span></div>
+    <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:var(--green-mid); border-radius:20px; height:8px; width:${pct}%;"></div></div>
+  </div>`;
+  const items = checkpoints.map(c => `
+    <div class="checkpoint-row" onclick="toggleCheckpoint(${c.id}, ${!c.completed})">
+      <div style="width:20px; height:20px; border-radius:50%; border:2px solid ${c.completed?'var(--green-mid)':'var(--border)'}; background:${c.completed?'var(--green-mid)':'white'}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
       </div>
-      <div style="background:#e2e8f0; border-radius:20px; height:10px;">
-        <div style="background:var(--sage); border-radius:20px; height:10px; width:${pct}%; transition:width 0.5s;"></div>
+      <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
+    </div>`).join('');
+  el.innerHTML = bar + checkpoints.slice(0,4).map(c => `
+    <div class="checkpoint-row" onclick="toggleCheckpoint(${c.id}, ${!c.completed})">
+      <div style="width:20px; height:20px; border-radius:50%; border:2px solid ${c.completed?'var(--green-mid)':'var(--border)'}; background:${c.completed?'var(--green-mid)':'white'}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
       </div>
-    </div>
-    ${checkpoints.map(c => `
-      <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border);">
-        <div onclick="toggleCheckpoint(${c.id}, ${!c.completed})" style="width:20px; height:20px; border-radius:50%; border:2px solid ${c.completed ? 'var(--sage)' : 'var(--border)'}; background:${c.completed ? 'var(--sage)' : 'white'}; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-          ${c.completed ? '<span style="color:white; font-size:11px;">✓</span>' : ''}
-        </div>
-        <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--text)'}; text-decoration:${c.completed ? 'line-through' : 'none'}; font-weight:600;">${c.title}</span>
-      </div>`).join('')}`;
+      <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
+    </div>`).join('');
+  if(allEl) allEl.innerHTML = bar + items;
 }
 
 function renderStudents(students) {
   const el = document.getElementById('student-list');
-  if (!students.length) { el.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No students yet</div>'; return; }
-  el.innerHTML = students.slice(0,4).map(s => `
-    <div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border);">
-      <div style="width:36px; height:36px; border-radius:50%; background:var(--rose-light); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:var(--rose-dark); flex-shrink:0;">${s.first_name[0]}${s.last_name[0]}</div>
-      <div>
-        <div style="font-size:14px; font-weight:700; color:var(--text);">${s.first_name} ${s.last_name}</div>
-        <div style="font-size:12px; color:var(--text-muted);">${s.grade_level || 'Grade not set'}</div>
-      </div>
+  const allEl = document.getElementById('all-students');
+  if (!students.length) { const msg = '<div style="color:var(--text-muted); font-size:13px;">No students yet.</div>'; el.innerHTML = msg; if(allEl) allEl.innerHTML = msg; return; }
+  const html = students.map(s => `
+    <div class="student-row">
+      <div style="width:36px; height:36px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--pink-dark); flex-shrink:0;">${s.first_name[0]}${s.last_name[0]}</div>
+      <div style="flex:1;"><div style="font-size:13px; font-weight:700; color:var(--navy);">${s.first_name} ${s.last_name}</div><div style="font-size:12px; color:var(--text-muted);">${s.grade_level||'Grade not set'}</div></div>
     </div>`).join('');
+  el.innerHTML = students.slice(0,4).map(s => `
+    <div class="student-row">
+      <div style="width:36px; height:36px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--pink-dark); flex-shrink:0;">${s.first_name[0]}${s.last_name[0]}</div>
+      <div><div style="font-size:13px; font-weight:700; color:var(--navy);">${s.first_name} ${s.last_name}</div><div style="font-size:12px; color:var(--text-muted);">${s.grade_level||'Grade not set'}</div></div>
+    </div>`).join('');
+  if(allEl) allEl.innerHTML = html;
 }
 
-function renderReviews() {
-  const el = document.getElementById('reviews-list');
-  el.innerHTML = `
-   <div style="background:var(--blue-light); border-radius:10px; padding:14px; margin-bottom:14px;">
-  <div style="font-size:13px; font-weight:700; color:var(--blue-dark); margin-bottom:10px;">Rate a student (private)</div>
-  <select id="review-student-select" style="margin-bottom:8px; font-size:13px;"></select>
-  <div style="display:flex; gap:6px; margin-bottom:8px;">
-    <select id="review-attendance" style="font-size:12px;"><option value="on-time">On-time</option><option value="late">Late</option><option value="no-show">No-show</option></select>
-    <select id="review-engagement" style="font-size:12px;"><option value="5">Engagement: 5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-    <select id="review-preparedness" style="font-size:12px;"><option value="5">Prep: 5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-  </div>
-  <textarea id="review-note" placeholder="Private notes (not visible to student)" style="height:60px; resize:none; margin-bottom:8px; font-size:13px;"></textarea>
-  <button class="btn-primary" style="width:100%; padding:8px; font-size:13px;" onclick="submitStudentReview()">Save private note</button>
-  <div id="student-review-success" style="display:none; font-size:12px; color:#15803d; font-weight:600; margin-top:6px; text-align:center;">✓ Saved</div>
-</div>;
+async function renderReviewsPreview() {
+  const el = document.getElementById('reviews-preview');
+  const allEl = document.getElementById('all-reviews');
+  try {
+    const reviews = await fetch(`${API}/api/reviews/tutor/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]);
+    if (!reviews.length) {
+      const msg = '<div style="color:var(--text-muted); font-size:13px;">No reviews yet.</div>';
+      el.innerHTML = msg; if(allEl) allEl.innerHTML = msg; return;
+    }
+    const html = reviews.map(r => `
+      <div class="session-row">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <div style="font-size:13px; font-weight:600; color:var(--navy);">${r.reviewer_name||'Student'}</div>
+          <div style="color:#f59e0b;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); line-height:1.5;">${r.comment||''}</div>
+      </div>`).join('');
+    el.innerHTML = reviews.slice(0,2).map(r => `
+      <div class="session-row">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <div style="font-size:13px; font-weight:600; color:var(--navy);">${r.reviewer_name||'Student'}</div>
+          <div style="color:#f59e0b;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); line-height:1.5;">${r.comment||''}</div>
+      </div>`).join('');
+    if(allEl) allEl.innerHTML = html;
+  } catch(e) {}
+}
+
+function populateStudentDropdown(students) {
+  const select = document.getElementById('review-student-select');
+  students.forEach(s => { select.innerHTML += `<option value="${s.id}">${s.first_name} ${s.last_name}</option>`; });
 }
 
 function showAddCheckpoint() {
@@ -214,50 +363,95 @@ async function addCheckpoint() {
   const title = document.getElementById('cp-title').value.trim();
   if (!title) return;
   await fetch(`${API}/api/checkpoints`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tutor_id: TUTOR_ID, student_id: 1, subject_id: 1, title })
   });
   document.getElementById('cp-title').value = '';
   document.getElementById('add-checkpoint-form').style.display = 'none';
-  loadDashboard();
+  const checkpoints = await fetch(`${API}/api/checkpoints/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]);
+  renderProgress(checkpoints);
 }
 
 async function toggleCheckpoint(id, completed) {
   await fetch(`${API}/api/checkpoints/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ completed })
   });
-  loadDashboard();
-}
-
-function populateReviewStudents(students) {
-  const select = document.getElementById('review-student-select');
-  students.forEach(s => {
-    select.innerHTML += \`<option value="${s.id}">${s.first_name} ${s.last_name}</option>\`;
-  });
+  const checkpoints = await fetch(`${API}/api/checkpoints/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]);
+  renderProgress(checkpoints);
 }
 
 async function submitStudentReview() {
   const studentId = document.getElementById('review-student-select').value;
   if (!studentId) return;
-  await fetch(\`${API}/api/reviews\`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  await fetch(`${API}/api/reviews`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       reviewer_id: TUTOR_ID, reviewer_type: 'tutor',
       reviewee_id: parseInt(studentId), reviewee_type: 'student',
-      booking_id: null, rating: parseInt(document.getElementById('review-engagement').value),
+      booking_id: null,
+      rating: parseInt(document.getElementById('review-engagement').value),
       comment: document.getElementById('review-note').value,
       is_private: true,
       attendance: document.getElementById('review-attendance').value,
       engagement: parseInt(document.getElementById('review-engagement').value),
-      preparedness: parseInt(document.getElementById('review-preparedness').value)
+      preparedness: 3
     })
   });
   document.getElementById('student-review-success').style.display = 'block';
   document.getElementById('review-note').value = '';
+  setTimeout(() => document.getElementById('student-review-success').style.display = 'none', 3000);
+}
+
+async function loadGamification() {
+  try {
+    const stats = await fetch(`${API}/api/tutors/${TUTOR_ID}/stats`).then(r=>r.json());
+    const icon = LEVELS[stats.level] || '🌱';
+    document.getElementById('level-badge-display').textContent = `${icon} ${stats.level}`;
+    document.getElementById('gam-sessions').textContent = stats.completed_sessions;
+    document.getElementById('gam-hours').textContent = stats.total_hours;
+    document.getElementById('gam-students').textContent = stats.unique_students;
+    document.getElementById('gam-rating').textContent = stats.avg_rating > 0 ? '⭐' + stats.avg_rating : '—';
+
+    if (stats.next_level) {
+      const min = LEVEL_MIN[stats.level] || 0;
+      const pct = ((stats.completed_sessions - min) / (stats.next_threshold - min)) * 100;
+      document.getElementById('level-bar').style.width = Math.min(100, Math.max(0, pct)) + '%';
+      document.getElementById('level-text').textContent = `${stats.completed_sessions}/${stats.next_threshold} sessions to ${stats.next_level}`;
+    } else {
+      document.getElementById('level-bar').style.width = '100%';
+      document.getElementById('level-text').textContent = 'Max level reached! 👑';
+    }
+
+    document.getElementById('badges-grid').innerHTML = stats.badges.map(b => `
+      <div style="text-align:center; padding:12px 8px; border-radius:10px; background:${b.earned?'var(--pink-light)':'#f1f5f9'}; opacity:${b.earned?1:0.5};">
+        <div style="font-size:22px; margin-bottom:4px;">${b.icon}</div>
+        <div style="font-size:11px; font-weight:700; color:${b.earned?'var(--pink-dark)':'var(--text-muted)'};">${b.name}</div>
+      </div>`).join('');
+
+    const tutorData = await fetch(`${API}/api/tutors/${TUTOR_ID}`).then(r=>r.json());
+    document.getElementById('leaderboard-opt').checked = tutorData.leaderboard_opt_in !== false;
+
+    const leaderboard = await fetch(`${API}/api/leaderboard`).then(r=>r.json()).catch(()=>[]);
+    document.getElementById('leaderboard-list').innerHTML = leaderboard.length ? leaderboard.map((t, i) => {
+      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
+      const isMe = t.id == TUTOR_ID;
+      const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=36`;
+      return `<div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background:${isMe?'var(--pink-light)':'transparent'}; margin-bottom:4px;">
+        <div style="font-size:14px; font-weight:800; width:24px; text-align:center;">${medal}</div>
+        <img src="${avatarUrl}" style="width:32px; height:32px; border-radius:50%;" onerror="this.style.display='none'">
+        <div style="flex:1; font-size:13px; font-weight:${isMe?800:600}; color:${isMe?'var(--pink-dark)':'var(--navy)'};">${t.first_name} ${t.last_name}${isMe?' (you)':''}</div>
+        <div style="font-size:12px; color:var(--text-muted);">${t.completed_sessions} sessions</div>
+      </div>`;
+    }).join('') : '<div style="color:var(--text-muted); font-size:13px;">No tutors on the leaderboard yet.</div>';
+  } catch(e) {}
+}
+
+async function toggleLeaderboard(checked) {
+  await fetch(`${API}/api/tutors/${TUTOR_ID}/leaderboard-opt`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ opt_in: checked })
+  });
 }
 
 loadDashboard();
