@@ -3,284 +3,245 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Your Tutor — TutwMe</title>
+  <title>Find My Tutor Match — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .step { display: none; }
+    .step.active { display: block; }
+    .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 12px; margin-bottom: 24px; }
+    .tile { border: 2px solid var(--border-light); border-radius: 14px; padding: 18px 12px; text-align: center; cursor: pointer; background: white; transition: all 0.15s; font-family: inherit; }
+    .tile:hover { border-color: var(--pink); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(233,30,140,0.1); }
+    .tile.selected { border-color: var(--pink); background: var(--pink-light); }
+    .tile .icon { font-size: 28px; margin-bottom: 8px; }
+    .tile .label { font-size: 13px; font-weight: 600; color: var(--navy); }
+    .progress-bar { background: var(--border-light); border-radius: 20px; height: 6px; margin-bottom: 28px; }
+    .progress-fill { background: var(--pink); border-radius: 20px; height: 6px; transition: width 0.4s; }
+    .tutor-match { background: white; border-radius: 16px; border: 1px solid var(--border-light); overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+    .tutor-match:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(233,30,140,0.12); }
+    .match-score { display: inline-flex; align-items: center; gap: 4px; background: var(--pink-light); color: var(--pink-dark); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <nav style="display:flex; gap:24px; margin-left:40px;">
+    <a href="find-tutor.html" style="font-size:14px; font-weight:500; color:var(--text-muted); text-decoration:none;">Browse all tutors</a>
+  </nav>
+  <div style="margin-left:auto; display:flex; gap:10px;">
+    <a href="register.html" class="btn-primary" style="padding:8px 18px;">Get started</a>
+  </div>
 </header>
 
-<div style="background:linear-gradient(135deg,#fff0f6,#fafafa); padding:40px 20px 32px; text-align:center;">
-  <div style="font-size:32px; margin-bottom:12px;">✨</div>
-  <h1 style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:8px;">Find your perfect tutor</h1>
-  <p style="font-size:15px; color:var(--text-muted);">Tap what fits you — we'll show your best matches instantly</p>
+<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:48px 20px; text-align:center;">
+  <div style="display:inline-block; background:rgba(233,30,140,0.2); color:var(--pink-light); font-size:12px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:14px;">✨ AI Tutor Matching</div>
+  <h1 style="font-size:36px; font-weight:800; color:white; margin-bottom:10px; line-height:1.2;">Find your perfect tutor match</h1>
+  <p style="font-size:16px; color:rgba(255,255,255,0.75); max-width:480px; margin:0 auto;">Answer a few quick questions and we'll match you with tutors based on your learning style, goals, and personality.</p>
 </div>
 
-<div class="page-container" style="max-width:720px;">
+<div class="page-container" style="max-width:640px;">
 
-  <!-- Subject tiles -->
-  <div style="margin-bottom:28px;">
-    <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">What do you need help with?</div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;" id="subject-tiles"></div>
+  <!-- Progress -->
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+  <!-- Step 1: Subject -->
+  <div class="step active" id="step-1">
+    <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:6px;">What do you need help with?</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Select all that apply</p>
+    <div class="tile-grid">
+      <button class="tile" onclick="toggleTile(this,'subject','Math')"><div class="icon">📐</div><div class="label">Math</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','Science')"><div class="icon">🔬</div><div class="label">Science</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','English')"><div class="icon">📖</div><div class="label">English</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','SAT/ACT Prep')"><div class="icon">📝</div><div class="label">SAT/ACT Prep</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','History')"><div class="icon">🗺️</div><div class="label">History</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','Foreign Language')"><div class="icon">🌍</div><div class="label">Language</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','Writing')"><div class="icon">✍️</div><div class="label">Writing</div></button>
+      <button class="tile" onclick="toggleTile(this,'subject','Other')"><div class="icon">💡</div><div class="label">Other</div></button>
+    </div>
+    <button class="btn-primary" style="width:100%; padding:13px;" onclick="nextStep(2)">Continue →</button>
   </div>
 
-  <!-- Learning style tiles -->
-  <div style="margin-bottom:28px;">
-    <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">How do you learn best?</div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px;">
-      <div class="tile" data-group="style" data-keywords="visual" onclick="toggleTile(this)">
-        <div class="tile-icon">👁</div>
-        <div class="tile-label">Visual learner</div>
-        <div class="tile-sub">Diagrams & examples</div>
-      </div>
-      <div class="tile" data-group="style" data-keywords="step-by-step,structured" onclick="toggleTile(this)">
-        <div class="tile-icon">📋</div>
-        <div class="tile-label">Step by step</div>
-        <div class="tile-sub">Clear walkthroughs</div>
-      </div>
-      <div class="tile" data-group="style" data-keywords="homework help,practice" onclick="toggleTile(this)">
-        <div class="tile-icon">✏️</div>
-        <div class="tile-label">Practice heavy</div>
-        <div class="tile-sub">Lots of problems</div>
-      </div>
-      <div class="tile" data-group="style" data-keywords="conversation,flexible,discussion" onclick="toggleTile(this)">
-        <div class="tile-icon">💬</div>
-        <div class="tile-label">Discussion based</div>
-        <div class="tile-sub">Talk it through</div>
-      </div>
+  <!-- Step 2: Learning style -->
+  <div class="step" id="step-2">
+    <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:6px;">How do you learn best?</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Pick the one that fits you most</p>
+    <div class="tile-grid">
+      <button class="tile" onclick="selectTile(this,'style','visual')"><div class="icon">👁️</div><div class="label">Visual (diagrams & examples)</div></button>
+      <button class="tile" onclick="selectTile(this,'style','auditory')"><div class="icon">👂</div><div class="label">Auditory (listening & discussion)</div></button>
+      <button class="tile" onclick="selectTile(this,'style','reading')"><div class="icon">📖</div><div class="label">Reading & writing</div></button>
+      <button class="tile" onclick="selectTile(this,'style','kinesthetic')"><div class="icon">✋</div><div class="label">Hands-on practice</div></button>
+      <button class="tile" onclick="selectTile(this,'style','mixed')"><div class="icon">🔀</div><div class="label">Mix of everything</div></button>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn-ghost" style="flex:1; padding:13px;" onclick="nextStep(1)">← Back</button>
+      <button class="btn-primary" style="flex:2; padding:13px;" onclick="nextStep(3)">Continue →</button>
     </div>
   </div>
 
-  <!-- Goals -->
-  <div style="margin-bottom:28px;">
-    <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">What's your goal?</div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px;">
-      <div class="tile" data-group="goal" data-keywords="structured,homework help,patient" onclick="toggleTile(this)">
-        <div class="tile-icon">📈</div>
-        <div class="tile-label">Improve grades</div>
-      </div>
-      <div class="tile" data-group="goal" data-keywords="SAT,test prep,college prep,accountability" onclick="toggleTile(this)">
-        <div class="tile-icon">🎓</div>
-        <div class="tile-label">SAT / Test prep</div>
-      </div>
-      <div class="tile" data-group="goal" data-keywords="homework help,patient" onclick="toggleTile(this)">
-        <div class="tile-icon">📚</div>
-        <div class="tile-label">Homework help</div>
-      </div>
-      <div class="tile" data-group="goal" data-keywords="flexible,step-by-step" onclick="toggleTile(this)">
-        <div class="tile-icon">🚀</div>
-        <div class="tile-label">Learn ahead</div>
-      </div>
-      <div class="tile" data-group="goal" data-keywords="patient,structured" onclick="toggleTile(this)">
-        <div class="tile-icon">💪</div>
-        <div class="tile-label">Build confidence</div>
-      </div>
+  <!-- Step 3: Session preference -->
+  <div class="step" id="step-3">
+    <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:6px;">Virtual or in-person?</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Where would you prefer to learn?</p>
+    <div class="tile-grid" style="grid-template-columns:repeat(2,1fr);">
+      <button class="tile" onclick="selectTile(this,'session','virtual')" style="padding:24px 12px;"><div class="icon">💻</div><div class="label">Virtual (Zoom/Meet)</div></button>
+      <button class="tile" onclick="selectTile(this,'session','in-person')" style="padding:24px 12px;"><div class="icon">📍</div><div class="label">In-person</div></button>
+      <button class="tile" onclick="selectTile(this,'session','both')" style="padding:24px 12px; grid-column:1/-1;"><div class="icon">🔀</div><div class="label">Either works for me</div></button>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn-ghost" style="flex:1; padding:13px;" onclick="nextStep(2)">← Back</button>
+      <button class="btn-primary" style="flex:2; padding:13px;" onclick="nextStep(4)">Continue →</button>
     </div>
   </div>
 
-  <!-- Session type -->
-  <div style="margin-bottom:28px;">
-    <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Session type</div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:420px;">
-      <div class="tile" data-group="session" data-session="virtual" onclick="toggleTile(this)">
-        <div class="tile-icon">💻</div>
-        <div class="tile-label">Virtual</div>
-      </div>
-      <div class="tile" data-group="session" data-session="in-person" onclick="toggleTile(this)">
-        <div class="tile-icon">📍</div>
-        <div class="tile-label">In-person</div>
-      </div>
-      <div class="tile" data-group="session" data-session="both" onclick="toggleTile(this)">
-        <div class="tile-icon">🤷</div>
-        <div class="tile-label">Either</div>
-      </div>
+  <!-- Step 4: Goals -->
+  <div class="step" id="step-4">
+    <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:6px;">What's your main goal?</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Select all that apply</p>
+    <div class="tile-grid">
+      <button class="tile" onclick="toggleTile(this,'goal','improve-grades')"><div class="icon">📈</div><div class="label">Improve grades</div></button>
+      <button class="tile" onclick="toggleTile(this,'goal','test-prep')"><div class="icon">🎯</div><div class="label">Test prep</div></button>
+      <button class="tile" onclick="toggleTile(this,'goal','homework-help')"><div class="icon">📚</div><div class="label">Homework help</div></button>
+      <button class="tile" onclick="toggleTile(this,'goal','build-confidence')"><div class="icon">💪</div><div class="label">Build confidence</div></button>
+      <button class="tile" onclick="toggleTile(this,'goal','college-prep')"><div class="icon">🎓</div><div class="label">College prep</div></button>
+      <button class="tile" onclick="toggleTile(this,'goal','stay-ahead')"><div class="icon">⚡</div><div class="label">Stay ahead</div></button>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn-ghost" style="flex:1; padding:13px;" onclick="nextStep(3)">← Back</button>
+      <button class="btn-primary" style="flex:2; padding:13px;" onclick="findMatches()">Find my matches ✨</button>
     </div>
   </div>
 
-  <!-- Live results -->
-  <div id="results-section" style="display:none;">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-      <h2 style="font-size:20px; font-weight:800; color:var(--navy);">Your matches</h2>
-      <div style="font-size:13px; color:var(--text-muted);" id="match-count"></div>
+  <!-- Results -->
+  <div class="step" id="step-results">
+    <div id="results-loading" style="text-align:center; padding:48px;">
+      <div style="font-size:36px; margin-bottom:12px; animation:spin 1s linear infinite; display:inline-block;">✨</div>
+      <div style="font-size:16px; font-weight:700; color:var(--navy);">Finding your matches...</div>
     </div>
-    <div id="results-grid" style="display:flex; flex-direction:column; gap:14px;"></div>
-  </div>
-
-  <div id="empty-state" style="display:none; text-align:center; padding:40px;">
-    <div style="font-size:32px; margin-bottom:12px;">🔍</div>
-    <div style="font-size:16px; font-weight:700; color:var(--navy); margin-bottom:6px;">No exact matches found</div>
-    <div style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">Try removing some filters or browse all tutors</div>
-    <a href="find-tutor.html" class="btn-primary" style="padding:12px 24px;">Browse all tutors</a>
+    <div id="results-content" style="display:none;">
+      <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin-bottom:6px;">Your tutor matches</h2>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;" id="match-subtitle"></p>
+      <div id="matches-grid" style="display:flex; flex-direction:column; gap:14px; margin-bottom:24px;"></div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ghost" style="flex:1; padding:12px;" onclick="retake()">Retake quiz</button>
+        <a href="find-tutor.html" class="btn-outline" style="flex:1; padding:12px; text-align:center;">Browse all tutors</a>
+      </div>
+    </div>
   </div>
 
 </div>
 
 <style>
-.tile {
-  border: 1.5px solid var(--border-light);
-  border-radius: 12px;
-  padding: 14px 12px;
-  text-align: center;
-  cursor: pointer;
-  background: white;
-  transition: all 0.15s;
-  user-select: none;
-}
-.tile:hover { border-color: var(--pink); background: var(--pink-light); }
-.tile.selected { border-color: var(--pink); background: var(--pink-light); }
-.tile-icon { font-size: 24px; margin-bottom: 6px; }
-.tile-label { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
-.tile.selected .tile-label { color: var(--pink-dark); }
-.tile-sub { font-size: 11px; color: var(--text-muted); }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 
 <script src="chatbot.js"></script>
 <script>
 const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
-let allTutors = [];
-let tutorSubjects = {};
-let selectedKeywords = new Set();
-let selectedSession = '';
+let answers = { subject: [], style: null, session: null, goal: [] };
+let currentStep = 1;
+const totalSteps = 4;
 
-const subjectTiles = [
-  { label: 'Algebra', icon: '➕', keywords: ['math','algebra'] },
-  { label: 'Calculus', icon: '📐', keywords: ['math','calculus'] },
-  { label: 'Biology', icon: '🧬', keywords: ['science','biology'] },
-  { label: 'Chemistry', icon: '⚗️', keywords: ['science','chemistry'] },
-  { label: 'English', icon: '📖', keywords: ['english','writing'] },
-  { label: 'SAT Prep', icon: '🎓', keywords: ['SAT','test prep','college prep'] },
-  { label: 'Writing', icon: '✍️', keywords: ['writing','essays','english'] },
-  { label: 'All subjects', icon: '📚', keywords: [] }
-];
-
-async function init() {
-  buildSubjectTiles();
-  allTutors = await fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[]);
-  for (const t of allTutors) {
-    const subs = await fetch(`${API}/api/tutors/${t.id}/subjects`).then(r=>r.json()).catch(()=>[]);
-    tutorSubjects[t.id] = subs;
-  }
+function updateProgress(step) {
+  document.getElementById('progress-fill').style.width = ((step-1)/totalSteps*100) + '%';
 }
 
-function buildSubjectTiles() {
-  const grid = document.getElementById('subject-tiles');
-  grid.innerHTML = subjectTiles.map((s, i) => `
-    <div class="tile" data-group="subject" data-keywords="${s.keywords.join(',')}" onclick="toggleTile(this)" data-idx="${i}">
-      <div class="tile-icon">${s.icon}</div>
-      <div class="tile-label">${s.label}</div>
-    </div>`).join('');
+function nextStep(step) {
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  currentStep = step;
+  const el = document.getElementById('step-' + step) || document.getElementById('step-results');
+  el.classList.add('active');
+  updateProgress(step);
+  window.scrollTo(0, 0);
 }
 
-function toggleTile(tile) {
-  const group = tile.dataset.group;
-  const keywords = tile.dataset.keywords ? tile.dataset.keywords.split(',').filter(Boolean) : [];
-  const session = tile.dataset.session || '';
-
-  if (group === 'session') {
-    document.querySelectorAll('[data-group="session"]').forEach(t => t.classList.remove('selected'));
-    tile.classList.add('selected');
-    selectedSession = session === 'both' ? '' : session;
-  } else {
-    tile.classList.toggle('selected');
-    if (tile.classList.contains('selected')) {
-      keywords.forEach(k => selectedKeywords.add(k));
-    } else {
-      keywords.forEach(k => selectedKeywords.delete(k));
-    }
-  }
-  updateResults();
+function toggleTile(btn, key, value) {
+  btn.classList.toggle('selected');
+  if (btn.classList.contains('selected')) { if (!answers[key].includes(value)) answers[key].push(value); }
+  else { answers[key] = answers[key].filter(v => v !== value); }
 }
 
-function scoretutor(t) {
-  if (!selectedKeywords.size && !selectedSession) return 100;
-  const tutorKws = (t.keywords || '').toLowerCase().split(',').map(k=>k.trim());
-  const bioText = `${t.bio||''} ${t.teaching_philosophy||''}`.toLowerCase();
-  let matches = 0;
-  selectedKeywords.forEach(kw => {
-    const k = kw.toLowerCase();
-    if (tutorKws.some(tk => tk.includes(k) || k.includes(tk))) matches += 2;
-    else if (bioText.includes(k)) matches += 1;
-  });
-  const total = selectedKeywords.size * 2;
-  let score = total > 0 ? Math.round((matches / total) * 90) + 10 : 100;
-  if (selectedSession) {
-    if (t.session_types === selectedSession || t.session_types === 'both') score += 10;
-    else score -= 20;
-  }
-  return Math.min(99, Math.max(0, score));
+function selectTile(btn, key, value) {
+  document.querySelectorAll(`#step-${currentStep} .tile`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[key] = value;
 }
 
-function updateResults() {
-  const hasSelection = selectedKeywords.size > 0 || selectedSession;
-  if (!hasSelection) {
-    document.getElementById('results-section').style.display = 'none';
-    document.getElementById('empty-state').style.display = 'none';
-    return;
-  }
-  const scored = allTutors
-    .map(t => ({ ...t, score: scoretutor(t) }))
-    .filter(t => t.score > 20)
-    .sort((a,b) => b.score - a.score);
+async function findMatches() {
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  document.getElementById('step-results').classList.add('active');
+  updateProgress(totalSteps + 1);
 
-  document.getElementById('results-section').style.display = scored.length ? 'block' : 'none';
-  document.getElementById('empty-state').style.display = scored.length ? 'none' : 'block';
+  try {
+    const [tutors, allSubjects] = await Promise.all([
+      fetch(`${API}/api/tutors`).then(r=>r.json()),
+      fetch(`${API}/api/subjects`).then(r=>r.json()).catch(()=>[])
+    ]);
 
-  if (!scored.length) return;
+    const tutorSubjects = {};
+    await Promise.all(tutors.map(async t => {
+      try { tutorSubjects[t.id] = await fetch(`${API}/api/tutors/${t.id}/subjects`).then(r=>r.json()); }
+      catch(e) { tutorSubjects[t.id] = []; }
+    }));
 
-  document.getElementById('match-count').textContent = `${scored.length} tutor${scored.length!==1?'s':''} matched`;
-  document.getElementById('results-grid').innerHTML = scored.map((t, i) => {
-    const subs = tutorSubjects[t.id] || [];
-    const tags = subs.map(s=>`<span class="tag-pink">${s.name}</span>`).join('');
-    const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=64`;
-    const matchColor = t.score >= 75 ? 'var(--green-mid)' : t.score >= 50 ? 'var(--amber-mid)' : 'var(--text-muted)';
-    const matchBg = t.score >= 75 ? 'var(--green-soft)' : t.score >= 50 ? 'var(--amber-soft)' : '#f1f5f9';
-    const sharedKws = (t.keywords||'').split(',').filter(k => {
-      const kl = k.trim().toLowerCase();
-      return [...selectedKeywords].some(sk => kl.includes(sk.toLowerCase()) || sk.toLowerCase().includes(kl));
-    });
-    return `
-      <div class="card card-hover" style="cursor:pointer; ${i===0?'border:2px solid var(--pink);':''}" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
-        ${i===0?'<div style="background:var(--pink); color:white; font-size:11px; font-weight:700; padding:5px 12px; margin:-20px -20px 16px; border-radius:12px 12px 0 0; text-align:center;">⭐ Best match for your selections</div>':''}
-        <div style="display:flex; gap:14px; align-items:flex-start;">
-          <div style="position:relative; flex-shrink:0;">
-            <img src="${avatarUrl}" style="width:60px; height:60px; border-radius:50%; border:3px solid var(--pink-light);" onerror="this.style.display='none'">
-            <div style="position:absolute; bottom:-4px; right:-4px; background:${matchBg}; color:${matchColor}; font-size:11px; font-weight:800; padding:2px 7px; border-radius:20px;">${t.score}%</div>
-          </div>
-          <div style="flex:1;">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
-              <div style="font-size:16px; font-weight:800; color:var(--navy);">${t.first_name} ${t.last_name}</div>
-              <span style="background:${matchBg}; color:${matchColor}; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px;">${t.score>=75?'Great match':t.score>=50?'Good match':'Possible match'}</span>
+    const scored = tutors.map(t => {
+      let score = 0;
+      const subs = tutorSubjects[t.id] || [];
+      const keywords = (t.keywords || '').toLowerCase();
+      answers.subject.forEach(s => { if (subs.some(ts => ts.name.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(ts.name.toLowerCase()))) score += 30; });
+      answers.goal.forEach(g => { if (keywords.includes(g.replace('-',' '))) score += 15; });
+      if (answers.style && keywords.includes(answers.style)) score += 20;
+      if (answers.session === 'both' || answers.session === t.session_types || t.session_types === 'both') score += 10;
+      if (t.rating > 0) score += Math.round(t.rating * 2);
+      return { ...t, score, subjects: subs };
+    }).sort((a,b) => b.score - a.score).slice(0,4);
+
+    document.getElementById('results-loading').style.display = 'none';
+    document.getElementById('results-content').style.display = 'block';
+    document.getElementById('match-subtitle').textContent = `Based on your preferences — ${scored.length} tutor${scored.length!==1?'s':''} matched`;
+
+    document.getElementById('matches-grid').innerHTML = scored.map((t, i) => {
+      const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=64`;
+      const banner = t.banner_gradient || 'linear-gradient(135deg,#fce4f0,#f3e5f5)';
+      const tags = t.subjects.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
+      const matchPct = Math.min(100, Math.round((t.score / 100) * 100));
+      return `
+        <div class="tutor-match" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
+          <div style="height:56px; background:${banner};"></div>
+          <div style="padding:14px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-top:-28px; margin-bottom:10px;">
+              <img src="${avatarUrl}" style="width:52px; height:52px; border-radius:50%; border:3px solid white; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.1);" onerror="this.style.display='none'">
+              <div style="padding-top:30px; flex:1;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <div style="font-size:15px; font-weight:700; color:var(--navy);">${t.first_name} ${t.last_name}</div>
+                  ${i===0?'<span class="match-score">⭐ Best match</span>':''}
+                </div>
+                <div style="font-size:13px; color:var(--pink); font-weight:600;">$${t.hourly_rate}/hr</div>
+              </div>
             </div>
-            <div style="font-size:13px; color:var(--pink); font-weight:600; margin-bottom:6px;">$${t.hourly_rate}/hr · ${t.session_types==='virtual'?'💻 Virtual':t.session_types==='in-person'?'📍 In-person':'💻📍 Both'}</div>
-            <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px; line-height:1.5;">${t.bio}</div>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">${tags}</div>
-            ${sharedKws.length?`
-              <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
-                <strong style="color:var(--navy);">Matches your selections:</strong>
-                ${sharedKws.slice(0,5).map(k=>`<span style="background:var(--green-soft); color:var(--green-mid); font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; margin-left:4px;">${k.trim()}</span>`).join('')}
-              </div>`:''}
-            <div style="display:flex; gap:8px;">
-              <a href="tutor-profile.html?id=${t.id}" class="btn-outline" style="padding:7px 14px; font-size:13px;" onclick="event.stopPropagation()">View profile</a>
-              <a href="booking.html?tutor_id=${t.id}" class="btn-primary" style="padding:7px 14px; font-size:13px;" onclick="event.stopPropagation()">Book session</a>
+            <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${t.bio||''}</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;">${tags}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:12px; color:var(--text-muted);">Match score: ${matchPct}%</div>
+              <a href="booking.html?tutor_id=${t.id}" class="btn-primary" style="padding:7px 16px; font-size:13px;" onclick="event.stopPropagation()">Book</a>
             </div>
           </div>
-        </div>
-      </div>`;
-  }).join('');
+        </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('results-loading').innerHTML = '<div style="color:#dc2626; font-size:14px;">Could not load matches. <a href="find-tutor.html" style="color:var(--pink);">Browse all tutors →</a></div>';
+  }
 }
 
-init();
+function retake() {
+  answers = { subject: [], style: null, session: null, goal: [] };
+  document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('results-content').style.display = 'none';
+  document.getElementById('results-loading').style.display = 'block';
+  currentStep = 1;
+  document.getElementById('step-1').classList.add('active');
+  updateProgress(1);
+}
 </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Your Tutor — TutwMe</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-

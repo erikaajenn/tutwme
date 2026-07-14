@@ -3,160 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Build Your Avatar — TutwMe</title>
+  <title>Avatar Builder — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .style-btn { border: 2px solid var(--border-light); border-radius: 12px; padding: 10px; cursor: pointer; background: white; transition: all 0.15s; text-align: center; }
+    .style-btn:hover { border-color: var(--pink); }
+    .style-btn.active { border-color: var(--pink); background: var(--pink-light); }
+    .style-btn img { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 6px; display: block; }
+    .style-btn div { font-size: 12px; font-weight: 600; color: var(--navy); }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
-  <div style="margin-left:auto; font-size:13px; font-weight:600; color:var(--pink);">Avatar Builder</div>
+  <div style="margin-left:auto; font-size:13px; font-weight:700; color:var(--pink);">Avatar Builder</div>
 </header>
 
+<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:40px 20px; text-align:center;">
+  <h1 style="font-size:26px; font-weight:800; color:white; margin-bottom:8px;">✨ Customize your avatar</h1>
+  <p style="font-size:14px; color:rgba(255,255,255,0.7);">Choose a style that represents you — students love seeing a friendly face</p>
+</div>
+
 <div class="page-container" style="max-width:680px;">
-  <div style="text-align:center; margin-bottom:32px;">
-    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">Create your avatar</h1>
-    <p style="font-size:15px; color:var(--text-muted);">Pick a style that represents you. Your avatar appears on your tutor profile.</p>
+
+  <!-- Preview -->
+  <div style="text-align:center; margin-bottom:28px;">
+    <img id="avatar-preview" src="" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--pink-light); box-shadow:0 4px 20px rgba(233,30,140,0.2); margin:0 auto 16px; display:block;">
+    <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:4px;">Your avatar preview</div>
+    <div style="font-size:13px; color:var(--text-muted);" id="current-style-label">adventurer</div>
   </div>
 
-  <div class="card" style="margin-bottom:20px; text-align:center; padding:32px;">
-    <img id="avatar-preview" src="" alt="Your avatar" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--pink-light); margin-bottom:16px;">
-    <div style="font-size:16px; font-weight:700; color:var(--navy);" id="avatar-name">Your Avatar</div>
-    <div style="font-size:13px; color:var(--text-muted); margin-top:4px;" id="avatar-style-label">Adventurer style</div>
+  <!-- Seed customization -->
+  <div class="card" style="margin-bottom:20px; padding:20px;">
+    <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Avatar seed (change for different look)</label>
+    <input type="text" id="avatar-seed" placeholder="Your name or any word..." oninput="updatePreview()">
+    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Different words generate different avatars of the same style</div>
   </div>
 
-  <div class="card" style="margin-bottom:20px;">
-    <div class="section-title" style="margin-bottom:14px;">Choose your style</div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px;" id="style-grid"></div>
+  <!-- Style picker -->
+  <div class="card" style="padding:20px; margin-bottom:20px;">
+    <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:16px;">Choose your style</div>
+    <div id="style-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:12px;"></div>
   </div>
 
-  <div class="card" style="margin-bottom:20px;">
-    <div class="section-title" style="margin-bottom:14px;">Customize seed</div>
-    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Change the seed to get a different look within the same style.</p>
-    <div style="display:flex; gap:10px;">
-      <input type="text" id="seed-input" placeholder="Enter your name or any word" style="flex:1;">
-      <button class="btn-outline" onclick="updateSeed()" style="white-space:nowrap;">Apply</button>
-    </div>
-    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;" id="seed-suggestions"></div>
-  </div>
-
-  <button class="btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="saveAvatar()">Save My Avatar</button>
-  <div style="text-align:center; margin-top:12px;">
-    <a href="tutor-dashboard.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Skip for now</a>
-  </div>
-
-  <div id="save-success" style="display:none; background:var(--green-soft); border:1px solid #a5d6a7; border-radius:10px; padding:14px; text-align:center; margin-top:16px; font-size:14px; font-weight:600; color:var(--green-mid);">
-    Avatar saved! Redirecting to your dashboard...
-  </div>
+  <button class="btn-primary" id="save-btn" style="width:100%; padding:14px; font-size:16px;" onclick="saveAvatar()">Save avatar →</button>
+  <div id="save-msg" style="display:none; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:12px; text-align:center; margin-top:10px; font-size:13px; font-weight:700; color:#15803d;">✓ Avatar saved!</div>
 </div>
 
 <script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const tutor = JSON.parse(localStorage.getItem('tutor') || '{}');
+const TUTOR_ID = tutor.id || 1;
 
 const STYLES = [
-  { id: 'adventurer', label: 'Adventurer' },
-  { id: 'adventurer-neutral', label: 'Neutral' },
-  { id: 'avataaars', label: 'Avataaars' },
-  { id: 'big-ears', label: 'Big Ears' },
-  { id: 'big-smile', label: 'Big Smile' },
-  { id: 'bottts', label: 'Robot' },
-  { id: 'croodles', label: 'Croodles' },
-  { id: 'fun-emoji', label: 'Emoji' },
-  { id: 'icons', label: 'Icons' },
-  { id: 'identicon', label: 'Identicon' },
-  { id: 'lorelei', label: 'Lorelei' },
-  { id: 'micah', label: 'Micah' },
-  { id: 'miniavs', label: 'Mini' },
-  { id: 'notionists', label: 'Notion' },
-  { id: 'open-peeps', label: 'Open Peeps' },
-  { id: 'personas', label: 'Personas' },
-  { id: 'pixel-art', label: 'Pixel Art' },
-  { id: 'shapes', label: 'Shapes' },
-  { id: 'thumbs', label: 'Thumbs' },
+  'adventurer','adventurer-neutral','avataaars','avataaars-neutral',
+  'big-ears','big-ears-neutral','big-smile','bottts','bottts-neutral',
+  'croodles','croodles-neutral','dylan','fun-emoji','glass',
+  'icons','identicon','initials','lorelei','lorelei-neutral','micah',
+  'miniavs','notionists','open-peeps','personas','pixel-art'
 ];
 
-let currentStyle = 'adventurer';
-let currentSeed = 'TutwMe';
-const TUTOR_ID = 1;
+let currentStyle = tutor.avatar_style || 'adventurer';
+let currentSeed = tutor.avatar_seed || tutor.first_name || 'tutor';
 
-function avatarUrl(style, seed) {
-  return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}&size=120`;
+function getAvatarUrl(style, seed) {
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}&size=80`;
 }
 
 function updatePreview() {
-  document.getElementById('avatar-preview').src = avatarUrl(currentStyle, currentSeed);
-  const styleLabel = STYLES.find(s => s.id === currentStyle)?.label || currentStyle;
-  document.getElementById('avatar-style-label').textContent = `${styleLabel} style`;
-  document.querySelectorAll('.style-btn').forEach(btn => {
-    btn.style.borderColor = btn.dataset.style === currentStyle ? 'var(--pink)' : 'var(--border-light)';
-    btn.style.background = btn.dataset.style === currentStyle ? 'var(--pink-light)' : 'white';
-  });
+  currentSeed = document.getElementById('avatar-seed').value || currentSeed;
+  document.getElementById('avatar-preview').src = getAvatarUrl(currentStyle, currentSeed);
+  document.getElementById('current-style-label').textContent = currentStyle;
 }
 
-function buildStyleGrid() {
-  const grid = document.getElementById('style-grid');
-  grid.innerHTML = STYLES.map(s => `
-    <button class="style-btn" data-style="${s.id}" onclick="selectStyle('${s.id}')"
-      style="border:2px solid var(--border-light); border-radius:10px; padding:8px; cursor:pointer; background:white; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:6px;">
-      <img src="${avatarUrl(s.id, currentSeed)}" style="width:48px; height:48px; border-radius:50%;" loading="lazy">
-      <span style="font-size:11px; font-weight:500; color:var(--text-muted);">${s.label}</span>
+function buildGrid() {
+  document.getElementById('avatar-seed').value = currentSeed;
+  document.getElementById('style-grid').innerHTML = STYLES.map(s => `
+    <button class="style-btn ${s===currentStyle?'active':''}" onclick="selectStyle('${s}', this)">
+      <img src="${getAvatarUrl(s, currentSeed)}" alt="${s}" loading="lazy">
+      <div>${s}</div>
     </button>`).join('');
+  updatePreview();
 }
 
-function selectStyle(style) {
+function selectStyle(style, btn) {
   currentStyle = style;
+  document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
   updatePreview();
-  document.querySelectorAll('.style-btn').forEach(btn => {
-    btn.style.borderColor = btn.dataset.style === style ? 'var(--pink)' : 'var(--border-light)';
-    btn.style.background = btn.dataset.style === style ? 'var(--pink-light)' : 'white';
-  });
-}
-
-function updateSeed() {
-  const val = document.getElementById('seed-input').value.trim();
-  if (val) { currentSeed = val; updatePreview(); buildStyleGrid(); }
-}
-
-function buildSeedSuggestions() {
-  const suggestions = ['Sunny', 'Nova', 'Pixel', 'Spark', 'Ace', 'Bloom', 'Zara', 'Rio'];
-  document.getElementById('seed-suggestions').innerHTML = suggestions.map(s =>
-    `<button onclick="applySeed('${s}')" class="tag-pink" style="cursor:pointer; border:none; font-family:Inter,sans-serif;">${s}</button>`
-  ).join('');
-}
-
-function applySeed(seed) {
-  currentSeed = seed;
-  document.getElementById('seed-input').value = seed;
-  updatePreview();
-  buildStyleGrid();
 }
 
 async function saveAvatar() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Saving...';
   try {
     await fetch(`${API}/api/tutors/${TUTOR_ID}/avatar`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ avatar_style: currentStyle, avatar_seed: currentSeed })
     });
-    document.getElementById('save-success').style.display = 'block';
-    setTimeout(() => window.location.href = 'tutor-dashboard.html', 2000);
+    const updated = { ...tutor, avatar_style: currentStyle, avatar_seed: currentSeed };
+    localStorage.setItem('tutor', JSON.stringify(updated));
+    document.getElementById('save-msg').style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Save avatar →';
+    setTimeout(() => window.location.href = `tutor-profile.html?id=${TUTOR_ID}`, 1500);
   } catch(e) {
+    btn.disabled = false; btn.textContent = 'Save avatar →';
     alert('Could not save. Please try again.');
   }
 }
 
-const tutor = JSON.parse(localStorage.getItem('tutor') || '{}');
-if (tutor.first_name) {
-  currentSeed = tutor.first_name + (tutor.last_name || '');
-  document.getElementById('avatar-name').textContent = `${tutor.first_name} ${tutor.last_name || ''}`;
-  document.getElementById('seed-input').value = currentSeed;
-}
-
-buildStyleGrid();
-buildSeedSuggestions();
-updatePreview();
+buildGrid();
 </script>
 </body>
 </html>

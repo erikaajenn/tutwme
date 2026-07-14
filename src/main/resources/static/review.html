@@ -5,59 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Leave a Review — TutwMe</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .star-btn { font-size: 32px; cursor: pointer; background: none; border: none; padding: 4px; transition: transform 0.1s; color: #e2e8f0; }
+    .star-btn.filled { color: #f59e0b; }
+    .star-btn:hover { transform: scale(1.2); }
+  </style>
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
-</header>
-<div class="page-container" style="max-width:520px;">
-  <div style="text-align:center; margin-bottom:28px;">
-    <div style="font-size:40px; margin-bottom:12px;">⭐</div>
-    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">How was your session?</h1>
-    <p style="font-size:15px; color:var(--text-muted);">Your review helps other students and parents in the community</p>
+  <div style="margin-left:auto;">
+    <a href="student-dashboard.html" class="btn-ghost" style="padding:8px 18px;">← Dashboard</a>
   </div>
+</header>
 
-  <div class="card" id="review-form">
-    <div id="review-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-bottom:14px;"></div>
+<div style="background:linear-gradient(135deg,#fff8e1,#fafafa); padding:48px 20px 32px; text-align:center;">
+  <div style="font-size:36px; margin-bottom:10px;">⭐</div>
+  <h1 style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:8px;">Leave a review</h1>
+  <p style="font-size:15px; color:var(--text-muted);">Help other families in our community find great tutors</p>
+</div>
 
-    <div style="margin-bottom:20px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Select the session you're reviewing</label>
-      <select id="booking-select" style="font-size:14px;">
-        <option value="">-- Choose a session --</option>
+<div class="page-container" style="max-width:520px;">
+
+  <div class="card" style="padding:28px;" id="form-section">
+    <div id="error-box" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; font-weight:600; margin-bottom:14px;"></div>
+
+    <div style="margin-bottom:18px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Select your tutor</label>
+      <select id="tutor-select" style="font-size:14px;">
+        <option value="">-- Choose a tutor --</option>
       </select>
     </div>
 
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:18px;">
       <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px;">Your rating</label>
-      <div style="display:flex; gap:8px;" id="star-rating">
-        <button onclick="setRating(1)" data-star="1" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
-        <button onclick="setRating(2)" data-star="2" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
-        <button onclick="setRating(3)" data-star="3" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
-        <button onclick="setRating(4)" data-star="4" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
-        <button onclick="setRating(5)" data-star="5" style="font-size:32px; background:none; border:none; cursor:pointer; opacity:0.3; transition:opacity 0.15s;">★</button>
+      <div style="display:flex; gap:4px;" id="star-container">
+        <button class="star-btn" onclick="setRating(1)">★</button>
+        <button class="star-btn" onclick="setRating(2)">★</button>
+        <button class="star-btn" onclick="setRating(3)">★</button>
+        <button class="star-btn" onclick="setRating(4)">★</button>
+        <button class="star-btn" onclick="setRating(5)">★</button>
       </div>
-      <div id="rating-label" style="font-size:13px; color:var(--text-muted); margin-top:6px;">Click a star to rate</div>
+      <div id="rating-label" style="font-size:13px; color:var(--text-muted); margin-top:8px;">Select a rating</div>
     </div>
 
     <div style="margin-bottom:20px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Your review</label>
-      <textarea id="review-comment" placeholder="Tell others about your experience. Was the tutor helpful? Patient? Did you improve?" style="height:120px; resize:none; font-size:14px; line-height:1.6;"></textarea>
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your review</label>
+      <textarea id="comment" placeholder="How did the tutor help you? What made their sessions great? Would you recommend them to other families?" style="height:140px; resize:none; line-height:1.7;"></textarea>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Reviews are submitted for admin approval before being published</div>
     </div>
 
-    <div style="background:var(--pink-light); border-radius:10px; padding:14px; margin-bottom:20px;">
-      <div style="font-size:13px; font-weight:700; color:var(--pink-dark); margin-bottom:6px;">📋 Review policy</div>
-      <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">All reviews are submitted to our admin team for approval before being published. This keeps our community safe and trustworthy. Reviews are usually approved within 24 hours.</div>
+    <div style="background:var(--pink-light); border-radius:10px; padding:12px; margin-bottom:20px; font-size:13px; color:var(--pink-dark); line-height:1.6;">
+      ✨ Your honest review helps other Elk Grove & Sacramento families find the right tutor. Thank you for contributing to our community!
     </div>
 
-    <button class="btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="submitReview()">Submit Review</button>
+    <button class="btn-primary" id="submit-btn" style="width:100%; padding:14px; font-size:15px;" onclick="submitReview()">Submit review</button>
   </div>
 
   <div id="success-box" style="display:none;" class="card">
-    <div style="text-align:center; padding:20px;">
-      <div style="font-size:40px; margin-bottom:12px;">🎉</div>
+    <div style="text-align:center; padding:24px;">
+      <div style="font-size:48px; margin-bottom:14px;">🌟</div>
       <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:8px;">Review submitted!</h2>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.6; margin-bottom:20px;">Thank you! Your review is pending admin approval and will be published within 24 hours.</p>
-      <a href="login.html" class="btn-primary" style="padding:12px 24px;">Back to my dashboard</a>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">Thanks for sharing your experience! Our team will review it shortly and publish it on the tutor's profile.</p>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <a href="find-tutor.html" class="btn-outline" style="padding:11px 20px;">Browse tutors</a>
+        <a href="student-dashboard.html" class="btn-primary" style="padding:11px 20px;">My dashboard</a>
+      </div>
     </div>
   </div>
 </div>
@@ -65,71 +79,64 @@
 <script src="chatbot.js"></script>
 <script>
 const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
+const STUDENT_ID = JSON.parse(localStorage.getItem('student') || '{}').id || 1;
 let selectedRating = 0;
-const student = JSON.parse(localStorage.getItem('student') || '{}');
+const RATING_LABELS = { 1:'😞 Poor', 2:'😐 Fair', 3:'🙂 Good', 4:'😊 Great', 5:'🌟 Excellent!' };
 
-async function loadBookings() {
-  if (!student.id) return;
-  try {
-    const bookings = await fetch(`${API}/api/students/${student.id}/bookings`).then(r => r.json());
-    const select = document.getElementById('booking-select');
-    bookings.forEach(b => {
-      select.innerHTML += `<option value="${b.id}" data-tutor="${b.tutor_id}" data-name="${b.tutor_first} ${b.tutor_last}">${b.subject_name} with ${b.tutor_first} ${b.tutor_last} — ${new Date(b.scheduled_at).toLocaleDateString()}</option>`;
-    });
-  } catch(e) {}
+const params = new URLSearchParams(window.location.search);
+
+async function loadTutors() {
+  const tutors = await fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[]);
+  const select = document.getElementById('tutor-select');
+  tutors.forEach(t => { select.innerHTML += `<option value="${t.id}">${t.first_name} ${t.last_name}</option>`; });
+  if (params.get('tutor_id')) select.value = params.get('tutor_id');
 }
 
-function setRating(n) {
-  selectedRating = n;
-  const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'];
-  document.getElementById('rating-label').textContent = labels[n] + ' (' + n + '/5)';
-  document.getElementById('rating-label').style.color = 'var(--pink)';
-  document.querySelectorAll('#star-rating button').forEach(btn => {
-    btn.style.opacity = parseInt(btn.dataset.star) <= n ? '1' : '0.3';
-    btn.style.color = parseInt(btn.dataset.star) <= n ? '#f59e0b' : '#ccc';
+function setRating(rating) {
+  selectedRating = rating;
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.classList.toggle('filled', i < rating);
   });
+  document.getElementById('rating-label').textContent = RATING_LABELS[rating] || '';
+  document.getElementById('rating-label').style.color = rating >= 4 ? 'var(--green-mid)' : rating >= 3 ? 'var(--amber-mid)' : '#dc2626';
 }
 
 async function submitReview() {
-  const errEl = document.getElementById('review-error');
+  const errEl = document.getElementById('error-box');
   errEl.style.display = 'none';
-  const bookingSelect = document.getElementById('booking-select');
-  const bookingId = bookingSelect.value;
-  const tutorId = bookingSelect.options[bookingSelect.selectedIndex]?.dataset.tutor;
-  const comment = document.getElementById('review-comment').value.trim();
-  if (!bookingId) { errEl.textContent = 'Please select a session.'; errEl.style.display = 'block'; return; }
-  if (!selectedRating) { errEl.textContent = 'Please select a star rating.'; errEl.style.display = 'block'; return; }
-  if (!comment) { errEl.textContent = 'Please write a short review.'; errEl.style.display = 'block'; return; }
+  const tutorId = document.getElementById('tutor-select').value;
+  const comment = document.getElementById('comment').value.trim();
+  if (!tutorId) { errEl.textContent = 'Please select a tutor.'; errEl.style.display = 'block'; return; }
+  if (!selectedRating) { errEl.textContent = 'Please select a rating.'; errEl.style.display = 'block'; return; }
+  if (!comment || comment.length < 20) { errEl.textContent = 'Please write at least 20 characters in your review.'; errEl.style.display = 'block'; return; }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
   try {
     const res = await fetch(`${API}/api/reviews`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        reviewer_id: student.id || 1,
-        reviewer_type: 'student',
-        reviewee_id: parseInt(tutorId),
-        reviewee_type: 'tutor',
-        booking_id: parseInt(bookingId),
-        rating: selectedRating,
-        comment,
-        is_private: false
+        reviewer_id: STUDENT_ID, reviewer_type: 'student',
+        reviewee_id: parseInt(tutorId), reviewee_type: 'tutor',
+        booking_id: null, rating: selectedRating, comment, is_private: false
       })
     });
     if (res.ok) {
-      document.getElementById('review-form').style.display = 'none';
+      document.getElementById('form-section').style.display = 'none';
       document.getElementById('success-box').style.display = 'block';
     } else {
       const data = await res.json();
-      errEl.textContent = data.error || 'Could not submit review.';
+      errEl.textContent = data.error || 'Something went wrong.';
       errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Submit review';
     }
   } catch(e) {
     errEl.textContent = 'Could not connect. Please try again.';
     errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Submit review';
   }
 }
 
-loadBookings();
+loadTutors();
 </script>
 </body>
 </html>
