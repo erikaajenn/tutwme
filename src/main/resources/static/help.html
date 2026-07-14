@@ -7,66 +7,90 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <div style="margin-left:auto; display:flex; gap:10px;">
+    <a href="login.html" class="btn-ghost" style="padding:8px 18px;">Sign in</a>
+  </div>
 </header>
 
-<div class="page-container" style="max-width:560px;">
-  <div style="text-align:center; margin-bottom:28px;">
-    <div style="font-size:36px; margin-bottom:12px;">🛟</div>
-    <h1 style="font-size:26px; font-weight:800; color:var(--navy); margin-bottom:8px;">Need help?</h1>
-    <p style="font-size:15px; color:var(--text-muted);">Report an issue, ask a question, or send feedback — we'll get back to you within 24-48 hours.</p>
+<div style="background:linear-gradient(135deg,#fff0f6,#fafafa); padding:56px 20px 40px; text-align:center;">
+  <div style="font-size:40px; margin-bottom:12px;">🛟</div>
+  <h1 style="font-size:32px; font-weight:800; color:var(--navy); margin-bottom:10px;">Help & Support</h1>
+  <p style="font-size:15px; color:var(--text-muted); max-width:480px; margin:0 auto;">Report an issue, ask a question, or send feedback. We respond within 24-48 hours.</p>
+</div>
+
+<div class="page-container" style="max-width:580px;">
+
+  <!-- Quick links -->
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:28px;">
+    <a href="faq" style="text-decoration:none; background:white; border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--pink)'" onmouseout="this.style.borderColor='var(--border-light)'">
+      <div style="font-size:24px; margin-bottom:6px;">❓</div>
+      <div style="font-size:13px; font-weight:600; color:var(--navy);">FAQ</div>
+    </a>
+    <a href="about.html#faq" style="text-decoration:none; background:white; border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--pink)'" onmouseout="this.style.borderColor='var(--border-light)'">
+      <div style="font-size:24px; margin-bottom:6px;">📖</div>
+      <div style="font-size:13px; font-weight:600; color:var(--navy);">About TutwMe</div>
+    </a>
+    <a href="mailto:support@tutwme.com" style="text-decoration:none; background:white; border:1px solid var(--border-light); border-radius:12px; padding:16px; text-align:center; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--pink)'" onmouseout="this.style.borderColor='var(--border-light)'">
+      <div style="font-size:24px; margin-bottom:6px;">📧</div>
+      <div style="font-size:13px; font-weight:600; color:var(--navy);">Email us</div>
+    </a>
   </div>
 
-  <div class="card" id="form-section">
-    <div style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; margin-bottom:14px;" id="error-box"></div>
+  <div class="card" style="padding:28px;" id="form-section">
+    <h2 style="font-size:18px; font-weight:800; color:var(--navy); margin-bottom:4px;">Send us a message</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:22px;">Or email us directly at <a href="mailto:support@tutwme.com" style="color:var(--pink); font-weight:600; text-decoration:none;">support@tutwme.com</a></p>
 
-    <div style="margin-bottom:16px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your name</label>
-      <input type="text" id="name" placeholder="Your name">
-    </div>
+    <div id="error-box" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px; font-size:13px; color:#dc2626; font-weight:600; margin-bottom:14px;"></div>
 
-    <div style="margin-bottom:16px;">
-      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your email</label>
-      <input type="email" id="email" placeholder="you@email.com">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your name</label>
+        <input type="text" id="name" placeholder="Alex Kim">
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Your email</label>
+        <input type="email" id="email" placeholder="you@email.com">
+      </div>
     </div>
 
     <div style="margin-bottom:16px;">
       <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">What's this about?</label>
       <select id="category">
-        <option value="Site issue / bug">Site issue / bug</option>
-        <option value="Account help">Account help</option>
-        <option value="Booking / payment question">Booking / payment question</option>
-        <option value="Tutor application">Tutor application</option>
-        <option value="Feedback / suggestion">Feedback / suggestion</option>
-        <option value="Other">Other</option>
+        <option value="Site issue / bug">🐛 Site issue / bug</option>
+        <option value="Account help">🔐 Account help</option>
+        <option value="Booking / payment question">💳 Booking / payment question</option>
+        <option value="Tutor application">📋 Tutor application</option>
+        <option value="Feedback / suggestion">💡 Feedback / suggestion</option>
+        <option value="Other">💬 Other</option>
       </select>
     </div>
 
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:22px;">
       <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Tell us more</label>
-      <textarea id="message" placeholder="Describe the issue or question in detail. Include any error messages, page names, or steps to reproduce if it's a bug." style="height:140px; resize:none; line-height:1.6;"></textarea>
+      <textarea id="message" placeholder="Describe your issue or question in detail. Include any error messages, page names, or steps to reproduce if it's a bug." style="height:140px; resize:none; line-height:1.6;"></textarea>
     </div>
 
-    <button class="btn-primary" id="submit-btn" style="width:100%; padding:14px; font-size:16px;" onclick="submitTicket()">Send message</button>
-
-    <div style="margin-top:20px; text-align:center; font-size:13px; color:var(--text-muted);">
-      Or email us directly at <a href="mailto:support@tutwme.com" style="color:var(--pink); font-weight:600; text-decoration:none;">support@tutwme.com</a>
-    </div>
+    <button class="btn-primary" id="submit-btn" style="width:100%; padding:14px; font-size:15px;" onclick="submitTicket()">Send message</button>
   </div>
 
   <div id="success-box" style="display:none;" class="card">
-    <div style="text-align:center; padding:20px;">
-      <div style="font-size:40px; margin-bottom:12px;">✅</div>
+    <div style="text-align:center; padding:24px;">
+      <div style="font-size:48px; margin-bottom:14px;">✅</div>
       <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:8px;">Message sent!</h2>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.6;">Thanks for reaching out. Our team will respond to your email within 24-48 hours.</p>
-      <a href="index.html" class="btn-primary" style="padding:12px 24px; margin-top:16px; display:inline-block;">Back to home</a>
+      <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">We'll get back to you at your email within 24-48 hours.</p>
+      <a href="index.html" class="btn-primary" style="padding:12px 24px;">Back to home</a>
     </div>
   </div>
+
 </div>
 
-<script src="chatbot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+if (window.emailjs) emailjs.init({ publicKey: "EwR3DOxN_uCCgdwPC" });
+
 async function submitTicket() {
   const errEl = document.getElementById('error-box');
   errEl.style.display = 'none';
@@ -74,25 +98,17 @@ async function submitTicket() {
   const email = document.getElementById('email').value.trim();
   const category = document.getElementById('category').value;
   const message = document.getElementById('message').value.trim();
-
   if (!name || !email || !message) {
     errEl.textContent = 'Please fill in all fields.';
-    errEl.style.display = 'block';
-    return;
+    errEl.style.display = 'block'; return;
   }
-
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-
+  btn.disabled = true; btn.textContent = 'Sending...';
   try {
     if (window.emailjs) {
-      await emailjs.send('YOUR_SERVICE_ID', 'YOUR_HELP_TEMPLATE_ID', {
-        to_email: 'support@tutwme.com',
-        from_name: name,
-        from_email: email,
-        category: category,
-        message: message
+      await emailjs.send('service_3epxmbr', 'template_1qsgrgd', {
+        to_email: 'support@tutwme.com', from_name: name,
+        from_email: email, category, message
       });
     }
     document.getElementById('form-section').style.display = 'none';
@@ -100,8 +116,7 @@ async function submitTicket() {
   } catch(e) {
     errEl.textContent = 'Could not send. Please email support@tutwme.com directly.';
     errEl.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Send message';
+    btn.disabled = false; btn.textContent = 'Send message';
   }
 }
 </script>
