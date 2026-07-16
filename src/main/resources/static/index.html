@@ -204,31 +204,8 @@
     <div class="section-eyebrow">Community reviews</div>
     <div class="section-title-lg">What families are saying</div>
   </div>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px;">
-    <div class="testimonial-card fade-in-up">
-      <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">★★★★★</div>
-      <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"Sarah helped my daughter go from failing algebra to a B+ in just 6 weeks. She's patient, clear, and really understands how kids learn. The parent portal is amazing — I can see exactly what they worked on."</p>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:40px; height:40px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--pink-dark);">MK</div>
-        <div><div style="font-size:14px; font-weight:700; color:var(--navy);">Maria K.</div><div style="font-size:12px; color:var(--text-muted);">Parent · Elk Grove</div></div>
-      </div>
-    </div>
-    <div class="testimonial-card fade-in-up">
-      <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">★★★★★</div>
-      <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"James made SAT prep actually fun. I went from 1080 to 1280 and got into my first choice school. We've been working together for over a year now — he feels like part of the family."</p>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:40px; height:40px; border-radius:50%; background:var(--blue-soft); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--blue-mid);">AC</div>
-        <div><div style="font-size:14px; font-weight:700; color:var(--navy);">Alex C.</div><div style="font-size:12px; color:var(--text-muted);">Student · Sacramento</div></div>
-      </div>
-    </div>
-    <div class="testimonial-card fade-in-up">
-      <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">★★★★★</div>
-      <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"As a tutor, TutwMe gives me everything I need to run my business. Session notes, invoicing, student tracking, payments — it's all in one place. I've grown from 2 students to 12."</p>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:40px; height:40px; border-radius:50%; background:var(--green-soft); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--green-mid);">SC</div>
-        <div><div style="font-size:14px; font-weight:700; color:var(--navy);">Sarah C.</div><div style="font-size:12px; color:var(--text-muted);">Tutor · Elk Grove</div></div>
-      </div>
-    </div>
+  <div id="testimonials-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px;">
+    <!-- Loaded dynamically below, with static fallback -->
   </div>
 </div>
 
@@ -349,6 +326,9 @@ function filterBySubject(subjectName, pillEl) {
 function filterCity(city, el) {
   document.querySelectorAll('.city-pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
+  if (city === 'all') { renderTutorCards(allHomeTutors); return; }
+  const filtered = allHomeTutors.filter(t => (t.city||'').toLowerCase() === city.toLowerCase() || (t.city||'').toLowerCase().includes(city.toLowerCase()));
+  renderTutorCards(filtered.length ? filtered : allHomeTutors);
 }
 
 async function loadTutors() {
@@ -402,13 +382,87 @@ function animateCount(id, target, suffix) {
   }, 30);
 }
 
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
-}, { threshold: 0.15 });
-document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+// Scroll fade-in with fallback
+function initObserver() {
+  const cards = document.querySelectorAll('.fade-in-up');
+  if (!cards.length) return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  cards.forEach(el => observer.observe(el));
+}
+// Run after a small delay to ensure DOM is ready
+setTimeout(initObserver, 300);
 
 loadStats();
 loadTutors();
+loadTestimonials();
+
+async function loadTestimonials() {
+  const STATIC_REVIEWS = [
+    { comment: "Sarah helped my daughter go from failing algebra to a B+ in just 6 weeks. She's patient, clear, and really understands how kids learn. The parent portal is amazing — I can see exactly what they worked on.", reviewer_name: "Maria K.", role: "Parent · Elk Grove", initials: "MK", color: "var(--pink-light)", text_color: "var(--pink-dark)" },
+    { comment: "James made SAT prep actually fun. I went from 1080 to 1280 and got into my first choice school. We've been working together for over a year now — he feels like part of the family.", reviewer_name: "Alex C.", role: "Student · Sacramento", initials: "AC", color: "var(--blue-soft)", text_color: "var(--blue-mid)" },
+    { comment: "As a tutor, TutwMe gives me everything I need to run my business. Session notes, payments, student tracking — it's all in one place. I've grown from 2 students to 12.", reviewer_name: "Sarah C.", role: "Tutor · Elk Grove", initials: "SC", color: "var(--green-soft)", text_color: "var(--green-mid)" }
+  ];
+
+  const el = document.getElementById('testimonials-grid');
+  if (!el) return;
+
+  try {
+    // Try to load real approved reviews from DB
+    const tutors = await fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[]);
+    let allReviews = [];
+    for (const t of tutors.slice(0,3)) {
+      const reviews = await fetch(`${API}/api/reviews/tutor/${t.id}`).then(r=>r.json()).catch(()=>[]);
+      reviews.forEach(r => { r._tutor_name = `${t.first_name} ${t.last_name}`; });
+      allReviews = allReviews.concat(reviews);
+    }
+    const publicReviews = allReviews.filter(r => !r.is_private && r.comment && r.comment.length > 20);
+
+    if (publicReviews.length >= 2) {
+      // Use real DB reviews
+      el.innerHTML = publicReviews.slice(0,3).map(r => {
+        const initials = (r.reviewer_name||'S').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+        return `
+          <div class="testimonial-card fade-in-up">
+            <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"${r.comment}"</p>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:40px; height:40px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--pink-dark);">${initials}</div>
+              <div><div style="font-size:14px; font-weight:700; color:var(--navy);">${r.reviewer_name||'Community member'}</div><div style="font-size:12px; color:var(--text-muted);">Verified review · TutwMe</div></div>
+            </div>
+          </div>`;
+      }).join('');
+    } else {
+      // Fallback to static quotes
+      renderStaticReviews(el, STATIC_REVIEWS);
+    }
+  } catch(e) {
+    renderStaticReviews(el, STATIC_REVIEWS);
+  }
+
+  // Re-run observer for newly added cards
+  setTimeout(() => {
+    document.querySelectorAll('#testimonials-grid .fade-in-up').forEach(el => {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      obs.observe(el);
+    });
+  }, 100);
+}
+
+function renderStaticReviews(el, reviews) {
+  el.innerHTML = reviews.map(r => `
+    <div class="testimonial-card fade-in-up">
+      <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">★★★★★</div>
+      <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"${r.comment}"</p>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:40px; height:40px; border-radius:50%; background:${r.color}; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:${r.text_color};">${r.initials}</div>
+        <div><div style="font-size:14px; font-weight:700; color:var(--navy);">${r.reviewer_name}</div><div style="font-size:12px; color:var(--text-muted);">${r.role}</div></div>
+      </div>
+    </div>`).join('');
+}
 </script>
 </body>
 </html>

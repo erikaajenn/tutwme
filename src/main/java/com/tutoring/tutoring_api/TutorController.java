@@ -715,7 +715,7 @@ public class TutorController {
             java.util.List<Object> params = new java.util.ArrayList<>();
             String[] fields = {"profile_theme","profile_layout","banner_url","banner_gradient",
                                "video_intro_url","profile_photo_url","bio","teaching_philosophy",
-                               "keywords","session_types","zoom_link","hourly_rate"};
+                               "keywords","session_types","zoom_link","hourly_rate","city","venmo","cashapp","zelle"};
             boolean first = true;
             for (String field : fields) {
                 if (body.containsKey(field)) {

@@ -112,6 +112,17 @@
       </div>
     </div>
     <div style="margin-bottom:14px;">
+      <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">City / area</label>
+      <select id="tutor-city">
+        <option value="Elk Grove">Elk Grove</option>
+        <option value="Sacramento">Sacramento</option>
+        <option value="Roseville">Roseville</option>
+        <option value="Folsom">Folsom</option>
+        <option value="Davis">Davis</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
       <label style="display:block; font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Zoom / Google Meet link</label>
       <input type="url" id="zoom-link" placeholder="https://zoom.us/j/... or meet.google.com/...">
     </div>
@@ -216,6 +227,7 @@ async function prefill() {
     if (t.bio) document.getElementById('bio').value = t.bio;
     if (t.keywords) document.getElementById('keywords').value = t.keywords;
     if (t.video_intro_url) document.getElementById('video-intro').value = t.video_intro_url;
+    if (t.city && document.getElementById('tutor-city')) document.getElementById('tutor-city').value = t.city;
     if (t.profile_theme) { selectedTheme = t.profile_theme; document.querySelector(`[data-theme="${t.profile_theme}"]`)?.classList.add('active'); document.getElementById('theme-label').textContent = THEME_LABELS[t.profile_theme]||t.profile_theme; }
     if (t.profile_layout) { selectedLayout = t.profile_layout; document.querySelectorAll('.layout-btn').forEach(b => { if(b.dataset.layout===t.profile_layout) b.classList.add('active'); else b.classList.remove('active'); }); }
     if (t.banner_gradient) { selectedBanner = t.banner_gradient; document.querySelectorAll('.gradient-btn').forEach(b => { if(b.dataset.gradient===t.banner_gradient) b.classList.add('active'); else b.classList.remove('active'); }); }
@@ -275,6 +287,7 @@ async function saveProfile() {
         hourly_rate: document.getElementById('hourly-rate').value,
         keywords: document.getElementById('keywords').value.trim(),
         video_intro_url: document.getElementById('video-intro').value.trim(),
+        city: document.getElementById('tutor-city')?.value || 'Elk Grove',
         teaching_style_prompts: prompts
       })
     });
