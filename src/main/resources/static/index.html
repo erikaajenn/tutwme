@@ -6,38 +6,26 @@
   <title>TutwMe — Elk Grove & Sacramento's Trusted Tutoring Community</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ── Premium homepage overrides ── */
     .hero { background: linear-gradient(135deg, #fff0f6 0%, #ffffff 50%, #f8f0ff 100%); }
-    .trust-bar { background: var(--navy); color: white; padding: 10px 20px; font-size: 13px; font-weight: 500; text-align: center; letter-spacing: 0.02em; }
-    .trust-bar span { color: var(--pink); font-weight: 700; }
-    .stat-pill { display: inline-flex; align-items: center; gap: 8px; background: white; border: 1px solid var(--border-light); border-radius: 50px; padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--navy); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .stat-pill { display: inline-flex; align-items: center; gap: 8px; background: white; border: 1px solid var(--border-light); border-radius: 50px; padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--navy); box-shadow: var(--shadow-sm); }
     .stat-pill strong { color: var(--pink); }
-    .city-pill { display: inline-block; background: var(--pink-light); color: var(--pink-dark); font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; }
-    .city-pill:hover, .city-pill.active { background: var(--pink); color: white; }
-    .value-card { background: white; border-radius: 16px; padding: 28px 24px; border: 1px solid var(--border-light); transition: transform 0.2s, box-shadow 0.2s; }
-    .value-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(233,30,140,0.1); }
-    .value-card .icon-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
     .tutor-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-light); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
     .tutor-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(233,30,140,0.12); }
-    .tutor-card .card-banner { height: 72px; }
-    .tutor-card .card-body { padding: 16px; }
-    .testimonial-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid var(--border-light); }
-    .section-eyebrow { font-size: 12px; font-weight: 700; color: var(--pink); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
-    .section-title-lg { font-size: 36px; font-weight: 800; color: var(--navy); line-height: 1.2; margin-bottom: 12px; }
-    .section-subtitle { font-size: 16px; color: var(--text-muted); line-height: 1.7; max-width: 560px; }
-    .coming-soon-badge { display: inline-flex; align-items: center; gap: 6px; background: #fff8e1; color: #f57f17; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1px solid #ffd54f; }
-    .step-number { width: 36px; height: 36px; border-radius: 50%; background: var(--pink); color: white; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    @media (max-width: 768px) {
-      .section-title-lg { font-size: 26px; }
-      .hero-btns { flex-direction: column; }
-    }
+    .subject-pill { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border-light); background: white; color: var(--text-muted); transition: all 0.15s; font-family: 'Inter', sans-serif; }
+    .subject-pill:hover { border-color: var(--pink); color: var(--pink-dark); }
+    .subject-pill.active { background: var(--pink); color: white; border-color: var(--pink); }
+    .trust-bar { background: var(--navy); color: white; padding: 10px 20px; font-size: 13px; font-weight: 500; text-align: center; }
+    .trust-bar span { color: var(--pink); font-weight: 700; }
   </style>
 </head>
 <body>
 
 <!-- Trust bar -->
 <div class="trust-bar">
-  <span>✓ Verified local tutors</span> &nbsp;·&nbsp; <span>✓ Parent progress portal</span> &nbsp;·&nbsp; <span>✓ Safe for students under 18</span> &nbsp;·&nbsp; <span>✓ Elk Grove & Sacramento community</span>
+  <span>✓ Verified local tutors</span> &nbsp;·&nbsp;
+  <span>✓ Parent progress portal</span> &nbsp;·&nbsp;
+  <span>✓ Safe for students under 18</span> &nbsp;·&nbsp;
+  <span>✓ Elk Grove & Sacramento</span>
 </div>
 
 <!-- Header -->
@@ -56,20 +44,20 @@
 </header>
 
 <!-- Hero -->
-<div class="hero" style="padding:80px 20px 64px; text-align:center;">
+<div class="hero" style="padding:80px 20px 72px; text-align:center;">
   <div style="display:inline-flex; align-items:center; gap:8px; background:var(--pink-light); color:var(--pink-dark); font-size:12px; font-weight:700; padding:6px 16px; border-radius:20px; margin-bottom:20px;">
-    📍 Serving Elk Grove, Sacramento & surrounding communities
+    📍 Elk Grove, Sacramento & surrounding communities
   </div>
-  <h1 style="font-size:52px; font-weight:800; color:var(--navy); line-height:1.1; margin-bottom:18px; max-width:720px; margin-left:auto; margin-right:auto;">
-    Find a tutor your family<br><span style="color:var(--pink);">can trust, locally.</span>
+  <h1 style="font-size:56px; font-weight:900; color:var(--navy); line-height:1.1; margin-bottom:18px; max-width:700px; margin-left:auto; margin-right:auto; letter-spacing:-1px;">
+    Find a tutor your<br>family <span style="color:var(--pink);">can trust.</span>
   </h1>
-  <p style="font-size:18px; color:var(--text-muted); margin-bottom:16px; max-width:520px; margin-left:auto; margin-right:auto; line-height:1.7;">
-    Built by a tutor, for tutors — TutwMe connects students and parents with verified local tutors for personalized, relationship-first learning.
+  <p style="font-size:18px; color:var(--text-muted); margin-bottom:36px; max-width:480px; margin-left:auto; margin-right:auto; line-height:1.7;">
+    Local, verified tutors for personalized one-on-one learning — virtual or in-person.
   </p>
-  <p style="font-size:13px; font-weight:700; color:var(--text-muted); margin-bottom:32px; letter-spacing:0.02em;">✏️ Built by a tutor, for tutors.</p>
 
-  <div class="hero-btns" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:48px;">
-    <a href="student-home.html" class="btn-primary" style="padding:16px 32px; font-size:16px;">I'm a Student 🎒</a>
+  <!-- CTAs -->
+  <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:48px;">
+    <a href="register.html" class="btn-primary" style="padding:16px 32px; font-size:16px;">I'm a Student 🎒</a>
     <a href="tutor-register.html" class="btn-outline" style="padding:16px 32px; font-size:16px;">Become a Tutor 📚</a>
     <a href="parent-dashboard.html" class="btn-ghost" style="padding:16px 32px; font-size:16px;">I'm a Parent 👨‍👩‍👧</a>
   </div>
@@ -77,162 +65,40 @@
   <!-- Live stats -->
   <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
     <div class="stat-pill">🎓 <strong id="stat-tutors-count">—</strong> verified tutors</div>
-    <div class="stat-pill">📚 <strong id="stat-subjects-count">—</strong> subjects covered</div>
+    <div class="stat-pill">📚 <strong id="stat-subjects-count">—</strong> subjects</div>
     <div class="stat-pill">✅ <strong id="stat-sessions-count">—</strong> sessions booked</div>
     <div class="stat-pill">⭐ <strong id="stat-rating-count">5.0</strong> avg rating</div>
   </div>
 </div>
 
-<!-- City selector -->
-<div style="background:white; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); padding:16px 20px; text-align:center;">
-  <span style="font-size:13px; font-weight:600; color:var(--text-muted); margin-right:12px;">Find tutors near:</span>
-  <div style="display:inline-flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-    <span class="city-pill active" onclick="filterCity('all', this)">All areas</span>
-    <span class="city-pill" onclick="filterCity('elk-grove', this)">Elk Grove</span>
-    <span class="city-pill" onclick="filterCity('sacramento', this)">Sacramento</span>
-    <span class="city-pill" onclick="filterCity('roseville', this)">Roseville</span>
-    <span class="city-pill" onclick="filterCity('folsom', this)">Folsom</span>
-    <span class="city-pill" onclick="filterCity('davis', this)">Davis</span>
-  </div>
-</div>
-
-<!-- Value propositions -->
-<div style="padding:72px 20px; max-width:1100px; margin:0 auto;">
-  <div style="text-align:center; margin-bottom:48px;">
-    <div class="section-eyebrow">Why TutwMe</div>
-    <div class="section-title-lg">More than a tutoring marketplace</div>
-    <p class="section-subtitle" style="margin:0 auto;">We built the tools families and tutors actually need — from transparent session notes to full business management for tutors.</p>
-  </div>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px;">
-    <div class="value-card">
-      <div class="icon-wrap" style="background:#fce4f0;">🏘️</div>
-      <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:8px;">Hyperlocal community</h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">Not a faceless national platform. We connect families with tutors from their own neighborhoods across Elk Grove, Sacramento, and surrounding cities.</p>
-    </div>
-    <div class="value-card">
-      <div class="icon-wrap" style="background:#e8f4fd;">📊</div>
-      <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:8px;">Parent progress portal</h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">Parents see every session's notes, homework assigned, goals achieved, and long-term progress — not just a receipt after payment.</p>
-    </div>
-    <div class="value-card">
-      <div class="icon-wrap" style="background:#e8f5e9;">🤝</div>
-      <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:8px;">Relationship-first tutoring</h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">Favorite tutors, book recurring sessions, and build lasting learning relationships. Tutoring is personal — we treat it that way.</p>
-    </div>
-    <div class="value-card">
-      <div class="icon-wrap" style="background:#f3e5f5;">🎨</div>
-      <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:8px;">Tutor portfolios</h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">Rich tutor profiles with intro videos, teaching style prompts, certifications, and success stories — so you know exactly who you're booking.</p>
-    </div>
-    <div class="value-card">
-      <div class="icon-wrap" style="background:#fff8e1;">💼</div>
-      <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:8px;">Tutor business platform</h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">Tutors get everything they need to run their business: scheduling, payments, student CRM, progress tracking, invoicing, and analytics.</p>
-    </div>
-    <div class="value-card" style="border:1.5px dashed #ffd54f; background:#fffde7;">
-      <div class="icon-wrap" style="background:#fff8e1;">🎓</div>
-      <h3 style="font-size:17px; font-weight:700; color:var(--navy); margin-bottom:8px;">Learning community <div class="coming-soon-badge" style="margin-top:6px;">🕐 Coming soon</div></h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.7;">SAT workshops, study groups, parent webinars, local events, and educational resources — TutwMe as a year-round education hub.</p>
-    </div>
-  </div>
-</div>
-
-<!-- AI Matching banner -->
-<div style="background:linear-gradient(135deg,var(--navy),#2d2d4e); padding:56px 20px; text-align:center;">
-  <div style="max-width:640px; margin:0 auto;">
-    <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(233,30,140,0.2); color:var(--pink-light); font-size:12px; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:16px;">✨ AI Tutor Matching</div>
-    <h2 style="font-size:36px; font-weight:800; color:white; margin-bottom:14px; line-height:1.2;">Not sure who to pick? <br>Let AI find your match.</h2>
-    <p style="font-size:16px; color:rgba(255,255,255,0.75); margin-bottom:28px; line-height:1.7;">Tell us about your child's learning style, goals, and personality. Our matching engine finds tutors based on teaching style, experience, and fit — not just subject and price.</p>
-    <a href="find-match.html" style="display:inline-flex; align-items:center; gap:10px; background:var(--pink); color:white; padding:16px 32px; border-radius:12px; font-size:16px; font-weight:700; text-decoration:none; box-shadow:0 4px 20px rgba(233,30,140,0.4);">✨ Find My Tutor Match <span style="font-size:18px;">→</span></a>
-  </div>
-</div>
-
-<!-- How it works -->
-<div id="how-it-works" style="padding:72px 20px; max-width:800px; margin:0 auto;">
-  <div style="text-align:center; margin-bottom:48px;">
-    <div class="section-eyebrow">How it works</div>
-    <div class="section-title-lg">Up and running in minutes</div>
-  </div>
-  <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
-    <div class="how-it-works-card fade-in-up" style="text-align:center; padding:32px 20px; border-radius:16px; border:1px solid var(--border-light); cursor:default;">
-      <div style="width:56px; height:56px; background:var(--pink-light); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 16px;">🔍</div>
-      <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px;">Browse or get matched</div>
-      <div style="font-size:14px; color:var(--text-muted); line-height:1.6;">Filter tutors by subject, area, and price — or use AI matching to find your perfect fit</div>
-    </div>
-    <div class="how-it-works-card fade-in-up" style="text-align:center; padding:32px 20px; border-radius:16px; border:1px solid var(--border-light); cursor:default;">
-      <div style="width:56px; height:56px; background:var(--pink-light); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 16px;">📅</div>
-      <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px;">Book & pay securely</div>
-      <div style="font-size:14px; color:var(--text-muted); line-height:1.6;">Choose virtual or in-person, pick your time, and pay via Venmo, CashApp, or Zelle</div>
-    </div>
-    <div class="how-it-works-card fade-in-up" style="text-align:center; padding:32px 20px; border-radius:16px; border:1px solid var(--border-light); cursor:default;">
-      <div style="width:56px; height:56px; background:var(--pink-light); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 16px;">📚</div>
-      <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px;">Learn & track progress</div>
-      <div style="font-size:14px; color:var(--text-muted); line-height:1.6;">Session notes, checkpoints, and homework — all visible to you and your parents</div>
-    </div>
-    <div class="how-it-works-card fade-in-up" style="text-align:center; padding:32px 20px; border-radius:16px; border:1px solid var(--border-light); cursor:default;">
-      <div style="width:56px; height:56px; background:var(--pink-light); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 16px;">🤝</div>
-      <div style="font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px;">Build a relationship</div>
-      <div style="font-size:14px; color:var(--text-muted); line-height:1.6;">Favorite your tutor, book recurring sessions, and grow together over time</div>
-    </div>
-  </div>
-</div>
-
 <!-- Meet our tutors -->
-<div id="tutors" style="background:white; border-top:1px solid var(--border-light); padding:72px 20px;">
+<div style="background:white; border-top:1px solid var(--border-light); padding:72px 20px;">
   <div style="max-width:1100px; margin:0 auto;">
-    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:12px;">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
       <div>
-        <div class="section-eyebrow">Our tutors</div>
-        <div class="section-title-lg" style="margin-bottom:6px;">Meet the community</div>
-        <p style="font-size:15px; color:var(--text-muted);">Every tutor is manually reviewed and approved by our team before going live.</p>
+        <div style="font-size:12px; font-weight:700; color:var(--pink); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">Our tutors</div>
+        <h2 style="font-size:32px; font-weight:800; color:var(--navy); line-height:1.2;">Meet the community</h2>
+        <p style="font-size:15px; color:var(--text-muted); margin-top:6px;">Every tutor is manually reviewed and approved before going live.</p>
       </div>
       <a href="find-tutor.html" class="btn-outline" style="padding:10px 22px;">View all tutors →</a>
     </div>
 
-    <!-- Subject filter pills -->
+    <!-- Subject pills -->
     <div id="subject-pills" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px;"></div>
 
+    <!-- Tutors grid -->
     <div id="tutors-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px;">
       <div style="color:var(--text-muted); text-align:center; padding:60px; grid-column:1/-1;">Loading tutors...</div>
     </div>
-  </div>
-</div>
 
-<!-- Testimonials -->
-<div id="testimonials" style="padding:72px 20px; max-width:1100px; margin:0 auto;">
-  <div style="text-align:center; margin-bottom:48px;">
-    <div class="section-eyebrow">Community reviews</div>
-    <div class="section-title-lg">What families are saying</div>
-  </div>
-  <div id="testimonials-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px;">
-    <!-- Loaded dynamically below, with static fallback -->
-  </div>
-</div>
-
-<!-- For tutors CTA -->
-<div style="background:var(--pink-light); border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); padding:56px 20px;">
-  <div style="max-width:900px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px;">
-    <div>
-      <div class="section-eyebrow">For tutors</div>
-      <h2 style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:10px;">Run your tutoring business, not just sessions.</h2>
-      <p style="font-size:15px; color:var(--text-muted); line-height:1.7; max-width:480px;">TutwMe gives tutors a complete business platform — scheduling, payments, student management, progress tracking, invoicing, and a beautiful portfolio profile.</p>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
-      <a href="tutor-register.html" class="btn-primary" style="padding:14px 28px; font-size:15px; text-align:center;">Apply to become a tutor</a>
-      <a href="tutor-home.html" class="btn-ghost" style="padding:14px 28px; font-size:15px; text-align:center;">Learn more about tutoring →</a>
-    </div>
-  </div>
-</div>
-
-<!-- Final CTA -->
-<div style="background:var(--navy); padding:72px 20px; text-align:center;">
-  <div style="max-width:600px; margin:0 auto;">
-    <div style="font-size:13px; font-weight:700; color:var(--pink); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:14px;">Get started today</div>
-    <h2 style="font-size:38px; font-weight:800; color:white; margin-bottom:14px; line-height:1.2;">Join Elk Grove & Sacramento's tutoring community</h2>
-    <p style="font-size:16px; color:rgba(255,255,255,0.65); margin-bottom:32px; line-height:1.7;">Students, parents, and tutors — there's a place for all of you here.</p>
-    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-      <a href="register.html" style="background:var(--pink); color:white; padding:16px 32px; border-radius:12px; font-size:16px; font-weight:700; text-decoration:none; box-shadow:0 4px 20px rgba(233,30,140,0.4);">Create free account</a>
-      <a href="find-tutor.html" style="background:rgba(255,255,255,0.1); color:white; padding:16px 32px; border-radius:12px; font-size:16px; font-weight:700; text-decoration:none; border:1.5px solid rgba(255,255,255,0.25);">Browse tutors</a>
+    <!-- AI match CTA -->
+    <div style="margin-top:40px; background:linear-gradient(135deg,var(--navy),#2d2d4e); border-radius:16px; padding:32px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+      <div>
+        <div style="font-size:13px; font-weight:700; color:var(--pink-light); margin-bottom:6px;">✨ Not sure who to pick?</div>
+        <div style="font-size:20px; font-weight:800; color:white; margin-bottom:6px;">Let AI find your perfect match</div>
+        <div style="font-size:14px; color:rgba(255,255,255,0.7);">Tell us about your learning style and goals — we'll do the rest.</div>
+      </div>
+      <a href="find-match.html" style="background:var(--pink); color:white; padding:14px 28px; border-radius:12px; font-size:15px; font-weight:700; text-decoration:none; white-space:nowrap; box-shadow:0 4px 16px rgba(233,30,140,0.4);">Take the quiz →</a>
     </div>
   </div>
 </div>
@@ -248,7 +114,6 @@
       <a href="about.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">About</a>
       <a href="find-tutor.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">Find a tutor</a>
       <a href="tutor-register.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">Become a tutor</a>
-      <a href="register.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">Sign up</a>
       <a href="login.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">Sign in</a>
       <a href="help.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">Help</a>
       <a href="terms.html" style="font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none;">Terms</a>
@@ -257,23 +122,9 @@
   </div>
 </footer>
 
-<style>
-.how-it-works-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(233,30,140,0.12); border-color: var(--pink-light); }
-.how-it-works-card:hover > div:first-child { transform: scale(1.1) rotate(-4deg); }
-.fade-in-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
-.fade-in-up.visible { opacity: 1; transform: translateY(0); }
-.subject-pill { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border-light); background: white; color: var(--text-muted); transition: all 0.15s; font-family: 'Inter', sans-serif; }
-.subject-pill:hover { border-color: var(--pink); color: var(--pink-dark); }
-.subject-pill.active { background: var(--pink); color: white; border-color: var(--pink); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-</style>
-
 <script src="chatbot.js"></script>
 <script>
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://tutwme-production.up.railway.app';
-
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://tutwme-production.up.railway.app';
 let allHomeTutors = [];
 let homeTutorSubjects = {};
 
@@ -286,16 +137,13 @@ function renderTutorCards(tutors) {
   grid.innerHTML = tutors.map(t => {
     const subjects = homeTutorSubjects[t.id] || [];
     const tags = subjects.map(s => `<span class="tag-pink">${s.name}</span>`).join('');
-    const avatarStyle = t.avatar_style || 'adventurer';
-    const avatarSeed = t.avatar_seed || (t.first_name + t.last_name);
-    const avatarUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(avatarSeed)}&size=80`;
-    const stars = t.rating > 0 ? '⭐'.repeat(Math.round(t.rating)) : '⭐⭐⭐⭐⭐';
+    const avatarUrl = `https://api.dicebear.com/7.x/${t.avatar_style||'adventurer'}/svg?seed=${encodeURIComponent(t.avatar_seed||t.first_name+t.last_name)}&size=80`;
     const banner = t.banner_gradient || 'linear-gradient(135deg,#fce4f0,#f3e5f5)';
     const sessionLabel = t.session_types === 'virtual' ? '💻 Virtual' : t.session_types === 'in-person' ? '📍 In-person' : '💻 & 📍 Both';
     return `
       <div class="tutor-card" onclick="window.location.href='tutor-profile.html?id=${t.id}'">
-        <div class="card-banner" style="background:${banner};"></div>
-        <div class="card-body">
+        <div style="height:72px; background:${banner};"></div>
+        <div style="padding:16px;">
           <div style="display:flex; align-items:flex-start; gap:12px; margin-top:-28px; margin-bottom:12px;">
             <img src="${avatarUrl}" style="width:56px; height:56px; border-radius:50%; border:3px solid white; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.1);" onerror="this.style.display='none'">
             <div style="padding-top:30px;">
@@ -303,11 +151,10 @@ function renderTutorCards(tutors) {
               <div style="font-size:13px; color:var(--pink); font-weight:600;">$${t.hourly_rate}/hr</div>
             </div>
           </div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">${stars} ${t.total_reviews ? `(${t.total_reviews} reviews)` : 'New tutor'}</div>
-          <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${t.bio || ''}</div>
-          <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">${tags}</div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${t.bio||''}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px;">${tags}</div>
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; color:var(--text-muted);">${sessionLabel}</span>
+            <span style="font-size:11px; color:var(--text-muted); font-weight:500;">${sessionLabel}</span>
             <button class="btn-primary" style="padding:7px 16px; font-size:13px;" onclick="event.stopPropagation(); window.location.href='booking.html?tutor_id=${t.id}'">Book</button>
           </div>
         </div>
@@ -323,24 +170,13 @@ function filterBySubject(subjectName, pillEl) {
   renderTutorCards(filtered);
 }
 
-function filterCity(city, el) {
-  document.querySelectorAll('.city-pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  if (city === 'all') { renderTutorCards(allHomeTutors); return; }
-  const filtered = allHomeTutors.filter(t => (t.city||'').toLowerCase() === city.toLowerCase() || (t.city||'').toLowerCase().includes(city.toLowerCase()));
-  renderTutorCards(filtered.length ? filtered : allHomeTutors);
-}
-
 async function loadTutors() {
   try {
-    const [tutors, subjects] = await Promise.all([
-      fetch(`${API}/api/tutors`).then(r => r.json()),
-      fetch(`${API}/api/subjects`).then(r => r.json()).catch(() => [])
-    ]);
+    const tutors = await fetch(`${API}/api/tutors`).then(r=>r.json());
     allHomeTutors = tutors;
-    for (const tutor of tutors) {
-      try { homeTutorSubjects[tutor.id] = await fetch(`${API}/api/tutors/${tutor.id}/subjects`).then(r => r.json()); }
-      catch(e) { homeTutorSubjects[tutor.id] = []; }
+    for (const t of tutors) {
+      try { homeTutorSubjects[t.id] = await fetch(`${API}/api/tutors/${t.id}/subjects`).then(r=>r.json()); }
+      catch(e) { homeTutorSubjects[t.id] = []; }
     }
     const usedSubjects = new Set();
     Object.values(homeTutorSubjects).forEach(subs => subs.forEach(s => usedSubjects.add(s.name)));
@@ -364,9 +200,6 @@ async function loadStats() {
     animateCount('stat-tutors-count', tutors.length, '+');
     animateCount('stat-subjects-count', subjects.length, '+');
     animateCount('stat-sessions-count', bookings.length, '+');
-    const rated = tutors.filter(t => t.rating > 0);
-    const avg = rated.length ? (rated.reduce((s,t) => s + parseFloat(t.rating), 0) / rated.length).toFixed(1) : '5.0';
-    document.getElementById('stat-rating-count').textContent = avg;
   } catch(e) {}
 }
 
@@ -382,87 +215,8 @@ function animateCount(id, target, suffix) {
   }, 30);
 }
 
-// Scroll fade-in with fallback
-function initObserver() {
-  const cards = document.querySelectorAll('.fade-in-up');
-  if (!cards.length) return;
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  cards.forEach(el => observer.observe(el));
-}
-// Run after a small delay to ensure DOM is ready
-setTimeout(initObserver, 300);
-
 loadStats();
 loadTutors();
-loadTestimonials();
-
-async function loadTestimonials() {
-  const STATIC_REVIEWS = [
-    { comment: "Sarah helped my daughter go from failing algebra to a B+ in just 6 weeks. She's patient, clear, and really understands how kids learn. The parent portal is amazing — I can see exactly what they worked on.", reviewer_name: "Maria K.", role: "Parent · Elk Grove", initials: "MK", color: "var(--pink-light)", text_color: "var(--pink-dark)" },
-    { comment: "James made SAT prep actually fun. I went from 1080 to 1280 and got into my first choice school. We've been working together for over a year now — he feels like part of the family.", reviewer_name: "Alex C.", role: "Student · Sacramento", initials: "AC", color: "var(--blue-soft)", text_color: "var(--blue-mid)" },
-    { comment: "As a tutor, TutwMe gives me everything I need to run my business. Session notes, payments, student tracking — it's all in one place. I've grown from 2 students to 12.", reviewer_name: "Sarah C.", role: "Tutor · Elk Grove", initials: "SC", color: "var(--green-soft)", text_color: "var(--green-mid)" }
-  ];
-
-  const el = document.getElementById('testimonials-grid');
-  if (!el) return;
-
-  try {
-    // Try to load real approved reviews from DB
-    const tutors = await fetch(`${API}/api/tutors`).then(r=>r.json()).catch(()=>[]);
-    let allReviews = [];
-    for (const t of tutors.slice(0,3)) {
-      const reviews = await fetch(`${API}/api/reviews/tutor/${t.id}`).then(r=>r.json()).catch(()=>[]);
-      reviews.forEach(r => { r._tutor_name = `${t.first_name} ${t.last_name}`; });
-      allReviews = allReviews.concat(reviews);
-    }
-    const publicReviews = allReviews.filter(r => !r.is_private && r.comment && r.comment.length > 20);
-
-    if (publicReviews.length >= 2) {
-      // Use real DB reviews
-      el.innerHTML = publicReviews.slice(0,3).map(r => {
-        const initials = (r.reviewer_name||'S').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-        return `
-          <div class="testimonial-card fade-in-up">
-            <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-            <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"${r.comment}"</p>
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:40px; height:40px; border-radius:50%; background:var(--pink-light); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--pink-dark);">${initials}</div>
-              <div><div style="font-size:14px; font-weight:700; color:var(--navy);">${r.reviewer_name||'Community member'}</div><div style="font-size:12px; color:var(--text-muted);">Verified review · TutwMe</div></div>
-            </div>
-          </div>`;
-      }).join('');
-    } else {
-      // Fallback to static quotes
-      renderStaticReviews(el, STATIC_REVIEWS);
-    }
-  } catch(e) {
-    renderStaticReviews(el, STATIC_REVIEWS);
-  }
-
-  // Re-run observer for newly added cards
-  setTimeout(() => {
-    document.querySelectorAll('#testimonials-grid .fade-in-up').forEach(el => {
-      const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-      }, { threshold: 0.1 });
-      obs.observe(el);
-    });
-  }, 100);
-}
-
-function renderStaticReviews(el, reviews) {
-  el.innerHTML = reviews.map(r => `
-    <div class="testimonial-card fade-in-up">
-      <div style="color:#f59e0b; font-size:18px; margin-bottom:12px;">★★★★★</div>
-      <p style="font-size:15px; color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-style:italic;">"${r.comment}"</p>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:40px; height:40px; border-radius:50%; background:${r.color}; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:${r.text_color};">${r.initials}</div>
-        <div><div style="font-size:14px; font-weight:700; color:var(--navy);">${r.reviewer_name}</div><div style="font-size:12px; color:var(--text-muted);">${r.role}</div></div>
-      </div>
-    </div>`).join('');
-}
 </script>
 </body>
 </html>

@@ -91,10 +91,33 @@
       <div class="dash-card">
         <div class="dash-label">📊 Student progress</div>
         <div id="progress-list"><div style="color:var(--text-muted); font-size:13px;">Loading...</div></div>
-        <button class="btn-outline" style="width:100%; padding:9px; margin-top:12px; font-size:13px;" onclick="showAddCheckpoint()">+ Add checkpoint</button>
-        <div id="add-checkpoint-form" style="display:none; margin-top:12px; background:var(--green-soft); border-radius:10px; padding:14px;">
-          <input type="text" id="cp-title" placeholder="e.g. Solve quadratic equations" style="margin-bottom:8px; font-size:13px;">
-          <button class="btn-primary" style="width:100%; padding:9px; font-size:13px;" onclick="addCheckpoint()">Save checkpoint</button>
+        <button class="btn-outline" style="width:100%; padding:9px; margin-top:12px; font-size:13px;" onclick="showAddCheckpoint()">+ Add checkpoint / task</button>
+        <div id="add-checkpoint-form" style="display:none; margin-top:12px; background:var(--green-soft); border-radius:12px; padding:16px;">
+          <div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:12px;">New checkpoint</div>
+          <div style="margin-bottom:10px;">
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Student</label>
+            <select id="cp-student" style="font-size:13px;"><option value="">Select student...</option></select>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Task / goal</label>
+            <input type="text" id="cp-title" placeholder="e.g. Solve quadratic equations independently" style="font-size:13px;">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Topic / session</label>
+              <input type="text" id="cp-topic" placeholder="e.g. Algebra Unit 2" style="font-size:13px;">
+            </div>
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Due date</label>
+              <input type="date" id="cp-due-date" style="font-size:13px;">
+            </div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Post-session check-in question (optional)</label>
+            <input type="text" id="cp-checkin-question" placeholder="e.g. Can you explain how to factor a trinomial?" style="font-size:13px;">
+            <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Student will answer this after the session</div>
+          </div>
+          <button class="btn-primary" style="width:100%; padding:10px; font-size:13px;" onclick="addCheckpoint()">Save checkpoint</button>
         </div>
       </div>
 
@@ -273,6 +296,44 @@ function renderCalendar(bookings) {
     </div>`).join('');
 }
 
+function renderCheckpointCard(c, compact=false) {
+  const isOverdue = c.due_date && !c.completed && new Date(c.due_date) < new Date();
+  const dueStr = c.due_date ? new Date(c.due_date).toLocaleDateString() : null;
+  if (compact) {
+    return `
+      <div class="checkpoint-row" onclick="toggleCheckpoint(${c.id}, ${!c.completed})">
+        <div style="width:20px; height:20px; border-radius:50%; border:2px solid ${c.completed?'var(--green-mid)':isOverdue?'#dc2626':'var(--border)'}; background:${c.completed?'var(--green-mid)':'white'}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
+        </div>
+        <div style="flex:1;">
+          <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
+          ${dueStr?`<span style="font-size:11px; color:${isOverdue?'#dc2626':'var(--text-muted)'}; margin-left:8px;">Due ${dueStr}${isOverdue?' ⚠️':''}</span>`:''}
+        </div>
+      </div>`;
+  }
+  return `
+    <div style="background:white; border-radius:12px; border:1px solid ${isOverdue?'#fca5a5':c.completed?'var(--green-soft)':'var(--border-light)'}; padding:14px; margin-bottom:10px; transition:all 0.15s;">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <div onclick="toggleCheckpoint(${c.id}, ${!c.completed})" style="width:22px; height:22px; border-radius:50%; border:2px solid ${c.completed?'var(--green-mid)':isOverdue?'#dc2626':'var(--border)'}; background:${c.completed?'var(--green-mid)':'white'}; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; margin-top:1px;">
+          ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px; font-weight:700; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'}; margin-bottom:4px;">${c.title}</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+            ${c.topic?`<span style="font-size:11px; background:var(--blue-soft); color:var(--blue-mid); padding:2px 8px; border-radius:20px; font-weight:600;">📖 ${c.topic}</span>`:''}
+            ${dueStr?`<span style="font-size:11px; background:${isOverdue?'#fef2f2':c.completed?'var(--green-soft)':'var(--amber-soft)'}; color:${isOverdue?'#dc2626':c.completed?'var(--green-mid)':'var(--amber-mid)'}; padding:2px 8px; border-radius:20px; font-weight:600;">📅 Due ${dueStr}${isOverdue?' ⚠️ Overdue':c.completed?' ✓':''}</span>`:''}
+            ${c.completed&&c.completed_at?`<span style="font-size:11px; color:var(--text-muted);">Completed ${new Date(c.completed_at).toLocaleDateString()}</span>`:''}
+          </div>
+          ${c.checkin_question?`
+            <div style="background:var(--pink-light); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--pink-dark);">
+              <strong>Check-in Q:</strong> ${c.checkin_question}
+              ${c.student_answer?`<div style="margin-top:6px; color:var(--navy); font-style:italic;">Student: "${c.student_answer}"</div>`:'<div style="margin-top:4px; color:var(--text-muted); font-style:italic;">Awaiting student answer...</div>'}
+            </div>`:''}
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderProgress(checkpoints) {
   const el = document.getElementById('progress-list');
   const allEl = document.getElementById('all-checkpoints');
@@ -280,27 +341,55 @@ function renderProgress(checkpoints) {
     const msg = '<div style="color:var(--text-muted); font-size:13px;">No checkpoints yet. Add one below!</div>';
     el.innerHTML = msg; if(allEl) allEl.innerHTML = msg; return;
   }
-  const done = checkpoints.filter(c => c.completed).length;
-  const pct = Math.round((done/checkpoints.length)*100);
-  const bar = `<div style="margin-bottom:12px;">
-    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Progress</span><span>${done}/${checkpoints.length}</span></div>
-    <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:var(--green-mid); border-radius:20px; height:8px; width:${pct}%;"></div></div>
-  </div>`;
-  const items = checkpoints.map(c => `
-    <div class="checkpoint-row" onclick="toggleCheckpoint(${c.id}, ${!c.completed})">
-      <div style="width:20px; height:20px; border-radius:50%; border:2px solid ${c.completed?'var(--green-mid)':'var(--border)'}; background:${c.completed?'var(--green-mid)':'white'}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-        ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
-      </div>
-      <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
-    </div>`).join('');
-  el.innerHTML = bar + checkpoints.slice(0,4).map(c => `
-    <div class="checkpoint-row" onclick="toggleCheckpoint(${c.id}, ${!c.completed})">
-      <div style="width:20px; height:20px; border-radius:50%; border:2px solid ${c.completed?'var(--green-mid)':'var(--border)'}; background:${c.completed?'var(--green-mid)':'white'}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-        ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
-      </div>
-      <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
-    </div>`).join('');
-  if(allEl) allEl.innerHTML = bar + items;
+
+  // Group by student
+  const byStudent = {};
+  checkpoints.forEach(c => {
+    const key = c.student_id || 'all';
+    if (!byStudent[key]) byStudent[key] = [];
+    byStudent[key].push(c);
+  });
+
+  let html = '';
+  Object.entries(byStudent).forEach(([studentId, cps]) => {
+    const done = cps.filter(c => c.completed).length;
+    const pct = Math.round((done/cps.length)*100);
+    const overdue = cps.filter(c => !c.completed && c.due_date && new Date(c.due_date) < new Date()).length;
+    html += `
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div style="font-size:12px; font-weight:700; color:var(--navy);">${cps[0].student_name||'Student'}</div>
+          <div style="font-size:12px; color:var(--text-muted);">${done}/${cps.length} tasks${overdue?` · <span style="color:#dc2626;">${overdue} overdue</span>`:''}</div>
+        </div>
+        <div style="background:var(--border-light); border-radius:20px; height:8px; margin-bottom:10px;">
+          <div style="background:${pct===100?'var(--green-mid)':'var(--pink)'}; border-radius:20px; height:8px; width:${pct}%; transition:width 0.5s;"></div>
+        </div>
+        ${cps.map(c => renderCheckpointCard(c, true)).join('')}
+      </div>`;
+  });
+
+  el.innerHTML = html;
+
+  if (allEl) {
+    let fullHtml = '';
+    Object.entries(byStudent).forEach(([studentId, cps]) => {
+      const done = cps.filter(c => c.completed).length;
+      const pct = Math.round((done/cps.length)*100);
+      const overdue = cps.filter(c => !c.completed && c.due_date && new Date(c.due_date) < new Date()).length;
+      fullHtml += `
+        <div style="margin-bottom:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-size:15px; font-weight:700; color:var(--navy);">${cps[0].student_name||'Student'}</div>
+            <div style="font-size:13px; color:var(--text-muted);">${done}/${cps.length} tasks completed${overdue?` · <span style="color:#dc2626;">${overdue} overdue</span>`:''}</div>
+          </div>
+          <div style="background:var(--border-light); border-radius:20px; height:10px; margin-bottom:14px;">
+            <div style="background:${pct===100?'var(--green-mid)':'var(--pink)'}; border-radius:20px; height:10px; width:${pct}%; transition:width 0.5s;"></div>
+          </div>
+          ${cps.map(c => renderCheckpointCard(c, false)).join('')}
+        </div>`;
+    });
+    allEl.innerHTML = fullHtml;
+  }
 }
 
 function renderStudents(students) {
@@ -357,16 +446,35 @@ function populateStudentDropdown(students) {
 function showAddCheckpoint() {
   const form = document.getElementById('add-checkpoint-form');
   form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  // Populate student dropdown
+  const select = document.getElementById('cp-student');
+  if (select.options.length <= 1) {
+    allStudents.forEach(s => { select.innerHTML += `<option value="${s.id}">${s.first_name} ${s.last_name}</option>`; });
+  }
 }
 
 async function addCheckpoint() {
   const title = document.getElementById('cp-title').value.trim();
-  if (!title) return;
+  const studentId = document.getElementById('cp-student').value;
+  const topic = document.getElementById('cp-topic').value.trim();
+  const dueDate = document.getElementById('cp-due-date').value;
+  const checkinQuestion = document.getElementById('cp-checkin-question').value.trim();
+  if (!title) { alert('Please enter a task title.'); return; }
+  if (!studentId) { alert('Please select a student.'); return; }
   await fetch(`${API}/api/checkpoints`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tutor_id: TUTOR_ID, student_id: 1, subject_id: 1, title })
+    body: JSON.stringify({
+      tutor_id: TUTOR_ID,
+      student_id: parseInt(studentId),
+      subject_id: 1,
+      title,
+      topic: topic || null,
+      due_date: dueDate || null,
+      checkin_question: checkinQuestion || null
+    })
   });
-  document.getElementById('cp-title').value = '';
+  ['cp-title','cp-topic','cp-due-date','cp-checkin-question'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('cp-student').value = '';
   document.getElementById('add-checkpoint-form').style.display = 'none';
   const checkpoints = await fetch(`${API}/api/checkpoints/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]);
   renderProgress(checkpoints);

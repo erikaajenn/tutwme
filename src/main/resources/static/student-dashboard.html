@@ -216,6 +216,61 @@ function renderCalendar(bookings) {
     </div>`).join('');
 }
 
+function renderCheckpointCard(c, compact=false) {
+  const isOverdue = c.due_date && !c.completed && new Date(c.due_date) < new Date();
+  const dueStr = c.due_date ? new Date(c.due_date).toLocaleDateString() : null;
+  if (compact) return `
+    <div class="checkpoint-row">
+      <div style="width:18px; height:18px; border-radius:50%; background:${c.completed?'var(--green-mid)':isOverdue?'#fca5a5':'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+        ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
+      </div>
+      <div style="flex:1;">
+        <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
+        ${dueStr?`<span style="font-size:11px; color:${isOverdue?'#dc2626':'var(--text-muted)'}; margin-left:8px;">Due ${dueStr}${isOverdue?' ⚠️':''}</span>`:''}
+      </div>
+    </div>`;
+  return `
+    <div style="background:white; border-radius:12px; border:1px solid ${isOverdue?'#fca5a5':c.completed?'var(--green-soft)':'var(--border-light)'}; padding:14px; margin-bottom:10px;">
+      <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:8px;">
+        <div style="width:22px; height:22px; border-radius:50%; background:${c.completed?'var(--green-mid)':isOverdue?'#fca5a5':'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-top:1px;">
+          ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:14px; font-weight:700; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'}; margin-bottom:4px;">${c.title}</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${c.topic?`<span style="font-size:11px; background:var(--blue-soft); color:var(--blue-mid); padding:2px 8px; border-radius:20px; font-weight:600;">📖 ${c.topic}</span>`:''}
+            ${dueStr?`<span style="font-size:11px; background:${isOverdue?'#fef2f2':c.completed?'var(--green-soft)':'var(--amber-soft)'}; color:${isOverdue?'#dc2626':c.completed?'var(--green-mid)':'var(--amber-mid)'}; padding:2px 8px; border-radius:20px; font-weight:600;">📅 Due ${dueStr}${isOverdue?' ⚠️':c.completed?' ✓':''}</span>`:''}
+          </div>
+        </div>
+      </div>
+      ${c.checkin_question && !c.student_answer && !c.completed ? `
+        <div style="background:var(--pink-light); border-radius:10px; padding:12px; margin-top:6px;">
+          <div style="font-size:12px; font-weight:700; color:var(--pink-dark); margin-bottom:8px;">✏️ Check-in question from your tutor:</div>
+          <div style="font-size:13px; color:var(--navy); font-style:italic; margin-bottom:10px;">"${c.checkin_question}"</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="answer-${c.id}" placeholder="Type your answer..." style="flex:1; font-size:13px; padding:8px 12px;">
+            <button class="btn-primary" style="padding:8px 14px; font-size:13px; flex-shrink:0;" onclick="submitAnswer(${c.id})">Submit</button>
+          </div>
+        </div>` : ''}
+      ${c.checkin_question && c.student_answer ? `
+        <div style="background:var(--green-soft); border-radius:10px; padding:10px; margin-top:6px; font-size:12px; color:var(--green-mid);">
+          <strong>Your answer:</strong> "${c.student_answer}"
+        </div>` : ''}
+    </div>`;
+}
+
+async function submitAnswer(checkpointId) {
+  const input = document.getElementById('answer-' + checkpointId);
+  const answer = input?.value.trim();
+  if (!answer) return;
+  await fetch(`${API}/api/checkpoints/${checkpointId}/answer`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answer })
+  });
+  const checkpoints = await fetch(`${API}/api/checkpoints/student/${STUDENT_ID}`).then(r=>r.json()).catch(()=>[]);
+  renderProgress(checkpoints);
+}
+
 function renderProgress(checkpoints) {
   const done = checkpoints.filter(c => c.completed).length;
   const pct = checkpoints.length ? Math.round((done/checkpoints.length)*100) : 0;
@@ -225,32 +280,24 @@ function renderProgress(checkpoints) {
   const fullEl = document.getElementById('progress-full');
 
   if (!checkpoints.length) {
-    const msg = '<div style="color:var(--text-muted); font-size:13px;">No checkpoints yet — your tutor will add them soon!</div>';
+    const msg = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">No tasks yet — your tutor will add them after your first session!</div>';
     previewEl.innerHTML = msg; fullEl.innerHTML = msg; return;
   }
 
-  const bar = `<div style="margin-bottom:12px;">
-    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Overall progress</span><span>${done}/${checkpoints.length}</span></div>
-    <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:var(--pink); border-radius:20px; height:8px; width:${pct}%;"></div></div>
-  </div>`;
-
-  const items = checkpoints.map(c => `
-    <div class="checkpoint-row">
-      <div style="width:18px; height:18px; border-radius:50%; background:${c.completed ? 'var(--green-mid)' : 'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
-        ${c.completed ? '<span style="color:white;font-size:10px;font-weight:800;">✓</span>' : ''}
+  const overdue = checkpoints.filter(c => !c.completed && c.due_date && new Date(c.due_date) < new Date()).length;
+  const bar = `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">
+        <span>Progress — ${done}/${checkpoints.length} tasks done</span>
+        <span>${pct}%${overdue?` · <span style="color:#dc2626;">${overdue} overdue</span>`:''}</span>
       </div>
-      <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--navy)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
-    </div>`).join('');
-
-  previewEl.innerHTML = bar + checkpoints.slice(0,4).map(c => `
-    <div class="checkpoint-row">
-      <div style="width:18px; height:18px; border-radius:50%; background:${c.completed ? 'var(--green-mid)' : 'var(--border-light)'}; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
-        ${c.completed ? '<span style="color:white;font-size:10px;font-weight:800;">✓</span>' : ''}
+      <div style="background:var(--border-light); border-radius:20px; height:10px;">
+        <div style="background:${pct===100?'var(--green-mid)':'var(--pink)'}; border-radius:20px; height:10px; width:${pct}%; transition:width 0.5s;"></div>
       </div>
-      <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--navy)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
-    </div>`).join('');
+    </div>`;
 
-  fullEl.innerHTML = bar + items;
+  previewEl.innerHTML = bar + checkpoints.slice(0,4).map(c => renderCheckpointCard(c, true)).join('');
+  fullEl.innerHTML = bar + checkpoints.map(c => renderCheckpointCard(c, false)).join('');
 }
 
 function renderAllSessions(bookings) {

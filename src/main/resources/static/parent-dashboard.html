@@ -238,21 +238,36 @@ function renderUpcoming(bookings) {
 
 function renderProgress(checkpoints) {
   const el = document.getElementById('student-progress');
-  if (!checkpoints.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No checkpoints set yet by the tutor.</p>'; return; }
+  if (!checkpoints.length) { el.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">No tasks set yet by the tutor.</p>'; return; }
   const done = checkpoints.filter(c => c.completed).length;
   const pct = Math.round((done/checkpoints.length)*100);
+  const overdue = checkpoints.filter(c => !c.completed && c.due_date && new Date(c.due_date) < new Date()).length;
   el.innerHTML = `
-    <div style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;"><span>Progress</span><span>${done}/${checkpoints.length} goals</span></div>
-      <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:var(--pink); border-radius:20px; height:8px; width:${pct}%; transition:width 0.5s;"></div></div>
+    <div style="margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">
+        <span>${done}/${checkpoints.length} tasks completed</span>
+        <span>${pct}%${overdue?` · <span style="color:#dc2626;">${overdue} overdue</span>`:''}</span>
+      </div>
+      <div style="background:var(--border-light); border-radius:20px; height:8px;"><div style="background:${pct===100?'var(--green-mid)':'var(--pink)'}; border-radius:20px; height:8px; width:${pct}%; transition:width 0.5s;"></div></div>
     </div>
-    ${checkpoints.slice(0,5).map(c => `
-      <div class="checkpoint-row">
-        <div class="check-circle" style="background:${c.completed ? 'var(--green-mid)' : 'var(--border-light)'};">
-          ${c.completed ? '<span style="color:white;font-size:10px;font-weight:800;">✓</span>' : ''}
-        </div>
-        <span style="font-size:13px; color:${c.completed ? 'var(--text-muted)' : 'var(--navy)'}; text-decoration:${c.completed ? 'line-through' : 'none'};">${c.title}</span>
-      </div>`).join('')}`;
+    ${checkpoints.slice(0,6).map(c => {
+      const isOverdue = c.due_date && !c.completed && new Date(c.due_date) < new Date();
+      const dueStr = c.due_date ? new Date(c.due_date).toLocaleDateString() : null;
+      return `
+        <div class="checkpoint-row">
+          <div class="check-circle" style="background:${c.completed?'var(--green-mid)':isOverdue?'#fca5a5':'var(--border-light)'};">
+            ${c.completed?'<span style="color:white;font-size:10px;font-weight:800;">✓</span>':''}
+          </div>
+          <div style="flex:1;">
+            <span style="font-size:13px; color:${c.completed?'var(--text-muted)':'var(--navy)'}; text-decoration:${c.completed?'line-through':'none'};">${c.title}</span>
+            <div style="display:flex; gap:6px; margin-top:3px; flex-wrap:wrap;">
+              ${c.topic?`<span style="font-size:11px; background:var(--blue-soft); color:var(--blue-mid); padding:1px 7px; border-radius:20px; font-weight:600;">${c.topic}</span>`:''}
+              ${dueStr?`<span style="font-size:11px; color:${isOverdue?'#dc2626':'var(--text-muted)'};">Due ${dueStr}${isOverdue?' ⚠️':''}</span>`:''}
+              ${c.student_answer?`<span style="font-size:11px; color:var(--green-mid); font-style:italic;">Answered ✓</span>`:''}
+            </div>
+          </div>
+        </div>`;
+    }).join('')}`;
 }
 
 function renderNotes(notes) {
