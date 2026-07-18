@@ -117,18 +117,6 @@
             <input type="text" id="cp-checkin-question" placeholder="e.g. Can you explain how to factor a trinomial?" style="font-size:13px;">
             <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">Student will answer this after the session</div>
           </div>
-          <div style="margin-bottom:12px;">
-            <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Completion approval</label>
-            <div style="display:flex; gap:8px;">
-              <label style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 12px; border:1.5px solid var(--pink); border-radius:8px; cursor:pointer; background:var(--pink-light); font-size:13px; font-weight:600; color:var(--pink-dark);">
-                <input type="radio" name="cp-approval" value="auto" checked style="accent-color:var(--pink);"> ⚡ Auto-approve
-              </label>
-              <label style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; color:var(--text-muted);">
-                <input type="radio" name="cp-approval" value="manual" style="accent-color:var(--pink);"> 👀 I'll approve manually
-              </label>
-            </div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Auto: student checks off → done instantly. Manual: you review before marking complete.</div>
-          </div>
           <button class="btn-primary" style="width:100%; padding:10px; font-size:13px;" onclick="addCheckpoint()">Save checkpoint</button>
         </div>
       </div>
@@ -284,7 +272,7 @@ async function loadDashboard() {
   allStudents = students;
   allCheckpoints = checkpoints;
 
-  const myBookings = bookings.filter(b => b.tutor_id == TUTOR_ID);
+  const myBookings = bookings.filter(b => b.tutor_id == TUTOR_ID || b.tutor_first);
   document.getElementById('stat-sessions').textContent = myBookings.length;
   document.getElementById('stat-students').textContent = [...new Set(myBookings.map(b => b.student_id))].length;
   document.getElementById('stat-rating').textContent = tutor.rating ? '⭐' + parseFloat(tutor.rating).toFixed(1) : '—';
@@ -294,48 +282,6 @@ async function loadDashboard() {
   renderStudents(students);
   renderReviewsPreview();
   populateStudentDropdown(students);
-  loadPendingApprovals();
-}
-
-async function loadPendingApprovals() {
-  try {
-    const pending = await fetch(`${API}/api/checkpoints/pending-approval/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]);
-    if (!pending.length) return;
-    // Show a notification banner at top of overview
-    const overview = document.getElementById('section-overview');
-    const existing = document.getElementById('pending-approvals-banner');
-    if (existing) existing.remove();
-    const banner = document.createElement('div');
-    banner.id = 'pending-approvals-banner';
-    banner.style.cssText = 'background:var(--amber-soft); border:1px solid #fed7aa; border-radius:12px; padding:16px; margin-bottom:16px;';
-    banner.innerHTML = `
-      <div style="font-size:14px; font-weight:700; color:var(--amber-mid); margin-bottom:10px;">⏳ ${pending.length} task${pending.length!==1?'s':''} waiting for your approval</div>
-      ${pending.map(c => `
-        <div style="background:white; border-radius:10px; padding:12px; margin-bottom:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <div style="flex:1;">
-            <div style="font-size:13px; font-weight:700; color:var(--navy);">${c.title}</div>
-            <div style="font-size:12px; color:var(--text-muted);">${c.student_name||'Student'} · Submitted ${new Date(c.student_submitted_at).toLocaleDateString()}</div>
-            ${c.student_answer?`<div style="font-size:12px; color:var(--pink-dark); margin-top:4px; font-style:italic;">Answer: "${c.student_answer}"</div>`:''}
-          </div>
-          <div style="display:flex; gap:6px; flex-shrink:0;">
-            <button onclick="approveCheckpoint(${c.id})" style="background:var(--green-mid); color:white; border:none; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">✓ Approve</button>
-            <button onclick="rejectCheckpoint(${c.id})" style="background:white; color:#dc2626; border:1.5px solid #dc2626; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">↩ Send back</button>
-          </div>
-        </div>`).join('')}`;
-    overview.insertBefore(banner, overview.firstChild);
-  } catch(e) {}
-}
-
-async function approveCheckpoint(id) {
-  await fetch(`${API}/api/checkpoints/${id}/approve`, { method: 'PATCH' });
-  const checkpoints = await fetch(`${API}/api/checkpoints/${TUTOR_ID}`).then(r=>r.json()).catch(()=>[]);
-  renderProgress(checkpoints);
-  loadPendingApprovals();
-}
-
-async function rejectCheckpoint(id) {
-  await fetch(`${API}/api/checkpoints/${id}/reject`, { method: 'PATCH' });
-  loadPendingApprovals();
 }
 
 function renderCalendar(bookings) {
@@ -515,7 +461,6 @@ async function addCheckpoint() {
   const checkinQuestion = document.getElementById('cp-checkin-question').value.trim();
   if (!title) { alert('Please enter a task title.'); return; }
   if (!studentId) { alert('Please select a student.'); return; }
-  const approvalMode = document.querySelector('input[name="cp-approval"]:checked')?.value || 'auto';
   await fetch(`${API}/api/checkpoints`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -525,8 +470,7 @@ async function addCheckpoint() {
       title,
       topic: topic || null,
       due_date: dueDate || null,
-      checkin_question: checkinQuestion || null,
-      approval_mode: approvalMode
+      checkin_question: checkinQuestion || null
     })
   });
   ['cp-title','cp-topic','cp-due-date','cp-checkin-question'].forEach(id => { document.getElementById(id).value = ''; });
