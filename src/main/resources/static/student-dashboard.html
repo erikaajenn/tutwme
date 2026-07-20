@@ -377,7 +377,13 @@ async function checkIn() {
   document.getElementById('checkin-note').value = '';
 }
 
-loadDashboard();
+// Auth check
+const _student = localStorage.getItem('student');
+if (!_student && !window.location.search.includes('booking_id')) {
+  window.location.href = 'login.html';
+} else {
+  loadDashboard();
+}
 </script>
 </body>
 </html>

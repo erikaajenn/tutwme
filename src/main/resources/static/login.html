@@ -93,7 +93,13 @@ async function login() {
         window.location.href = 'tutor-dashboard.html';
       } else {
         localStorage.setItem('student', JSON.stringify(user));
-        showDashboard(user);
+        // Redirect back to original page if came from a redirect
+        const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+        if (redirectParam) {
+          window.location.href = decodeURIComponent(redirectParam);
+        } else {
+          showDashboard(user);
+        }
       }
     } else { showError('Invalid email or password.'); }
   } catch { showError('Could not connect to server.'); }

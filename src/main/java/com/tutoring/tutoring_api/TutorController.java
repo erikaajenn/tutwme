@@ -775,28 +775,77 @@ public class TutorController {
     @GetMapping("/tutors/{id}/stats")
     public org.springframework.http.ResponseEntity<?> getTutorStats(@PathVariable int id) {
         try {
-            Map<String, Object> stats = new java.util.HashMap<>();
+            Map<String, Object> tutor = jdbc.queryForMap("SELECT * FROM tutors WHERE id = ?", id);
 
-            Map<String, Object> sessionStats = jdbc.queryForMap("""
-                SELECT COUNT(*) as total_sessions,
-                       COUNT(DISTINCT student_id) as total_students
-                FROM bookings
-                WHERE tutor_id = ?
-                """, id);
-            stats.putAll(sessionStats);
+            int completedSessions = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM bookings WHERE tutor_id = ? AND status = 'completed'", Integer.class, id);
 
-            Map<String, Object> upcoming = jdbc.queryForMap("""
-                SELECT COUNT(*) as upcoming_sessions
-                FROM bookings
-                WHERE tutor_id = ? AND scheduled_at > NOW()
-                """, id);
-            stats.putAll(upcoming);
+            Double totalHours = jdbc.queryForObject(
+                "SELECT COALESCE(SUM(duration_minutes), 0) / 60.0 FROM bookings WHERE tutor_id = ? AND status = 'completed'",
+                Double.class, id);
 
-            Map<String, Object> tutorInfo = jdbc.queryForMap(
-                    "SELECT rating, total_reviews FROM tutors WHERE id = ?", id);
-            stats.putAll(tutorInfo);
+            int uniqueStudents = jdbc.queryForObject(
+                "SELECT COUNT(DISTINCT student_id) FROM bookings WHERE tutor_id = ?", Integer.class, id);
 
-            return org.springframework.http.ResponseEntity.ok(stats);
+            int totalSessions = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM bookings WHERE tutor_id = ?", Integer.class, id);
+
+            int upcomingSessions = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM bookings WHERE tutor_id = ? AND scheduled_at > NOW()", Integer.class, id);
+
+            int reviewCount = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM reviews WHERE reviewee_id = ? AND reviewee_type = 'tutor' AND is_private = false",
+                Integer.class, id);
+
+            Double avgRating = jdbc.queryForObject(
+                "SELECT COALESCE(AVG(rating), 0) FROM reviews WHERE reviewee_id = ? AND reviewee_type = 'tutor' AND is_private = false",
+                Double.class, id);
+
+            int repeatClients = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM (
+                    SELECT student_id FROM bookings WHERE tutor_id = ?
+                    GROUP BY student_id HAVING COUNT(*) >= 2
+                ) x
+                """, Integer.class, id);
+
+            // Level calculation
+            String level;
+            String nextLevel;
+            int nextThreshold;
+            if (completedSessions >= 100) { level = "Master Mentor"; nextLevel = null; nextThreshold = 0; }
+            else if (completedSessions >= 50) { level = "Leader"; nextLevel = "Master Mentor"; nextThreshold = 100; }
+            else if (completedSessions >= 20) { level = "Scholar"; nextLevel = "Leader"; nextThreshold = 50; }
+            else if (completedSessions >= 5)  { level = "Mentor"; nextLevel = "Scholar"; nextThreshold = 20; }
+            else { level = "Rookie"; nextLevel = "Mentor"; nextThreshold = 5; }
+
+            boolean profileComplete = tutor.get("bio") != null && !tutor.get("bio").toString().isEmpty()
+                && tutor.get("teaching_philosophy") != null && !tutor.get("teaching_philosophy").toString().isEmpty()
+                && tutor.get("avatar_style") != null
+                && tutor.get("keywords") != null && !tutor.get("keywords").toString().isEmpty();
+
+            List<Map<String, Object>> badges = new java.util.ArrayList<>();
+            badges.add(Map.of("id","first_student","name","First Student","icon","🎉","earned", totalSessions >= 1));
+            badges.add(Map.of("id","ten_hours","name","10 Hours","icon","⏰","earned", totalHours >= 10));
+            badges.add(Map.of("id","five_reviews","name","5 Reviews","icon","⭐","earned", reviewCount >= 5));
+            badges.add(Map.of("id","repeat_client","name","Repeat Client","icon","🔁","earned", repeatClients >= 1));
+            badges.add(Map.of("id","profile_complete","name","Profile Complete","icon","✅","earned", profileComplete));
+
+            Map<String, Object> result = new java.util.HashMap<>();
+            result.put("completed_sessions", completedSessions);
+            result.put("total_sessions", totalSessions);
+            result.put("upcoming_sessions", upcomingSessions);
+            result.put("total_hours", Math.round(totalHours * 10) / 10.0);
+            result.put("unique_students", uniqueStudents);
+            result.put("total_students", uniqueStudents);
+            result.put("review_count", reviewCount);
+            result.put("total_reviews", tutor.get("total_reviews"));
+            result.put("avg_rating", Math.round(avgRating * 10) / 10.0);
+            result.put("rating", tutor.get("rating"));
+            result.put("level", level);
+            result.put("next_level", nextLevel);
+            result.put("next_threshold", nextThreshold);
+            result.put("badges", badges);
+            return org.springframework.http.ResponseEntity.ok(result);
         } catch (Exception e) {
             return org.springframework.http.ResponseEntity.status(500)
                     .body(Map.of("error", e.getMessage()));

@@ -216,7 +216,13 @@ async function submitBooking() {
   }
 }
 
-loadTutors();
+// Auth check — redirect to login if not signed in
+const currentStudent = localStorage.getItem('student');
+if (!currentStudent) {
+  window.location.href = `login.html?redirect=booking.html${window.location.search ? encodeURIComponent(window.location.search) : ''}`;
+} else {
+  loadTutors();
+}
 </script>
 </body>
 </html>

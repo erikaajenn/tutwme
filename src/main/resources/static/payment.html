@@ -209,7 +209,13 @@ async function markAsPaid() {
   }
 }
 
-loadPayment();
+// Auth check
+const _student = localStorage.getItem('student');
+if (!_student && !window.location.search.includes('booking_id')) {
+  window.location.href = 'login.html';
+} else {
+  loadPayment();
+}
 </script>
 </body>
 </html>
