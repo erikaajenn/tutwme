@@ -14,7 +14,40 @@
     <a href="login.html" class="btn-ghost" style="padding:8px 18px;">Sign in</a>
     <a href="register.html" class="btn-primary" style="padding:8px 18px;">Get started</a>
   </div>
+  <button class="hamburger" onclick="openMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+
+<!-- Mobile nav drawer -->
+<div class="mobile-nav" id="mobile-nav" onclick="closeMobileNav(event)">
+  <div class="mobile-nav-drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <div class="logo">Tutw<span>Me</span></div>
+      <button onclick="document.getElementById('mobile-nav').classList.remove('open')" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-muted);">✕</button>
+    </div>
+    <a href="index.html" class="mobile-nav-link">🏠 Home</a>
+    <a href="find-tutor.html" class="mobile-nav-link">🔍 Browse Tutors</a>
+    <a href="find-match.html" class="mobile-nav-link">✨ Find My Match</a>
+    <a href="about.html" class="mobile-nav-link">ℹ️ About</a>
+    <a href="tutor-register.html" class="mobile-nav-link">📚 Become a Tutor</a>
+    <a href="parent-dashboard.html" class="mobile-nav-link">👨‍👩‍👧 Parent Portal</a>
+    <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+      <a href="login.html" class="btn-ghost" style="text-align:center; padding:12px;">Sign in</a>
+      <a href="register.html" class="btn-primary" style="text-align:center; padding:12px;">Get started free</a>
+    </div>
+    <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-light); display:flex; gap:16px; flex-wrap:wrap;">
+      <a href="help.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Help</a>
+      <a href="terms.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Terms</a>
+      <a href="privacy.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Privacy</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobileNav(e) { if(e.target===document.getElementById('mobile-nav')) { document.getElementById('mobile-nav').classList.remove('open'); document.body.style.overflow=''; } }
+</script>
 
 <div style="background:linear-gradient(135deg,#fff0f6,#fafafa); padding:40px 20px 28px; text-align:center;">
   <div style="display:inline-block; background:var(--pink-light); color:var(--pink-dark); font-size:12px; font-weight:700; padding:4px 14px; border-radius:20px; margin-bottom:12px;">Secure booking</div>
@@ -107,6 +140,21 @@
       </div>
     </div>
 
+    <!-- Safety consent for in-person -->
+    <div id="inperson-safety" style="display:none; background:var(--amber-soft); border:1px solid #fed7aa; border-radius:12px; padding:16px; margin-bottom:16px;">
+      <div style="font-size:14px; font-weight:700; color:var(--amber-mid); margin-bottom:10px;">📍 In-person session safety</div>
+      <ul style="font-size:13px; color:#78350f; line-height:1.8; margin:0 0 12px 16px;">
+        <li>Meet in a <strong>public location</strong> (library, coffee shop, school campus)</li>
+        <li>Let a parent or trusted adult know the <strong>time, location, and tutor's name</strong></li>
+        <li>Students under 18 should have a <strong>parent present or nearby</strong></li>
+        <li>Never share your home address with a tutor before meeting in person</li>
+      </ul>
+      <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+        <input type="checkbox" id="safety-consent" style="margin-top:2px; flex-shrink:0; accent-color:var(--pink);">
+        <span style="font-size:13px; color:#78350f; font-weight:600; line-height:1.5;">I understand and agree to follow TutwMe's in-person session safety guidelines</span>
+      </label>
+    </div>
+
     <button class="btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="submitBooking()">Confirm booking →</button>
 
     <div style="text-align:center; margin-top:12px; font-size:13px; color:var(--text-muted);">
@@ -133,6 +181,19 @@ async function loadTutors() {
   const select = document.getElementById('tutor-select');
   tutors.forEach(t => {
     select.innerHTML += `<option value="${t.id}">${t.first_name} ${t.last_name} — $${t.hourly_rate}/hr</option>`;
+  });
+
+  // Show/hide safety section based on session type
+  document.querySelectorAll('input[name="session-type"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const safety = document.getElementById('inperson-safety');
+      if (radio.value === 'in-person') {
+        safety.style.display = 'block';
+      } else {
+        safety.style.display = 'none';
+        document.getElementById('safety-consent').checked = false;
+      }
+    });
   });
   const params = new URLSearchParams(window.location.search);
   if (params.get('tutor_id')) {
@@ -189,6 +250,15 @@ async function submitBooking() {
     document.getElementById('error').textContent = 'Please fill in all fields.';
     document.getElementById('error').style.display = 'block';
     return;
+  }
+  const sessionType = document.querySelector('input[name="session-type"]:checked')?.value || 'in-person';
+  if (sessionType === 'in-person') {
+    const consent = document.getElementById('safety-consent');
+    if (!consent.checked) {
+      document.getElementById('error').textContent = 'Please read and agree to the in-person session safety guidelines.';
+      document.getElementById('error').style.display = 'block';
+      return;
+    }
   }
   document.getElementById('error').style.display = 'none';
 

@@ -9,7 +9,40 @@
 <body>
 <header>
   <a href="index.html" style="text-decoration:none;"><div class="logo">Tutw<span>Me</span></div></a>
+  <button class="hamburger" onclick="openMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+
+<!-- Mobile nav drawer -->
+<div class="mobile-nav" id="mobile-nav" onclick="closeMobileNav(event)">
+  <div class="mobile-nav-drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <div class="logo">Tutw<span>Me</span></div>
+      <button onclick="document.getElementById('mobile-nav').classList.remove('open')" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-muted);">✕</button>
+    </div>
+    <a href="index.html" class="mobile-nav-link">🏠 Home</a>
+    <a href="find-tutor.html" class="mobile-nav-link">🔍 Browse Tutors</a>
+    <a href="find-match.html" class="mobile-nav-link">✨ Find My Match</a>
+    <a href="about.html" class="mobile-nav-link">ℹ️ About</a>
+    <a href="tutor-register.html" class="mobile-nav-link">📚 Become a Tutor</a>
+    <a href="parent-dashboard.html" class="mobile-nav-link">👨‍👩‍👧 Parent Portal</a>
+    <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+      <a href="login.html" class="btn-ghost" style="text-align:center; padding:12px;">Sign in</a>
+      <a href="register.html" class="btn-primary" style="text-align:center; padding:12px;">Get started free</a>
+    </div>
+    <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-light); display:flex; gap:16px; flex-wrap:wrap;">
+      <a href="help.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Help</a>
+      <a href="terms.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Terms</a>
+      <a href="privacy.html" style="font-size:13px; color:var(--text-muted); text-decoration:none;">Privacy</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobileNav(e) { if(e.target===document.getElementById('mobile-nav')) { document.getElementById('mobile-nav').classList.remove('open'); document.body.style.overflow=''; } }
+</script>
 
 <div style="max-width:420px; margin:48px auto; padding:0 20px;">
   <div class="card">
